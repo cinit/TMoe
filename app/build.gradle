@@ -1,0 +1,86 @@
+plugins {
+    id 'com.android.application'
+}
+
+String BUILD_UUID = UUID.randomUUID().toString()
+println "Current build ID is " + BUILD_UUID
+
+android {
+    compileSdk 31
+    buildToolsVersion "31.0.0"
+
+    defaultConfig {
+        applicationId "cc.ioctl.tmoe"
+        minSdk 21
+        targetSdk 32
+        versionCode 1
+        versionName "1.0" + (getGitHeadRefsSuffix.call() as String)
+        buildConfigField "String", "BUILD_UUID", '"' + BUILD_UUID + '"'
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+        }
+        externalNativeBuild {
+            cmake {
+                arguments "-DTMOE_VERSION=" + versionName, "-DANDROID_PLATFORM=android-21"
+                cppFlags "-std=c++17"
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            shrinkResources false
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            ndk {
+                debugSymbolLevel "full"
+            }
+        }
+        debug {
+            debuggable true
+            jniDebuggable true
+            shrinkResources false
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+//    kotlinOptions {
+//        jvmTarget = JavaVersion.VERSION_1_8
+//        useIR = true
+//    }
+
+    externalNativeBuild {
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+            version "3.10.2"
+        }
+    }
+    androidResources {
+        additionalParameters("--allow-reserved-package-id", "--package-id", "0x73")
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+    implementation 'com.tencent:mmkv-static:1.2.8'
+    implementation 'io.noties.markwon:core:4.6.2'
+    implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:3.0'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'com.google.code.gson:gson:2.8.9'
+    compileOnly("de.robv.android.xposed:api:82")
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+}
