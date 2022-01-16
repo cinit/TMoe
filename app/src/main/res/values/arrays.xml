@@ -3,5 +3,7 @@
     <string-array name="xposedscope">
         <item>org.telegram.messenger</item>
         <item>nekox.messenger</item>
+        <item>com.jasonkhew96.pigeongram</item>
+        <item>xyz.nextalone.nagram</item>
     </string-array>
 </resources>
