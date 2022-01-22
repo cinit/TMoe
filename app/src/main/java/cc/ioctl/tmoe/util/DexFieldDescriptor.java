@@ -18,6 +18,10 @@ public class DexFieldDescriptor {
      */
     public final String type;
 
+    public DexFieldDescriptor(DexFieldDescriptor other) {
+        this(other.declaringClass, other.name, other.type);
+    }
+
     public DexFieldDescriptor(String desc) {
         if (desc == null) {
             throw new NullPointerException();
@@ -36,6 +40,12 @@ public class DexFieldDescriptor {
         declaringClass = clz;
         name = n;
         type = t;
+    }
+
+    public DexFieldDescriptor(Field field) {
+        declaringClass = getTypeSig(field.getDeclaringClass());
+        name = field.getName();
+        type = getTypeSig(field.getType());
     }
 
     public static String getTypeSig(final Class<?> type) {

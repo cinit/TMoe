@@ -9,6 +9,12 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import java.util.Objects;
 
 import cc.ioctl.tmoe.rtti.Bidirectional;
 import cc.ioctl.tmoe.rtti.ProxyFragmentRttiHandler;
@@ -23,7 +29,7 @@ public abstract class BaseProxyFragment {
         this(null);
     }
 
-    protected BaseProxyFragment(Bundle args) {
+    protected BaseProxyFragment(@Nullable Bundle args) {
         mArgs = args;
         mProxyRttiHandler = new ProxyFragmentRttiHandler(this);
     }
@@ -36,7 +42,34 @@ public abstract class BaseProxyFragment {
         return mProxyRttiHandler.getProxyInstance();
     }
 
-    public abstract View onCreateView(Context context);
+    public interface ActionBarWrapper {
+        void setBackButtonImage(int resource);
+
+        @Nullable
+        ImageView getBackButton();
+
+        void setActionBarMenuOnItemClick(View.OnClickListener listener);
+
+        void setTitle(CharSequence value);
+
+        String getTitle();
+
+        String getSubtitle();
+
+        void setSubtitle(CharSequence value);
+    }
+
+    @Nullable
+    public ViewGroup getActionBar() {
+        return mProxyRttiHandler.getActionBar();
+    }
+
+    @Nullable
+    public ActionBarWrapper getActionBarWrapper() {
+        return mProxyRttiHandler.getActionBarWrapper();
+    }
+
+    public abstract View onCreateView(@NonNull Context context);
 
     public Bundle getArguments() {
         return mArgs;
@@ -44,6 +77,15 @@ public abstract class BaseProxyFragment {
 
     public boolean isSwipeBackEnabled(MotionEvent event) {
         return true;
+    }
+
+    protected void setFragmentView(View view) {
+        mProxyRttiHandler.setFragmentView(view);
+    }
+
+    @Nullable
+    protected View getFragmentView() {
+        return mProxyRttiHandler.getFragmentView();
     }
 
     public void setInBubbleMode(boolean value) {
@@ -97,6 +139,38 @@ public abstract class BaseProxyFragment {
     public ViewGroup createActionBar(Context context) {
         return mProxyRttiHandler.createActionBarSuper(context);
     }
+
+    @Nullable
+    protected ViewGroup getParentLayout() {
+        return mProxyRttiHandler.getParentLayout();
+    }
+
+    public boolean presentFragment(@NonNull Object fragment) {
+        return presentFragment(fragment, false, false);
+    }
+
+    public boolean presentFragment(@NonNull Object fragment, boolean removeLast) {
+        return presentFragment(fragment, removeLast, false);
+    }
+
+    public boolean presentFragment(@NonNull Object fragment, boolean removeLast, boolean forceWithoutAnimation) {
+        Objects.requireNonNull(fragment, "fragment");
+        if (!allowPresentFragment()) {
+            return false;
+        }
+        ViewGroup parentLayout = getParentLayout();
+        if (parentLayout == null) {
+            return false;
+        }
+        Object targetFragment = fragment instanceof BaseProxyFragment ? ((BaseProxyFragment) fragment).getProxyObject() : fragment;
+        return ProxyFragmentRttiHandler.staticPresentFragment(parentLayout, targetFragment,
+                removeLast, forceWithoutAnimation, true, false, null);
+    }
+
+    protected boolean allowPresentFragment() {
+        return true;
+    }
+
 
     @Bidirectional
     public void finishFragment() {

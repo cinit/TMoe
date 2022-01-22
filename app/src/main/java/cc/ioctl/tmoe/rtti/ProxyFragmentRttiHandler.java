@@ -10,6 +10,10 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +25,8 @@ import java.util.Objects;
 import cc.ioctl.tmoe.base.BaseProxyFragment;
 import cc.ioctl.tmoe.util.HostFirstClassReferencer;
 import cc.ioctl.tmoe.util.HostInfo;
+import cc.ioctl.tmoe.util.Reflex;
+import cc.ioctl.tmoe.util.Utils;
 import dalvik.system.DexClassLoader;
 
 public class ProxyFragmentRttiHandler {
@@ -38,6 +44,146 @@ public class ProxyFragmentRttiHandler {
         }
         return mProxyInstance;
     }
+
+    // -----------------------------------------------
+    // reflect implementation
+
+    public void setFragmentView(View view) {
+        Object proxy = getProxyInstance();
+        Reflex.iput_object(proxy, "fragmentView", view);
+    }
+
+    public View getFragmentView() {
+        Object proxy = getProxyInstance();
+        return (View) Reflex.iget_object_or_null(proxy, "fragmentView");
+    }
+
+    public ViewGroup getActionBar() {
+        Object obj = getProxyInstance();
+        return (ViewGroup) Reflex.iget_object_or_null(obj, "actionBar");
+    }
+
+    public BaseProxyFragment.ActionBarWrapper getActionBarWrapper() {
+        ViewGroup actionBar = getActionBar();
+        if (actionBar == null) {
+            return null;
+        }
+        return new TMsgActionBarWrapper(actionBar);
+    }
+
+    private static class TMsgActionBarWrapper implements BaseProxyFragment.ActionBarWrapper {
+        ViewGroup actionBar;
+
+        public TMsgActionBarWrapper(ViewGroup r) {
+            actionBar = Objects.requireNonNull(r);
+        }
+
+        @Override
+        public void setBackButtonImage(int resource) {
+            try {
+                Reflex.invoke_virtual(actionBar, "setBackButtonImage", resource, int.class, void.class);
+            } catch (Exception e) {
+                Utils.loge(e);
+            }
+        }
+
+        @Override
+        public void setTitle(CharSequence value) {
+            try {
+                Reflex.invoke_virtual(actionBar, "setTitle", value, CharSequence.class, void.class);
+            } catch (Exception e) {
+                Utils.loge(e);
+            }
+        }
+
+        @Override
+        public String getTitle() {
+            try {
+                return (String) Reflex.invoke_virtual(actionBar, "getTitle", String.class);
+            } catch (Exception e) {
+                Utils.loge(e);
+                return null;
+            }
+        }
+
+        @Override
+        public String getSubtitle() {
+            try {
+                return (String) Reflex.invoke_virtual(actionBar, "getSubtitle", String.class);
+            } catch (Exception e) {
+                Utils.loge(e);
+                return null;
+            }
+        }
+
+        @Override
+        public void setSubtitle(CharSequence value) {
+            try {
+                Reflex.invoke_virtual(actionBar, "setSubtitle", value, CharSequence.class, void.class);
+            } catch (Exception e) {
+                Utils.loge(e);
+            }
+        }
+
+        @Override
+        public ImageView getBackButton() {
+            try {
+                return (ImageView) Reflex.invoke_virtual(actionBar, "getBackButton", ImageView.class);
+            } catch (Exception e) {
+                Utils.loge(e);
+                return null;
+            }
+        }
+
+        @Override
+        public void setActionBarMenuOnItemClick(View.OnClickListener listener) {
+            ImageView backButton = getBackButton();
+            if (backButton != null) {
+                backButton.setOnClickListener(listener);
+            }
+        }
+    }
+
+    @Nullable
+    public ViewGroup getParentLayout() {
+        Object obj = getProxyInstance();
+        return staticGetParentLayout(obj);
+    }
+
+    public static ViewGroup staticGetParentLayout(Object fragment) {
+        return (ViewGroup) Reflex.iget_object_or_null(fragment, "parentLayout");
+    }
+
+    public static boolean staticPresentFragment(@NonNull ViewGroup parentLayout, @NonNull Object fragment, boolean removeLast) {
+        return staticPresentFragment(parentLayout, fragment, removeLast, false, true, false, null);
+    }
+
+    public static boolean staticPresentFragment(@NonNull ViewGroup parentLayout, @NonNull Object fragment,
+                                                boolean removeLast, boolean forceWithoutAnimation,
+                                                boolean check, boolean preview, @Nullable View menu) {
+        Objects.requireNonNull(parentLayout, "parentLayout == null");
+        Objects.requireNonNull(fragment, "fragment == null");
+        if (sHostActionBarLayoutClass == null || sHostBaseFragmentClass == null) {
+            throw new IllegalStateException("attempt to call presentFragment() before sHostBaseFragmentClass is initialized");
+        }
+        // check cast
+        if (fragment instanceof BaseProxyFragment) {
+            fragment = ((BaseProxyFragment) fragment).getProxyObject();
+        }
+        if (!sHostBaseFragmentClass.isInstance(fragment)) {
+            throw new ClassCastException("fragment is not instance of " + sHostBaseFragmentClass.getName());
+        }
+        try {
+            return (Boolean) Objects.requireNonNull(sHostActionBarLayoutClass.getMethod("presentFragment", sHostBaseFragmentClass,
+                            boolean.class, boolean.class, boolean.class, boolean.class, View.class)
+                    .invoke(parentLayout, fragment, removeLast, forceWithoutAnimation, check, preview, menu));
+        } catch (ReflectiveOperationException e) {
+            Utils.loge(e);
+            return false;
+        }
+    }
+
+    // -----------------------------------------------
 
     /**
      * [{method name, type}]
@@ -118,10 +264,6 @@ public class ProxyFragmentRttiHandler {
     }
 
     public void setInPreviewModeSuper(boolean value) {
-        throw new UnsupportedOperationException("dex method not found");
-    }
-
-    public void setInPreviewMode$dispatcher(boolean value) {
         throw new UnsupportedOperationException("dex method not found");
     }
 
