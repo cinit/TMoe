@@ -2,4 +2,6 @@
     <string name="app_name" translatable="false">TMoe</string>
     <string name="res_inject_success" translatable="false">Resources injection success</string>
     <string name="xposeddescription">Extra features for Telegram clients.</string>
+
+    <string name="TMoeSettings">TMoe Settings</string>
 </resources>

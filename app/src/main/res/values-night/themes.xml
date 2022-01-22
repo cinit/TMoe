@@ -1,16 +1,21 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.TMoe" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+    <style name="Theme.TMoe" parent="Theme.MaterialComponents.DayNight">
+        <item name="android:actionBarStyle">@style/ActionBar.Transparent.TMoe</item>
+        <item name="android:colorBackground">#1f2732</item>
+        <item name="android:windowBackground">#1f2732</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:colorPrimaryDark">#1c242e</item>
+        <item name="android:colorPrimary">#232d3a</item>
+        <item name="android:navigationBarColor">#000000</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
     </style>
+
+    <style name="ActionBar.Transparent.TMoe" parent="Theme.MaterialComponents.DayNight">
+        <item name="android:logo">@drawable/transparent</item>
+        <item name="android:background">#ff232d3a</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:title">""</item>
+    </style>
+
 </resources>
