@@ -1,0 +1,61 @@
+package cc.ioctl.tmoe.base;
+
+import android.app.Application;
+
+import java.lang.reflect.Field;
+
+import cc.ioctl.tmoe.lifecycle.Parasitics;
+import cc.ioctl.tmoe.rtti.ProxyFragmentRttiHandler;
+import cc.ioctl.tmoe.util.HostInfo;
+import cc.ioctl.tmoe.util.Initiator;
+import cc.ioctl.tmoe.util.MultiProcess;
+
+public class MainStartInit {
+    public static final MainStartInit INSTANCE = new MainStartInit();
+
+    private MainStartInit() {
+    }
+
+    private boolean mInitialized = false;
+
+    public void initForStartup() {
+        if (mInitialized) {
+            return;
+        }
+        Application app = HostInfo.getApplication();
+        if (MultiProcess.isMainProcess()) {
+            // init for proxy fragment
+            findHostBaseFragmentAndInitForProxy();
+            // init lifecycle and resource injection
+            Parasitics.injectModuleResources(app.getApplicationContext().getResources());
+            Parasitics.initForStubActivity(app);
+            // init functional hooks
+            DynamicHookInit.loadHooks();
+        }
+        mInitialized = true;
+    }
+
+    private static void findHostBaseFragmentAndInitForProxy() {
+        // find host base fragment
+        Class<?> kBaseFragment = Initiator.load("org.telegram.ui.ActionBar.BaseFragment");
+        if (kBaseFragment == null) {
+            // maybe obfuscated
+            Class<?> kAppBarLayout = Initiator.load("org.telegram.ui.ActionBar.ActionBarLayout");
+            if (kAppBarLayout == null) {
+                throw new RuntimeException("can not find class ActionBarLayout");
+            }
+            try {
+                Field newFragment = kAppBarLayout.getDeclaredField("newFragment");
+                kBaseFragment = newFragment.getType();
+            } catch (NoSuchFieldException e) {
+                throw new RuntimeException("can not find field ActionBarLayout.newFragment");
+            }
+        }
+        // init for proxy
+        try {
+            ProxyFragmentRttiHandler.initProxyFragmentClass(kBaseFragment);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}

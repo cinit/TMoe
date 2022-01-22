@@ -76,6 +76,7 @@ dependencies {
     implementation 'com.tencent:mmkv-static:1.2.8'
     implementation 'io.noties.markwon:core:4.6.2'
     implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:3.0'
+    implementation 'org.smali:dexlib2:2.4.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'com.google.code.gson:gson:2.8.9'
