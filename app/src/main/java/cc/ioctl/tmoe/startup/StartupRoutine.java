@@ -6,7 +6,7 @@ import android.os.Build;
 
 import org.lsposed.hiddenapibypass.HiddenApiBypass;
 
-import cc.ioctl.tmoe.MainStartInit;
+import cc.ioctl.tmoe.base.MainStartInit;
 import cc.ioctl.tmoe.util.HostInfo;
 import cc.ioctl.tmoe.util.Initiator;
 
