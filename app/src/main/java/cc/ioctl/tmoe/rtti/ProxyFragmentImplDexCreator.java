@@ -43,6 +43,8 @@ public class ProxyFragmentImplDexCreator {
     private static final String PROXY_FRAGMENT_IMPL_CLASS_NAME = "cc.ioctl.tmoe.dynamic.ProxyFragmentImpl";
     private static final String PROXY_FRAGMENT_IMPL_TYPE = "L" + PROXY_FRAGMENT_IMPL_CLASS_NAME.replace(".", "/") + ";";
     private static final String RTTI_HANDLER_TYPE = "L" + ProxyFragmentRttiHandler.class.getName().replace(".", "/") + ";";
+    private static final String OBJECT_TYPE = "Ljava/lang/Object;";
+    private static final String VIEW_GROUP_TYPE = "Landroid/view/ViewGroup;";
 
     private ProxyFragmentImplDexCreator() {
         throw new AssertionError("no instance for you!");
@@ -195,17 +197,17 @@ public class ProxyFragmentImplDexCreator {
         String returnType = targetMethodDescriptor.getReturnType();
         int parameterCount = parameterTypeList.size();
         // replace host obfuscated class name with ViewGroup or Object
-        String returnTypeMitigated = returnType.replace(DexMethodDescriptor.getTypeSig(kActionBar), "Landroid/view/ViewGroup;")
-                .replace(DexMethodDescriptor.getTypeSig(kActionBarLayout), "Landroid/view/ViewGroup;")
-                .replace(hostBaseFragmentTypeSig, "Ljava/lang/Object;");
-        String parameterTypeSigMitigated = parameterTypeSig.replace(DexMethodDescriptor.getTypeSig(kActionBar), "Landroid/view/ViewGroup;")
-                .replace(DexMethodDescriptor.getTypeSig(kActionBarLayout), "Landroid/view/ViewGroup;")
-                .replace(hostBaseFragmentTypeSig, "Ljava/lang/Object;");
+        String returnTypeMitigated = returnType.replace(DexMethodDescriptor.getTypeSig(kActionBar), VIEW_GROUP_TYPE)
+                .replace(DexMethodDescriptor.getTypeSig(kActionBarLayout), VIEW_GROUP_TYPE)
+                .replace(hostBaseFragmentTypeSig, OBJECT_TYPE);
+        String parameterTypeSigMitigated = parameterTypeSig.replace(DexMethodDescriptor.getTypeSig(kActionBar), VIEW_GROUP_TYPE)
+                .replace(DexMethodDescriptor.getTypeSig(kActionBarLayout), VIEW_GROUP_TYPE)
+                .replace(hostBaseFragmentTypeSig, OBJECT_TYPE);
         List<String> parameterTypeListMitigated = new ArrayList<>();
         for (String parameterType : parameterTypeList) {
-            parameterTypeListMitigated.add(parameterType.replace(DexMethodDescriptor.getTypeSig(kActionBar), "Landroid/view/ViewGroup;")
-                    .replace(DexMethodDescriptor.getTypeSig(kActionBarLayout), "Landroid/view/ViewGroup;")
-                    .replace(hostBaseFragmentTypeSig, "Ljava/lang/Object;"));
+            parameterTypeListMitigated.add(parameterType.replace(DexMethodDescriptor.getTypeSig(kActionBar), VIEW_GROUP_TYPE)
+                    .replace(DexMethodDescriptor.getTypeSig(kActionBarLayout), VIEW_GROUP_TYPE)
+                    .replace(hostBaseFragmentTypeSig, OBJECT_TYPE));
         }
         // smali for method, no local variable
         // .method public ${generatedMethodName}(${parameterTypeSigMitigated})${returnTypeMitigated}
@@ -246,7 +248,7 @@ public class ProxyFragmentImplDexCreator {
         }
         ArrayList<ImmutableMethodParameter> parameters = new ArrayList<>();
         for (int i = 0; i < parameterCount; i++) {
-            parameters.add(new ImmutableMethodParameter(parameterTypeListMitigated.get(i), null, "p" + i));
+            parameters.add(new ImmutableMethodParameter(parameterTypeListMitigated.get(i), null, "p" + (i + 1)));
         }
         ImmutableMethodImplementation methodImpl = new ImmutableMethodImplementation(parameterCount + 1, insSuperStub, null, null);
         return new ImmutableMethod(PROXY_FRAGMENT_IMPL_TYPE, generatedMethodName, parameters,
@@ -262,17 +264,17 @@ public class ProxyFragmentImplDexCreator {
         String returnType = targetMethodDescriptor.getReturnType();
         int parameterCount = parameterTypeList.size(); // including this
         // replace host obfuscatable class name with ViewGroup or Object
-        String returnTypeMitigated = returnType.replace(DexMethodDescriptor.getTypeSig(kActionBar), "Landroid/view/ViewGroup;")
-                .replace(DexMethodDescriptor.getTypeSig(kActionBarLayout), "Landroid/view/ViewGroup;")
-                .replace(hostBaseFragmentTypeSig, "Ljava/lang/Object;");
-        String parameterTypeSigMitigated = parameterTypeSig.replace(DexMethodDescriptor.getTypeSig(kActionBar), "Landroid/view/ViewGroup;")
-                .replace(DexMethodDescriptor.getTypeSig(kActionBarLayout), "Landroid/view/ViewGroup;")
-                .replace(hostBaseFragmentTypeSig, "Ljava/lang/Object;");
+        String returnTypeMitigated = returnType.replace(DexMethodDescriptor.getTypeSig(kActionBar), VIEW_GROUP_TYPE)
+                .replace(DexMethodDescriptor.getTypeSig(kActionBarLayout), VIEW_GROUP_TYPE)
+                .replace(hostBaseFragmentTypeSig, OBJECT_TYPE);
+        String parameterTypeSigMitigated = parameterTypeSig.replace(DexMethodDescriptor.getTypeSig(kActionBar), VIEW_GROUP_TYPE)
+                .replace(DexMethodDescriptor.getTypeSig(kActionBarLayout), VIEW_GROUP_TYPE)
+                .replace(hostBaseFragmentTypeSig, OBJECT_TYPE);
         List<String> parameterTypeListMitigated = new ArrayList<>();
         for (String parameterType : parameterTypeList) {
-            parameterTypeListMitigated.add(parameterType.replace(DexMethodDescriptor.getTypeSig(kActionBar), "Landroid/view/ViewGroup;")
-                    .replace(DexMethodDescriptor.getTypeSig(kActionBarLayout), "Landroid/view/ViewGroup;")
-                    .replace(hostBaseFragmentTypeSig, "Ljava/lang/Object;"));
+            parameterTypeListMitigated.add(parameterType.replace(DexMethodDescriptor.getTypeSig(kActionBar), VIEW_GROUP_TYPE)
+                    .replace(DexMethodDescriptor.getTypeSig(kActionBarLayout), VIEW_GROUP_TYPE)
+                    .replace(hostBaseFragmentTypeSig, OBJECT_TYPE));
         }
         // smali for super stub method
         // .method public ${methodName}(${parameterTypeSig})${returnType}
@@ -313,7 +315,7 @@ public class ProxyFragmentImplDexCreator {
         }
         ArrayList<ImmutableMethodParameter> parameters = new ArrayList<>();
         for (int i = 0; i < parameterCount; i++) {
-            parameters.add(new ImmutableMethodParameter(parameterTypeList.get(i), null, "p" + i));
+            parameters.add(new ImmutableMethodParameter(parameterTypeList.get(i), null, "p" + (i + 1)));
         }
         ImmutableMethodImplementation methodImpl = new ImmutableMethodImplementation(localVarCount + parameterCount + 1, insStub, null, null);
         return new ImmutableMethod(PROXY_FRAGMENT_IMPL_TYPE, methodName, parameters, returnType,
