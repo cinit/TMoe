@@ -26,7 +26,7 @@ public class LocaleController {
         Class<?> kLocaleController = Initiator.load("org.telegram.messenger.LocaleController");
         if (kLocaleController != null) {
             try {
-                return (String) Reflex.invoke_static(kLocaleController, "getString", key, fallback, res, String.class, String.class, int.class, String.class);
+                return (String) Reflex.invokeStatic(kLocaleController, "getString", key, fallback, res, String.class, String.class, int.class, String.class);
             } catch (Exception ignored) {
             }
         }

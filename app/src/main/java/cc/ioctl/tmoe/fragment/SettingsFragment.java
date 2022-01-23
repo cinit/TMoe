@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
-import android.widget.TextSwitcher;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,7 +18,6 @@ import cc.ioctl.tmoe.base.BaseProxyFragment;
 import cc.ioctl.tmoe.ui.LocaleController;
 import cc.ioctl.tmoe.ui.Theme;
 import cc.ioctl.tmoe.ui.wrapper.TextCheckCell;
-import cc.ioctl.tmoe.ui.wrapper.TextSettingsCell;
 import cc.ioctl.tmoe.util.Initiator;
 import cc.ioctl.tmoe.util.Reflex;
 import cc.ioctl.tmoe.util.Utils;
@@ -56,7 +54,7 @@ public class SettingsFragment extends BaseProxyFragment {
         {
             boolean debugMode = false;
             try {
-                debugMode = (boolean) Reflex.sget_object(Initiator.load("org.telegram.messenger.BuildVars"), "DEBUG_VERSION");
+                debugMode = (boolean) Reflex.getStaticObject(Initiator.load("org.telegram.messenger.BuildVars"), "DEBUG_VERSION");
             } catch (Exception e) {
                 Utils.logw(e);
             }
@@ -65,8 +63,8 @@ public class SettingsFragment extends BaseProxyFragment {
             cell.setOnCellClickListener(c -> {
                 boolean checked = c.toggle();
                 try {
-                    Reflex.sput_object(Initiator.load("org.telegram.messenger.BuildVars"), "DEBUG_VERSION", checked);
-                    Reflex.sput_object(Initiator.load("org.telegram.messenger.BuildVars"), "DEBUG_PRIVATE_VERSION", checked);
+                    Reflex.setStaticObject(Initiator.load("org.telegram.messenger.BuildVars"), "DEBUG_VERSION", checked);
+                    Reflex.setStaticObject(Initiator.load("org.telegram.messenger.BuildVars"), "DEBUG_PRIVATE_VERSION", checked);
                 } catch (Exception e) {
                     Toast.makeText(c.getView().getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 }

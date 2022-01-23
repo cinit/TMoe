@@ -13,12 +13,15 @@ import java.util.regex.Pattern;
 import de.robv.android.xposed.XposedBridge;
 
 public class Reflex {
-
-    public static Object sget_object(Class clazz, String name) {
-        return sget_object(clazz, name, null);
+    private Reflex() {
+        throw new AssertionError("no instance for you!");
     }
 
-    public static Object sget_object(Class clazz, String name, Class type) {
+    public static Object getStaticObject(Class clazz, String name) {
+        return getStaticObject(clazz, name, null);
+    }
+
+    public static Object getStaticObject(Class clazz, String name, Class type) {
         try {
             Field f = findField(clazz, type, name);
             f.setAccessible(true);
@@ -29,7 +32,7 @@ public class Reflex {
         return null;
     }
 
-    public static Object invoke_virtual_any(Object obj, Object... argsTypesAndReturnType)
+    public static Object invokeVirtualAny(Object obj, Object... argsTypesAndReturnType)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IllegalArgumentException {
         Class clazz = obj.getClass();
         int argc = argsTypesAndReturnType.length / 2;
@@ -101,7 +104,7 @@ public class Reflex {
         return sb.toString();
     }
 
-    public static Object invoke_static_any(Class<?> clazz, Object... argsTypesAndReturnType)
+    public static Object invokeStaticAny(Class<?> clazz, Object... argsTypesAndReturnType)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IllegalArgumentException {
         int argc = argsTypesAndReturnType.length / 2;
         Class[] argt = new Class[argc];
@@ -152,8 +155,8 @@ public class Reflex {
         return method.invoke(null, argv);
     }
 
-    public static Object invoke_virtual_declared_modifier_any(Object obj, int requiredMask,
-                                                              int excludedMask, Object... argsTypesAndReturnType)
+    public static Object invokeVirtualDeclaredModifierAny(Object obj, int requiredMask,
+                                                          int excludedMask, Object... argsTypesAndReturnType)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IllegalArgumentException {
         Class clazz = obj.getClass();
         int argc = argsTypesAndReturnType.length / 2;
@@ -223,8 +226,8 @@ public class Reflex {
      * @throws IllegalAccessException
      * @throws IllegalArgumentException
      */
-    public static Object invoke_virtual_declared_ordinal(Object obj, int ordinal, int expected,
-                                                         boolean strict, Object... argsTypesAndReturnType)
+    public static Object invokeVirtualDeclaredOrdinal(Object obj, int ordinal, int expected,
+                                                      boolean strict, Object... argsTypesAndReturnType)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IllegalArgumentException {
         Class clazz = obj.getClass();
         int argc = argsTypesAndReturnType.length / 2;
@@ -319,9 +322,9 @@ public class Reflex {
      * @throws IllegalAccessException
      * @throws IllegalArgumentException
      */
-    public static Object invoke_virtual_declared_fixed_modifier_ordinal(Object obj,
-                                                                        int requiredMask, int excludedMask, Class fixed, int ordinal, int expected, boolean strict,
-                                                                        Object... argsTypesAndReturnType)
+    public static Object invokeVirtualDeclaredFixedModifierOrdinal(Object obj, int requiredMask, int excludedMask,
+                                                                   Class<?> fixed, int ordinal, int expected, boolean strict,
+                                                                   Object... argsTypesAndReturnType)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IllegalArgumentException {
         int argc = argsTypesAndReturnType.length / 2;
         Class[] argt = new Class[argc];
@@ -409,9 +412,9 @@ public class Reflex {
      * @throws IllegalArgumentException
      */
     @Deprecated
-    public static Object invoke_virtual_declared_ordinal_modifier(Object obj, int ordinal,
-                                                                  int expected, boolean strict, int requiredMask, int excludedMask,
-                                                                  Object... argsTypesAndReturnType)
+    public static Object invokeVirtualDeclaredOrdinalModifier(Object obj, int ordinal, int expected,
+                                                              boolean strict, int requiredMask, int excludedMask,
+                                                              Object... argsTypesAndReturnType)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IllegalArgumentException {
         Class clazz = obj.getClass();
         int argc = argsTypesAndReturnType.length / 2;
@@ -500,9 +503,9 @@ public class Reflex {
      * @throws IllegalArgumentException
      */
     @Deprecated
-    public static Object invoke_static_declared_ordinal_modifier(Class clazz, int ordinal,
-                                                                 int expected, boolean strict, int requiredMask, int excludedMask,
-                                                                 Object... argsTypesAndReturnType)
+    public static Object invokeStaticDeclaredOrdinalModifier(Class clazz, int ordinal, int expected,
+                                                             boolean strict, int requiredMask, int excludedMask,
+                                                             Object... argsTypesAndReturnType)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IllegalArgumentException {
         int argc = argsTypesAndReturnType.length / 2;
         Class[] argt = new Class[argc];
@@ -590,8 +593,8 @@ public class Reflex {
      * @throws IllegalArgumentException
      */
     @Deprecated
-    public static Object invoke_static_declared_ordinal(Class clazz, int ordinal, int expected,
-                                                        boolean strict, Object... argsTypesAndReturnType)
+    public static Object invokeStaticDeclaredOrdinal(Class clazz, int ordinal, int expected,
+                                                     boolean strict, Object... argsTypesAndReturnType)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IllegalArgumentException {
         int argc = argsTypesAndReturnType.length / 2;
         Class[] argt = new Class[argc];
@@ -658,8 +661,8 @@ public class Reflex {
         return candidates[ordinal].invoke(null, argv);
     }
 
-    public static Object invoke_virtual(Object obj, String name, Object... argsTypesAndReturnType)
-            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IllegalArgumentException {
+    public static Object invokeVirtual(Object obj, String name, Object... argsTypesAndReturnType)
+            throws ReflectiveOperationException {
         Class clazz = obj.getClass();
         int argc = argsTypesAndReturnType.length / 2;
         Class[] argt = new Class[argc];
@@ -706,9 +709,8 @@ public class Reflex {
         return method.invoke(obj, argv);
     }
 
-    public static Object invoke_virtual_original(Object obj, String name,
-                                                 Object... argsTypesAndReturnType)
-            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IllegalArgumentException {
+    public static Object invokeVirtualOriginal(Object obj, String name, Object... argsTypesAndReturnType)
+            throws ReflectiveOperationException {
         Class clazz = obj.getClass();
         int argc = argsTypesAndReturnType.length / 2;
         Class[] argt = new Class[argc];
@@ -784,9 +786,8 @@ public class Reflex {
         return ret;
     }
 
-    public static Object invoke_static(Class staticClass, String name,
-                                       Object... argsTypesAndReturnType)
-            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IllegalArgumentException {
+    public static Object invokeStatic(Class<?> staticClass, String name, Object... argsTypesAndReturnType)
+            throws ReflectiveOperationException, IllegalArgumentException {
         Class clazz = staticClass;
         int argc = argsTypesAndReturnType.length / 2;
         Class[] argt = new Class[argc];
@@ -832,11 +833,11 @@ public class Reflex {
         return method.invoke(null, argv);
     }
 
-    public static Object iget_object_or_null(Object obj, String name) {
-        return iget_object_or_null(obj, name, null);
+    public static Object getInstanceObjectOrNull(Object obj, String name) {
+        return getInstanceObjectOrNull(obj, name, null);
     }
 
-    public static <T> T iget_object_or_null(Object obj, String name, Class<T> type) {
+    public static <T> T getInstanceObjectOrNull(Object obj, String name, Class<T> type) {
         try {
             Class clazz = obj.getClass();
             Field f = findField(clazz, type, name);
@@ -847,18 +848,18 @@ public class Reflex {
         return null;
     }
 
-    public static <T> T iget_object(Object obj, String name, Class<T> type) throws ReflectiveOperationException {
+    public static <T> T getInstanceObject(Object obj, String name, Class<T> type) throws ReflectiveOperationException {
         Class clazz = obj.getClass();
         Field f = findField(clazz, type, name);
         f.setAccessible(true);
         return (T) f.get(obj);
     }
 
-    public static void iput_object(Object obj, String name, Object value) {
-        iput_object(obj, name, null, value);
+    public static void setInstanceObject(Object obj, String name, Object value) {
+        setInstanceObject(obj, name, null, value);
     }
 
-    public static void iput_object(Object obj, String name, Class type, Object value) {
+    public static void setInstanceObject(Object obj, String name, Class type, Object value) {
         Class clazz = obj.getClass();
         try {
             Field f = findField(clazz, type, name);
@@ -869,11 +870,11 @@ public class Reflex {
         }
     }
 
-    public static void sput_object(Class clz, String name, Object value) {
-        sput_object(clz, name, null, value);
+    public static void setStaticObject(Class clz, String name, Object value) {
+        setStaticObject(clz, name, null, value);
     }
 
-    public static void sput_object(Class clazz, String name, Class type, Object value) {
+    public static void setStaticObject(Class clazz, String name, Class type, Object value) {
         try {
             Field f = findField(clazz, type, name);
             f.setAccessible(true);
@@ -942,8 +943,8 @@ public class Reflex {
         return method;
     }
 
-    public static Object new_instance(Class clazz, Object... argsAndTypes)
-            throws InvocationTargetException, InstantiationException, NoSuchMethodException {
+    public static Object newInstance(Class clazz, Object... argsAndTypes)
+            throws ReflectiveOperationException {
         int argc = argsAndTypes.length / 2;
         Class[] argt = new Class[argc];
         Object[] argv = new Object[argc];

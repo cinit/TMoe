@@ -51,17 +51,17 @@ public class ProxyFragmentRttiHandler {
 
     public void setFragmentView(View view) {
         Object proxy = getProxyInstance();
-        Reflex.iput_object(proxy, "fragmentView", view);
+        Reflex.setInstanceObject(proxy, "fragmentView", view);
     }
 
     public View getFragmentView() {
         Object proxy = getProxyInstance();
-        return (View) Reflex.iget_object_or_null(proxy, "fragmentView");
+        return (View) Reflex.getInstanceObjectOrNull(proxy, "fragmentView");
     }
 
     public ViewGroup getActionBar() {
         Object obj = getProxyInstance();
-        return (ViewGroup) Reflex.iget_object_or_null(obj, "actionBar");
+        return (ViewGroup) Reflex.getInstanceObjectOrNull(obj, "actionBar");
     }
 
     public BaseProxyFragment.ActionBarWrapper getActionBarWrapper() {
@@ -82,7 +82,7 @@ public class ProxyFragmentRttiHandler {
         @Override
         public void setBackButtonImage(int resource) {
             try {
-                Reflex.invoke_virtual(actionBar, "setBackButtonImage", resource, int.class, void.class);
+                Reflex.invokeVirtual(actionBar, "setBackButtonImage", resource, int.class, void.class);
             } catch (Exception e) {
                 Utils.loge(e);
             }
@@ -91,7 +91,7 @@ public class ProxyFragmentRttiHandler {
         @Override
         public void setTitle(CharSequence value) {
             try {
-                Reflex.invoke_virtual(actionBar, "setTitle", value, CharSequence.class, void.class);
+                Reflex.invokeVirtual(actionBar, "setTitle", value, CharSequence.class, void.class);
             } catch (Exception e) {
                 Utils.loge(e);
             }
@@ -100,7 +100,7 @@ public class ProxyFragmentRttiHandler {
         @Override
         public String getTitle() {
             try {
-                return (String) Reflex.invoke_virtual(actionBar, "getTitle", String.class);
+                return (String) Reflex.invokeVirtual(actionBar, "getTitle", String.class);
             } catch (Exception e) {
                 Utils.loge(e);
                 return null;
@@ -110,7 +110,7 @@ public class ProxyFragmentRttiHandler {
         @Override
         public String getSubtitle() {
             try {
-                return (String) Reflex.invoke_virtual(actionBar, "getSubtitle", String.class);
+                return (String) Reflex.invokeVirtual(actionBar, "getSubtitle", String.class);
             } catch (Exception e) {
                 Utils.loge(e);
                 return null;
@@ -120,7 +120,7 @@ public class ProxyFragmentRttiHandler {
         @Override
         public void setSubtitle(CharSequence value) {
             try {
-                Reflex.invoke_virtual(actionBar, "setSubtitle", value, CharSequence.class, void.class);
+                Reflex.invokeVirtual(actionBar, "setSubtitle", value, CharSequence.class, void.class);
             } catch (Exception e) {
                 Utils.loge(e);
             }
@@ -129,7 +129,7 @@ public class ProxyFragmentRttiHandler {
         @Override
         public ImageView getBackButton() {
             try {
-                return (ImageView) Reflex.invoke_virtual(actionBar, "getBackButton", ImageView.class);
+                return (ImageView) Reflex.invokeVirtual(actionBar, "getBackButton", ImageView.class);
             } catch (Exception e) {
                 Utils.loge(e);
                 return null;
@@ -152,7 +152,7 @@ public class ProxyFragmentRttiHandler {
     }
 
     public static ViewGroup staticGetParentLayout(Object fragment) {
-        return (ViewGroup) Reflex.iget_object_or_null(fragment, "parentLayout");
+        return (ViewGroup) Reflex.getInstanceObjectOrNull(fragment, "parentLayout");
     }
 
     public static boolean staticPresentFragment(@NonNull ViewGroup parentLayout, @NonNull Object fragment, boolean removeLast) {
@@ -330,7 +330,7 @@ public class ProxyFragmentRttiHandler {
 
     public boolean isFinishing() {
         try {
-            return Boolean.TRUE.equals(Reflex.iget_object(mTargetFragment, "finishing", boolean.class));
+            return Boolean.TRUE.equals(Reflex.getInstanceObject(mTargetFragment, "finishing", boolean.class));
         } catch (ReflectiveOperationException e) {
             Utils.loge(e);
             return false;

@@ -28,7 +28,7 @@ public class Theme {
         Class<?> kTheme = Initiator.load("org.telegram.ui.ActionBar.Theme");
         if (kTheme != null) {
             try {
-                return (int) Reflex.invoke_static(kTheme, "getColor", key, isDefault, ignoreAnimation,
+                return (int) Reflex.invokeStatic(kTheme, "getColor", key, isDefault, ignoreAnimation,
                         String.class, boolean[].class, boolean.class, int.class);
             } catch (ReflectiveOperationException e) {
                 Utils.loge(e);

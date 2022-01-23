@@ -63,8 +63,8 @@ public class SettingEntryHook {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     if (!sListViewOnItemClickListenerHooked) {
-                        ViewGroup listView = (ViewGroup) Reflex.iget_object_or_null(param.thisObject, "listView");
-                        Object onItemClickListener = Reflex.iget_object_or_null(listView, "onItemClickListenerExtended");
+                        ViewGroup listView = (ViewGroup) Reflex.getInstanceObjectOrNull(param.thisObject, "listView");
+                        Object onItemClickListener = Reflex.getInstanceObjectOrNull(listView, "onItemClickListenerExtended");
                         Class<?> kOnItemClickListener = onItemClickListener.getClass();
                         Method onItemClick = null;
                         for (Method method : kOnItemClickListener.getDeclaredMethods()) {
@@ -97,12 +97,12 @@ public class SettingEntryHook {
             XposedBridge.hookMethod(ListAdapter_isEnabled, new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    Object fragment = Reflex.iget_object_or_null(param.thisObject, "this$0");
+                    Object fragment = Reflex.getInstanceObjectOrNull(param.thisObject, "this$0");
                     if (fragment != null) {
                         int notificationRow = fProfileActivity_notificationRow.getInt(fragment);
                         if (notificationRow != -1) {
                             Object holder = param.args[0];
-                            int position = (int) Reflex.invoke_virtual(holder, "getAdapterPosition", int.class);
+                            int position = (int) Reflex.invokeVirtual(holder, "getAdapterPosition", int.class);
                             int myRowId = getMyRowCountId(fragment);
                             if (myRowId != -1 && position == myRowId) {
                                 param.setResult(true);
@@ -115,7 +115,7 @@ public class SettingEntryHook {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) {
                     int position = (int) param.args[0];
-                    Object fragment = Reflex.iget_object_or_null(param.thisObject, "this$0");
+                    Object fragment = Reflex.getInstanceObjectOrNull(param.thisObject, "this$0");
                     int myRowId = getMyRowCountId(fragment);
                     if (myRowId != -1 && position == myRowId) {
                         param.setResult(4);
@@ -126,7 +126,7 @@ public class SettingEntryHook {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     int position = (int) param.args[1];
-                    Object fragment = Reflex.iget_object_or_null(param.thisObject, "this$0");
+                    Object fragment = Reflex.getInstanceObjectOrNull(param.thisObject, "this$0");
                     int myRowId = getMyRowCountId(fragment);
                     if (myRowId != -1 && position == myRowId) {
                         bindViewHolder(fragment, param.thisObject, param.args[0], (Integer) param.args[1]);
@@ -143,13 +143,13 @@ public class SettingEntryHook {
 
     private static void bindViewHolder(Object fragment, Object adapter, Object holder, int position)
             throws ReflectiveOperationException {
-        FrameLayout textCell = (FrameLayout) Reflex.iget_object_or_null(holder, "itemView");
+        FrameLayout textCell = (FrameLayout) Reflex.getInstanceObjectOrNull(holder, "itemView");
         if (textCell != null) {
             // color and theme is already set by Telegram, we only need to set the text and icon
             // textCell.setTextAndIcon(text, iconResId, true)
             String text = LocaleController.getString("TMoeSettings", R.string.TMoeSettings);
             int iconResId = R.drawable.ic_setting_hex_outline_24;
-            Reflex.invoke_virtual(textCell, "setTextAndIcon", text, iconResId, true,
+            Reflex.invokeVirtual(textCell, "setTextAndIcon", text, iconResId, true,
                     String.class, int.class, boolean.class, void.class);
         } else {
             Utils.loge(new IllegalStateException("textCell is null"));
@@ -159,7 +159,7 @@ public class SettingEntryHook {
     private static final XC_MethodHook LIST_VIEW_ITEM_CLICK_HOOK = new XC_MethodHook(49) {
         @Override
         protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-            Object fragment = Reflex.iget_object_or_null(param.thisObject, "this$0");
+            Object fragment = Reflex.getInstanceObjectOrNull(param.thisObject, "this$0");
             int position = (int) param.args[1];
             int myRowId = getMyRowCountId(fragment);
             if (myRowId != -1 && position == myRowId) {
