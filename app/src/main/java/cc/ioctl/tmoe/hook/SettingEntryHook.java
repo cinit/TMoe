@@ -148,7 +148,8 @@ public class SettingEntryHook {
             // color and theme is already set by Telegram, we only need to set the text and icon
             // textCell.setTextAndIcon(text, iconResId, true)
             String text = LocaleController.getString("TMoeSettings", R.string.TMoeSettings);
-            Reflex.invoke_virtual(textCell, "setTextAndIcon", text, 0, true,
+            int iconResId = R.drawable.ic_setting_hex_outline_24;
+            Reflex.invoke_virtual(textCell, "setTextAndIcon", text, iconResId, true,
                     String.class, int.class, boolean.class, void.class);
         } else {
             Utils.loge(new IllegalStateException("textCell is null"));
