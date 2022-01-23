@@ -847,6 +847,13 @@ public class Reflex {
         return null;
     }
 
+    public static <T> T iget_object(Object obj, String name, Class<T> type) throws ReflectiveOperationException {
+        Class clazz = obj.getClass();
+        Field f = findField(clazz, type, name);
+        f.setAccessible(true);
+        return (T) f.get(obj);
+    }
+
     public static void iput_object(Object obj, String name, Object value) {
         iput_object(obj, name, null, value);
     }

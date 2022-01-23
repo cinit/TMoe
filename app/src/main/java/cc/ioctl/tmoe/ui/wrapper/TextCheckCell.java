@@ -5,6 +5,8 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -12,7 +14,8 @@ import java.util.Objects;
 
 import cc.ioctl.tmoe.util.Initiator;
 
-public class TextCheckCell {
+public class TextCheckCell implements CellWrapper {
+    private static final String TARGET_CLASS_NAME = "org.telegram.ui.Cells.TextCheckCell";
     private static Class<?> sTargetClass = null;
     private static Constructor<?> sTargetConstructor = null;
     private final ViewGroup mTarget;
@@ -27,9 +30,9 @@ public class TextCheckCell {
 
     public TextCheckCell(Context context, int padding, boolean dialog) {
         if (sTargetConstructor == null) {
-            Class<?> sTargetClass = Initiator.load("org.telegram.ui.Cells.TextCheckCell");
+            sTargetClass = Initiator.load(TARGET_CLASS_NAME);
             if (sTargetClass == null) {
-                throw new NoClassDefFoundError("org.telegram.ui.Cells.TextCheckCell");
+                throw new NoClassDefFoundError(TARGET_CLASS_NAME);
             }
             try {
                 sTargetConstructor = sTargetClass.getConstructor(Context.class, int.class, boolean.class);
@@ -46,10 +49,11 @@ public class TextCheckCell {
     }
 
     public TextCheckCell wrap(View cell) {
+        Objects.requireNonNull(cell, "cell == null");
         if (sTargetClass == null) {
-            sTargetClass = Initiator.load("org.telegram.ui.Cells.TextCheckCell");
+            sTargetClass = Initiator.load(TARGET_CLASS_NAME);
             if (sTargetClass == null) {
-                throw new NoClassDefFoundError("org.telegram.ui.Cells.TextCheckCell");
+                throw new NoClassDefFoundError(TARGET_CLASS_NAME);
             }
         }
         // check if the cell is a TextCheckCell
@@ -64,6 +68,8 @@ public class TextCheckCell {
         mTarget = target;
     }
 
+    @NonNull
+    @Override
     public ViewGroup getView() {
         return mTarget;
     }

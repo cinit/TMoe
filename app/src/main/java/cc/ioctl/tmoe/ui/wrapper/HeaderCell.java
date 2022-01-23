@@ -5,6 +5,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Objects;
@@ -12,7 +14,8 @@ import java.util.Objects;
 import cc.ioctl.tmoe.ui.Theme;
 import cc.ioctl.tmoe.util.Initiator;
 
-public class HeaderCell {
+public class HeaderCell implements CellWrapper {
+    private static final String TARGET_CLASS_NAME = "org.telegram.ui.Cells.HeaderCell";
     private static Class<?> sTargetClass = null;
     private static Constructor<?> sTargetConstructor = null;
     private final ViewGroup mTarget;
@@ -35,9 +38,9 @@ public class HeaderCell {
 
     public HeaderCell(Context context, String textColorKey, int padding, int topMargin, boolean text2, Object resourcesProvider) {
         if (sTargetConstructor == null) {
-            Class<?> sTargetClass = Initiator.load("org.telegram.ui.Cells.HeaderCell");
+            sTargetClass = Initiator.load(TARGET_CLASS_NAME);
             if (sTargetClass == null) {
-                throw new NoClassDefFoundError("org.telegram.ui.Cells.HeaderCell");
+                throw new NoClassDefFoundError(TARGET_CLASS_NAME);
             }
             for (Constructor<?> constructor : sTargetClass.getDeclaredConstructors()) {
                 if (constructor.getParameterTypes().length == 6) {
@@ -58,10 +61,11 @@ public class HeaderCell {
     }
 
     public HeaderCell wrap(View cell) {
+        Objects.requireNonNull(cell, "cell == null");
         if (sTargetClass == null) {
-            sTargetClass = Initiator.load("org.telegram.ui.Cells.HeaderCell");
+            sTargetClass = Initiator.load(TARGET_CLASS_NAME);
             if (sTargetClass == null) {
-                throw new NoClassDefFoundError("org.telegram.ui.Cells.HeaderCell");
+                throw new NoClassDefFoundError(TARGET_CLASS_NAME);
             }
         }
         // check if the cell is a HeaderCell
@@ -76,6 +80,8 @@ public class HeaderCell {
         mTarget = target;
     }
 
+    @NonNull
+    @Override
     public ViewGroup getView() {
         return mTarget;
     }

@@ -329,7 +329,12 @@ public class ProxyFragmentRttiHandler {
     }
 
     public boolean isFinishing() {
-        throw new UnsupportedOperationException("dex method not found");
+        try {
+            return Boolean.TRUE.equals(Reflex.iget_object(mTargetFragment, "finishing", boolean.class));
+        } catch (ReflectiveOperationException e) {
+            Utils.loge(e);
+            return false;
+        }
     }
 
     public void onFragmentCreate() {
