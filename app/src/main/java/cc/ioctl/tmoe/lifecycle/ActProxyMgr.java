@@ -5,8 +5,6 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import cc.ioctl.tmoe.ui.___WindowIsTranslucent;
-
 /**
  * This class is used to cope with Activity
  */
@@ -42,6 +40,7 @@ public class ActProxyMgr {
     }
 
     public static boolean isWindowTranslucent(Class<?> clazz) {
-        return clazz != null && (___WindowIsTranslucent.class.isAssignableFrom(clazz));
+        // We can only use the only one proxy activity, where is always being able to set translucent.
+        return clazz != null;
     }
 }
