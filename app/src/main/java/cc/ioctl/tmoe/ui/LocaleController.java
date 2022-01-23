@@ -10,6 +10,9 @@ import cc.ioctl.tmoe.util.Initiator;
 import cc.ioctl.tmoe.util.Reflex;
 
 public class LocaleController {
+    private LocaleController() {
+        throw new AssertionError("no instance");
+    }
 
     public static String getString(@NonNull String key, int res) {
         return getStringImpl(key, null, res);

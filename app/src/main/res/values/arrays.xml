@@ -2,8 +2,20 @@
 <resources>
     <string-array name="xposedscope">
         <item>org.telegram.messenger</item>
+        <item>org.telegram.messenger.beta</item>
+        <item>org.telegram.plus</item>
         <item>nekox.messenger</item>
         <item>com.jasonkhew96.pigeongram</item>
+        <item>app.nicegram</item>
+        <item>ir.ilmili.telegraph</item>
         <item>xyz.nextalone.nagram</item>
+        <item>org.telegram.messenger.web</item>
+        <item>com.cool2645.nekolite</item>
+        <item>com.iMe.android</item>
+        <item>org.telegram.BifToGram</item>
+        <item>ua.itaysonlab.messenger</item>
+        <item>org.forkclient.messenger.beta</item>
+        <item>org.aka.messenger</item>
+        <item>ellipi.messenger</item>
     </string-array>
 </resources>

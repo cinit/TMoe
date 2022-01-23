@@ -7,6 +7,9 @@ import cc.ioctl.tmoe.util.Reflex;
 import cc.ioctl.tmoe.util.Utils;
 
 public class Theme {
+    private Theme() {
+        throw new IllegalStateException("no instance");
+    }
 
     public static final String key_windowBackgroundGray = "windowBackgroundGray";
 
