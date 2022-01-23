@@ -1,4 +1,4 @@
-package cc.ioctl.tmoe.util;
+package cc.ioctl.tmoe.util.dex;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

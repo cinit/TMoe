@@ -1,4 +1,4 @@
-package cc.ioctl.tmoe.util;
+package cc.ioctl.tmoe.util.dex;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;

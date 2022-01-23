@@ -33,8 +33,8 @@ import java.util.List;
 import java.util.Objects;
 
 import cc.ioctl.tmoe.BuildConfig;
-import cc.ioctl.tmoe.util.DexFieldDescriptor;
-import cc.ioctl.tmoe.util.DexMethodDescriptor;
+import cc.ioctl.tmoe.util.dex.DexFieldDescriptor;
+import cc.ioctl.tmoe.util.dex.DexMethodDescriptor;
 import cc.ioctl.tmoe.util.HostInfo;
 
 public class ProxyFragmentImplDexCreator {
