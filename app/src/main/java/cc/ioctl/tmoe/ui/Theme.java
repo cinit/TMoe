@@ -6,10 +6,10 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 
+import java.lang.reflect.Method;
 import java.util.Random;
 
-import cc.ioctl.tmoe.util.Initiator;
-import cc.ioctl.tmoe.util.Reflex;
+import cc.ioctl.tmoe.rtti.deobf.ClassLocator;
 import cc.ioctl.tmoe.util.Utils;
 
 public class Theme {
@@ -148,18 +148,37 @@ public class Theme {
     }
 
     static Random random = new Random();
+    private static Method sThemeGetColor3 = null;
 
     public static int getColor(String key, boolean[] isDefault, boolean ignoreAnimation) {
-        Class<?> kTheme = Initiator.load("org.telegram.ui.ActionBar.Theme");
-        if (kTheme != null) {
+        if (sThemeGetColor3 == null) {
+            Class<?> kTheme = ClassLocator.getThemeClass();
+            if (kTheme != null) {
+                // find method public static int *(String, boolean[], boolean)
+                for (Method method : kTheme.getDeclaredMethods()) {
+                    if (method.getReturnType() == Integer.TYPE) {
+                        Class<?>[] params = method.getParameterTypes();
+                        if (params.length == 3 && params[0] == String.class
+                                && params[1] == boolean[].class && params[2] == boolean.class) {
+                            sThemeGetColor3 = method;
+                            break;
+                        }
+                    }
+                }
+                if (sThemeGetColor3 == null) {
+                    Utils.loge("Failed to find method Theme.getColor(String, boolean[], boolean), class: " + kTheme);
+                }
+            }
+        }
+        if (sThemeGetColor3 != null) {
             try {
-                return (int) Reflex.invokeStatic(kTheme, "getColor", key, isDefault, ignoreAnimation,
-                        String.class, boolean[].class, boolean.class, int.class);
+                return (Integer) sThemeGetColor3.invoke(null, key, isDefault, ignoreAnimation);
             } catch (ReflectiveOperationException e) {
+                Utils.loge("Failed to invoke Theme.getColor(String, boolean[], boolean): " + sThemeGetColor3);
                 Utils.loge(e);
             }
         }
-        // error occurs
+        // error occurs, use random color to avoid crash and alert user
         return (key.hashCode() ^ random.nextInt()) | 0x80000000;
     }
 

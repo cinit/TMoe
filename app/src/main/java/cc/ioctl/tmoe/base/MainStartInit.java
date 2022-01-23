@@ -6,9 +6,11 @@ import java.lang.reflect.Field;
 
 import cc.ioctl.tmoe.lifecycle.Parasitics;
 import cc.ioctl.tmoe.rtti.ProxyFragmentRttiHandler;
+import cc.ioctl.tmoe.rtti.deobf.ClassLocator;
 import cc.ioctl.tmoe.util.HostInfo;
 import cc.ioctl.tmoe.util.Initiator;
 import cc.ioctl.tmoe.util.MultiProcess;
+import cc.ioctl.tmoe.util.Utils;
 
 public class MainStartInit {
     public static final MainStartInit INSTANCE = new MainStartInit();
@@ -33,6 +35,8 @@ public class MainStartInit {
             DynamicHookInit.loadHooks();
         }
         mInitialized = true;
+        // auxiliary init
+        initForClassLocator();
     }
 
     private static void findHostBaseFragmentAndInitForProxy() {
@@ -56,6 +60,22 @@ public class MainStartInit {
             ProxyFragmentRttiHandler.initProxyFragmentClass(kBaseFragment);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static void initForClassLocator() {
+        Class<?> kTheme = ClassLocator.getThemeClass();
+        if (kTheme == null) {
+            Utils.loge("can not find class Theme");
+            // maybe obfuscated
+            Utils.async(() -> {
+                Class<?> k = ClassLocator.findThemeClass();
+                if (k != null) {
+                    Utils.logd("find class Theme: " + k.getName());
+                } else {
+                    Utils.loge("can not find class Theme");
+                }
+            });
         }
     }
 }

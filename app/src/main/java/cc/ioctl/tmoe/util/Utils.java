@@ -2,10 +2,17 @@ package cc.ioctl.tmoe.util;
 
 import android.util.Log;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import javax.annotation.Nullable;
+
 import cc.ioctl.tmoe.BuildConfig;
 import de.robv.android.xposed.XposedBridge;
 
 public class Utils {
+
+    private static final ExecutorService sExecutorService = Executors.newCachedThreadPool();
 
     public static void loge(String str) {
         Log.e("TMoe", str);
@@ -74,5 +81,12 @@ public class Utils {
             Log.w("EdXposed-Bridge", msg);
             Log.w("LSPosed-Bridge", msg);
         }
+    }
+
+    public static void async(@Nullable Runnable r) {
+        if (r == null) {
+            return;
+        }
+        sExecutorService.execute(r);
     }
 }
