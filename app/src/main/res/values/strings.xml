@@ -4,4 +4,5 @@
     <string name="xposeddescription">Extra features for Telegram clients.</string>
 
     <string name="TMoeSettings">TMoe Settings</string>
+    <string name="EnableDebugMode">Enable debug mode</string>
 </resources>

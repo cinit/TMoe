@@ -60,4 +60,19 @@ public class Utils {
             Log.w("LSPosed-Bridge", str);
         }
     }
+
+    public static void logw(Throwable th) {
+        if (th == null) {
+            return;
+        }
+        String msg = Log.getStackTraceString(th);
+        Log.w("TMoe", msg);
+        try {
+            XposedBridge.log(th);
+        } catch (NoClassDefFoundError e) {
+            Log.w("Xposed", msg);
+            Log.w("EdXposed-Bridge", msg);
+            Log.w("LSPosed-Bridge", msg);
+        }
+    }
 }

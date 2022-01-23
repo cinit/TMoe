@@ -11,6 +11,7 @@ public class Theme {
         throw new IllegalStateException("no instance");
     }
 
+    public static final String key_windowBackgroundWhiteBlueHeader = "windowBackgroundWhiteBlueHeader";
     public static final String key_windowBackgroundGray = "windowBackgroundGray";
 
     public static int getColor(String key) {

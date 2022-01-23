@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -389,6 +390,10 @@ public class ProxyFragmentRttiHandler {
 
     public void onRequestPermissionsResultFragment$dispatcher(int requestCode, String[] permissions, int[] grantResults) {
         mTargetFragment.onRequestPermissionsResultFragment(requestCode, permissions, grantResults);
+    }
+
+    public ArrayList<Object> getThemeDescriptions$dispatcher() {
+        return mTargetFragment.getThemeDescriptions();
     }
 
     public void saveSelfArgs$dispatcher(Bundle args) {

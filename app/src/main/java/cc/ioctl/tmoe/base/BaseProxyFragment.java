@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import cc.ioctl.tmoe.rtti.Bidirectional;
@@ -259,6 +260,10 @@ public abstract class BaseProxyFragment {
 
     public void startActivityForResult(Intent intent, int requestCode) {
         mProxyRttiHandler.startActivityForResult(intent, requestCode);
+    }
+
+    public ArrayList<Object> getThemeDescriptions() {
+        return new ArrayList<>(0);
     }
 
     @Bidirectional
