@@ -5,11 +5,14 @@ import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 import cc.ioctl.tmoe.R;
 import cc.ioctl.tmoe.fragment.SettingsFragment;
@@ -158,8 +161,20 @@ public class SettingEntryHook {
 
     private static final XC_MethodHook LIST_VIEW_ITEM_CLICK_HOOK = new XC_MethodHook(49) {
         @Override
-        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-            Object fragment = Reflex.getInstanceObjectOrNull(param.thisObject, "this$0");
+        protected void beforeHookedMethod(MethodHookParam param) {
+            Object fragment;
+            try {
+                fragment = Reflex.getFirstByType(param.thisObject, kProfileActivity);
+            } catch (NoSuchFieldException e) {
+                // strange, but it happens if R8 was asked to repackage the app aggressively
+                fragment = Reflex.getInstanceObjectOrNull(param.thisObject, "a", Object.class);
+                if (fragment == null) {
+                    // unable to find the fragment, so we can't do anything
+                    Utils.loge(e);
+                    return;
+                }
+            }
+            Objects.requireNonNull(fragment, "fragment is unexpectedly null");
             int position = (int) param.args[1];
             int myRowId = getMyRowCountId(fragment);
             if (myRowId != -1 && position == myRowId) {
@@ -267,7 +282,7 @@ public class SettingEntryHook {
         }
     };
 
-    private static int getMyRowCountId(Object profileActivity) {
+    private static int getMyRowCountId(@NonNull Object profileActivity) {
         try {
             Bundle args = (Bundle) fBaseFragment_arguments.get(profileActivity);
             if (args != null) {
@@ -281,7 +296,7 @@ public class SettingEntryHook {
         }
     }
 
-    private static void presentTMoeSettingsFragment(Object parentFragment) {
+    private static void presentTMoeSettingsFragment(@NonNull Object parentFragment) {
         ViewGroup parentLayout = ProxyFragmentRttiHandler.staticGetParentLayout(parentFragment);
         if (parentLayout != null) {
             ProxyFragmentRttiHandler.staticPresentFragment(parentLayout, new SettingsFragment(), false);

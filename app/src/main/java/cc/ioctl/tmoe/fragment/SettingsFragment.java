@@ -60,16 +60,17 @@ public class SettingsFragment extends BaseProxyFragment {
             }
             TextCheckCell cell = new TextCheckCell(context);
             cell.setTextAndCheck(LocaleController.getString("EnableDebugMode", R.string.EnableDebugMode), debugMode, true);
-            cell.setOnCellClickListener(c -> {
+            cell.setOnClickListener(v -> {
+                TextCheckCell c = (TextCheckCell) v;
                 boolean checked = c.toggle();
                 try {
                     Reflex.setStaticObject(Initiator.load("org.telegram.messenger.BuildVars"), "DEBUG_VERSION", checked);
                     Reflex.setStaticObject(Initiator.load("org.telegram.messenger.BuildVars"), "DEBUG_PRIVATE_VERSION", checked);
-                } catch (Exception e) {
-                    Toast.makeText(c.getView().getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                } catch (NoSuchFieldException e) {
+                    Toast.makeText(c.getContext(), e.toString(), Toast.LENGTH_SHORT).show();
                 }
             });
-            ll.addView(cell.getView(), new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
+            ll.addView(cell, new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
         }
 
         setFragmentView(rootView);

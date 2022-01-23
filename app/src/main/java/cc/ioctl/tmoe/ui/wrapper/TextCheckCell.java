@@ -1,24 +1,67 @@
+/*
+ * This is the source code of Telegram for Android v. 5.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Nikolai Kudashov, 2013-2018.
+ */
 package cc.ioctl.tmoe.ui.wrapper;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.view.View;
-import android.view.ViewGroup;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
+import android.text.TextUtils;
+import android.util.Property;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.FrameLayout;
+import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Objects;
 
-import cc.ioctl.tmoe.util.Initiator;
+import cc.ioctl.tmoe.ui.LayoutHelper;
+import cc.ioctl.tmoe.ui.LocaleController;
+import cc.ioctl.tmoe.ui.Theme;
+import cc.ioctl.tmoe.ui.anim.AnimationProperties;
+import cc.ioctl.tmoe.ui.anim.CubicBezierInterpolator;
+import cc.ioctl.tmoe.ui.wrapper.component.Switch;
 
-public class TextCheckCell implements CellWrapper {
-    private static final String TARGET_CLASS_NAME = "org.telegram.ui.Cells.TextCheckCell";
-    private static Class<?> sTargetClass = null;
-    private static Constructor<?> sTargetConstructor = null;
-    private final ViewGroup mTarget;
+public class TextCheckCell extends FrameLayout {
+
+    private boolean isAnimatingToThumbInsteadOfTouch;
+
+    private TextView textView;
+    private TextView valueTextView;
+    private Switch checkBox;
+    private boolean needDivider;
+    private boolean isMultiline;
+    private int height = 50;
+    private int animatedColorBackground;
+    private float animationProgress;
+    private Paint animationPaint;
+    private float lastTouchX;
+    private ObjectAnimator animator;
+    private boolean drawCheckRipple;
+
+    public static final Property<TextCheckCell, Float> ANIMATION_PROGRESS = new AnimationProperties.FloatProperty<TextCheckCell>("animationProgress") {
+        @Override
+        public void setValue(TextCheckCell object, float value) {
+            object.setAnimationProgress(value);
+            object.invalidate();
+        }
+
+        @Override
+        public Float get(TextCheckCell object) {
+            return object.animationProgress;
+        }
+    };
 
     public TextCheckCell(Context context) {
         this(context, 21);
@@ -29,231 +72,258 @@ public class TextCheckCell implements CellWrapper {
     }
 
     public TextCheckCell(Context context, int padding, boolean dialog) {
-        if (sTargetConstructor == null) {
-            sTargetClass = Initiator.load(TARGET_CLASS_NAME);
-            if (sTargetClass == null) {
-                throw new NoClassDefFoundError(TARGET_CLASS_NAME);
-            }
-            try {
-                sTargetConstructor = sTargetClass.getConstructor(Context.class, int.class, boolean.class);
-            } catch (ReflectiveOperationException e) {
-                throw new UnsupportedOperationException(e);
-            }
-        }
-        Objects.requireNonNull(context, "context == null");
-        try {
-            mTarget = (ViewGroup) sTargetConstructor.newInstance(context, padding, dialog);
-        } catch (ReflectiveOperationException e) {
-            throw new UnsupportedOperationException(e);
-        }
+        super(context);
+
+        textView = new TextView(context);
+        textView.setTextColor(Theme.getColor(dialog ? Theme.key_dialogTextBlack : Theme.key_windowBackgroundWhiteBlackText));
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+        textView.setLines(1);
+        textView.setMaxLines(1);
+        textView.setSingleLine(true);
+        textView.setGravity((LocaleController.isRTL() ? Gravity.RIGHT : Gravity.LEFT) | Gravity.CENTER_VERTICAL);
+        textView.setEllipsize(TextUtils.TruncateAt.END);
+        addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, (LocaleController.isRTL() ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, LocaleController.isRTL() ? 70 : padding, 0, LocaleController.isRTL() ? padding : 70, 0));
+
+        valueTextView = new TextView(context);
+        valueTextView.setTextColor(Theme.getColor(dialog ? Theme.key_dialogIcon : Theme.key_windowBackgroundWhiteGrayText2));
+        valueTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
+        valueTextView.setGravity(LocaleController.isRTL() ? Gravity.RIGHT : Gravity.LEFT);
+        valueTextView.setLines(1);
+        valueTextView.setMaxLines(1);
+        valueTextView.setSingleLine(true);
+        valueTextView.setPadding(0, 0, 0, 0);
+        valueTextView.setEllipsize(TextUtils.TruncateAt.END);
+        addView(valueTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL() ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, LocaleController.isRTL() ? 64 : padding, 36, LocaleController.isRTL() ? padding : 64, 0));
+
+        checkBox = new Switch(context);
+        checkBox.setColors(Theme.key_switchTrack, Theme.key_switchTrackChecked, Theme.key_windowBackgroundWhite, Theme.key_windowBackgroundWhite);
+        addView(checkBox, LayoutHelper.createFrame(37, 20, (LocaleController.isRTL() ? Gravity.LEFT : Gravity.RIGHT) | Gravity.CENTER_VERTICAL, 22, 0, 22, 0));
+
+        setClipChildren(false);
     }
 
-    public TextCheckCell wrap(View cell) {
-        Objects.requireNonNull(cell, "cell == null");
-        if (sTargetClass == null) {
-            sTargetClass = Initiator.load(TARGET_CLASS_NAME);
-            if (sTargetClass == null) {
-                throw new NoClassDefFoundError(TARGET_CLASS_NAME);
-            }
-        }
-        // check if the cell is a TextCheckCell
-        if (sTargetClass.isInstance(cell)) {
-            return new TextCheckCell((ViewGroup) cell);
-        } else {
-            throw new ClassCastException(cell + " is not " + sTargetClass.getName());
-        }
-    }
-
-    private TextCheckCell(ViewGroup target) {
-        mTarget = target;
-    }
-
-    @NonNull
     @Override
-    public ViewGroup getView() {
-        return mTarget;
-    }
-
-    public interface OnCellClickListener {
-        void onClick(TextCheckCell cell);
-    }
-
-    public void setOnCellClickListener(OnCellClickListener listener) {
-        if (listener == null) {
-            mTarget.setOnClickListener(null);
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (isMultiline) {
+            super.onMeasure(MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
         } else {
-            mTarget.setOnClickListener(v -> listener.onClick(TextCheckCell.this));
+            super.onMeasure(MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(LayoutHelper.dp(valueTextView.getVisibility() == VISIBLE ? 64 : height) + (needDivider ? 1 : 0), MeasureSpec.EXACTLY));
         }
     }
 
-    private static Method sSetDivider = null;
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        lastTouchX = event.getX();
+        return super.onTouchEvent(event);
+    }
 
     public void setDivider(boolean divider) {
-        if (sSetDivider == null) {
-            try {
-                sSetDivider = mTarget.getClass().getMethod("setDivider", boolean.class);
-            } catch (ReflectiveOperationException e) {
-                throw new NoSuchMethodError("TextCheckCell.setDivider");
-            }
-        }
-        try {
-            sSetDivider.invoke(mTarget, divider);
-        } catch (ReflectiveOperationException e) {
-            throw new UnsupportedOperationException(e);
-        }
+        needDivider = divider;
+        setWillNotDraw(!divider);
     }
-
-    private static Method sSetTextAndCheck = null;
 
     public void setTextAndCheck(String text, boolean checked, boolean divider) {
-        if (sSetTextAndCheck == null) {
-            try {
-                sSetTextAndCheck = mTarget.getClass().getMethod("setTextAndCheck", String.class, boolean.class, boolean.class);
-            } catch (ReflectiveOperationException e) {
-                throw new NoSuchMethodError("TextCheckCell.setTextAndCheck");
-            }
-        }
-        try {
-            sSetTextAndCheck.invoke(mTarget, text, checked, divider);
-        } catch (ReflectiveOperationException e) {
-            throw new UnsupportedOperationException(e);
-        }
+        textView.setText(text);
+        isMultiline = false;
+        checkBox.setChecked(checked, false);
+        needDivider = divider;
+        valueTextView.setVisibility(GONE);
+        LayoutParams layoutParams = (LayoutParams) textView.getLayoutParams();
+        layoutParams.height = LayoutParams.MATCH_PARENT;
+        layoutParams.topMargin = 0;
+        textView.setLayoutParams(layoutParams);
+        setWillNotDraw(!divider);
     }
 
-    private static Method sSetDrawCheckRipple = null;
+    public void setColors(String key, String switchKey, String switchKeyChecked, String switchThumb, String switchThumbChecked) {
+        textView.setTextColor(Theme.getColor(key));
+        checkBox.setColors(switchKey, switchKeyChecked, switchThumb, switchThumbChecked);
+        textView.setTag(key);
+    }
+
+    public void setTypeface(Typeface typeface) {
+        textView.setTypeface(typeface);
+    }
+
+    public void setHeight(int value) {
+        height = value;
+    }
 
     public void setDrawCheckRipple(boolean value) {
-        if (sSetDrawCheckRipple == null) {
-            try {
-                sSetDrawCheckRipple = mTarget.getClass().getMethod("setDrawCheckRipple", boolean.class);
-            } catch (ReflectiveOperationException e) {
-                throw new NoSuchMethodError("TextCheckCell.setDrawCheckRipple");
-            }
-        }
-        try {
-            sSetDrawCheckRipple.invoke(mTarget, value);
-        } catch (ReflectiveOperationException e) {
-            throw new UnsupportedOperationException(e);
-        }
+        drawCheckRipple = value;
     }
 
-    private static Method sSetTextAndValueAndCheck = null;
+    @Override
+    public void setPressed(boolean pressed) {
+        if (drawCheckRipple) {
+            checkBox.setDrawRipple(pressed);
+        }
+        super.setPressed(pressed);
+    }
 
     public void setTextAndValueAndCheck(String text, String value, boolean checked, boolean multiline, boolean divider) {
-        if (sSetTextAndValueAndCheck == null) {
-            try {
-                sSetTextAndValueAndCheck = mTarget.getClass().getMethod("setTextAndValueAndCheck", String.class, String.class, boolean.class, boolean.class, boolean.class);
-            } catch (ReflectiveOperationException e) {
-                throw new NoSuchMethodError("TextCheckCell.setTextAndValueAndCheck");
-            }
+        textView.setText(text);
+        valueTextView.setText(value);
+        checkBox.setChecked(checked, false);
+        needDivider = divider;
+        valueTextView.setVisibility(VISIBLE);
+        isMultiline = multiline;
+        if (multiline) {
+            valueTextView.setLines(0);
+            valueTextView.setMaxLines(0);
+            valueTextView.setSingleLine(false);
+            valueTextView.setEllipsize(null);
+            valueTextView.setPadding(0, 0, 0, LayoutHelper.dp(11));
+        } else {
+            valueTextView.setLines(1);
+            valueTextView.setMaxLines(1);
+            valueTextView.setSingleLine(true);
+            valueTextView.setEllipsize(TextUtils.TruncateAt.END);
+            valueTextView.setPadding(0, 0, 0, 0);
         }
-        try {
-            sSetTextAndValueAndCheck.invoke(mTarget, text, value, checked, multiline, divider);
-        } catch (ReflectiveOperationException e) {
-            throw new UnsupportedOperationException(e);
-        }
+        LayoutParams layoutParams = (LayoutParams) textView.getLayoutParams();
+        layoutParams.height = LayoutParams.WRAP_CONTENT;
+        layoutParams.topMargin = LayoutHelper.dp(10);
+        textView.setLayoutParams(layoutParams);
+        setWillNotDraw(!divider);
     }
 
-    private static Method sSetChecked = null;
+    public void setEnabled(boolean value, ArrayList<Animator> animators) {
+        super.setEnabled(value);
+        if (animators != null) {
+            animators.add(ObjectAnimator.ofFloat(textView, "alpha", value ? 1.0f : 0.5f));
+            animators.add(ObjectAnimator.ofFloat(checkBox, "alpha", value ? 1.0f : 0.5f));
+            if (valueTextView.getVisibility() == VISIBLE) {
+                animators.add(ObjectAnimator.ofFloat(valueTextView, "alpha", value ? 1.0f : 0.5f));
+            }
+        } else {
+            textView.setAlpha(value ? 1.0f : 0.5f);
+            checkBox.setAlpha(value ? 1.0f : 0.5f);
+            if (valueTextView.getVisibility() == VISIBLE) {
+                valueTextView.setAlpha(value ? 1.0f : 0.5f);
+            }
+        }
+    }
 
     public void setChecked(boolean checked) {
-        if (sSetChecked == null) {
-            try {
-                sSetChecked = mTarget.getClass().getMethod("setChecked", boolean.class);
-            } catch (ReflectiveOperationException e) {
-                throw new NoSuchMethodError("TextCheckCell.setChecked");
-            }
+        checkBox.setChecked(checked, true);
+    }
+
+    public boolean isChecked() {
+        return checkBox.isChecked();
+    }
+
+    @Override
+    public void setBackgroundColor(int color) {
+        clearAnimation();
+        animatedColorBackground = 0;
+        super.setBackgroundColor(color);
+    }
+
+    public void setBackgroundColorAnimated(boolean checked, int color) {
+        if (animator != null) {
+            animator.cancel();
+            animator = null;
         }
-        try {
-            sSetChecked.invoke(mTarget, checked);
-        } catch (ReflectiveOperationException e) {
-            throw new UnsupportedOperationException(e);
+        if (animatedColorBackground != 0) {
+            setBackgroundColor(animatedColorBackground);
+        }
+        if (animationPaint == null) {
+            animationPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        }
+        checkBox.setOverrideColor(checked ? 1 : 2);
+        animatedColorBackground = color;
+        animationPaint.setColor(animatedColorBackground);
+        animationProgress = 0.0f;
+        animator = ObjectAnimator.ofFloat(this, ANIMATION_PROGRESS, 0.0f, 1.0f);
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                setBackgroundColor(animatedColorBackground);
+                animatedColorBackground = 0;
+                invalidate();
+            }
+        });
+        animator.setInterpolator(CubicBezierInterpolator.EASE_OUT);
+        animator.setDuration(240).start();
+    }
+
+    private void setAnimationProgress(float value) {
+        animationProgress = value;
+        float tx = getLastTouchX();
+        float rad = Math.max(tx, getMeasuredWidth() - tx) + LayoutHelper.dp(40);
+        float cx = tx;
+        int cy = getMeasuredHeight() / 2;
+        float animatedRad = rad * animationProgress;
+        checkBox.setOverrideColorProgress(cx, cy, animatedRad);
+    }
+
+    public void setBackgroundColorAnimatedReverse(int color) {
+        if (animator != null) {
+            animator.cancel();
+            animator = null;
+        }
+
+        int from = animatedColorBackground != 0 ? animatedColorBackground :
+                getBackground() instanceof ColorDrawable ? ((ColorDrawable) getBackground()).getColor() : 0;
+        if (animationPaint == null) {
+            animationPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        }
+        animationPaint.setColor(from);
+
+        setBackgroundColor(color);
+        checkBox.setOverrideColor(1);
+        animatedColorBackground = color;
+        animator = ObjectAnimator.ofFloat(this, ANIMATION_PROGRESS, 1, 0).setDuration(240);
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                setBackgroundColor(color);
+                animatedColorBackground = 0;
+                invalidate();
+            }
+        });
+        animator.setInterpolator(CubicBezierInterpolator.EASE_OUT);
+        animator.start();
+    }
+
+    private float getLastTouchX() {
+        return isAnimatingToThumbInsteadOfTouch ? (LocaleController.isRTL() ? LayoutHelper.dp(22) : getMeasuredWidth() - LayoutHelper.dp(42)) : lastTouchX;
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        if (animatedColorBackground != 0) {
+            float tx = getLastTouchX();
+            float rad = Math.max(tx, getMeasuredWidth() - tx) + LayoutHelper.dp(40);
+            float cx = tx;
+            int cy = getMeasuredHeight() / 2;
+            float animatedRad = rad * animationProgress;
+            canvas.drawCircle(cx, cy, animatedRad, animationPaint);
+        }
+        if (needDivider) {
+            canvas.drawLine(LocaleController.isRTL() ? 0 : LayoutHelper.dp(20), getMeasuredHeight() - 1,
+                    getMeasuredWidth() - (LocaleController.isRTL() ? LayoutHelper.dp(20) : 0), getMeasuredHeight() - 1,
+                    Theme.getDividerPaint());
         }
     }
 
-    private static Method sIsChecked = null;
+    public void setAnimatingToThumbInsteadOfTouch(boolean animatingToThumbInsteadOfTouch) {
+        isAnimatingToThumbInsteadOfTouch = animatingToThumbInsteadOfTouch;
+    }
 
-    public boolean isChecked() {
-        if (sIsChecked == null) {
-            try {
-                sIsChecked = mTarget.getClass().getMethod("isChecked");
-            } catch (ReflectiveOperationException e) {
-                throw new NoSuchMethodError("TextCheckCell.isChecked");
-            }
-        }
-        try {
-            return (boolean) sIsChecked.invoke(mTarget);
-        } catch (ReflectiveOperationException e) {
-            throw new UnsupportedOperationException(e);
-        }
+    @Override
+    public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
+        super.onInitializeAccessibilityNodeInfo(info);
+        info.setClassName("android.widget.CheckBox");
+        info.setCheckable(true);
+        info.setChecked(checkBox.isChecked());
     }
 
     public boolean toggle() {
-        boolean checked = !isChecked();
+        boolean checked = !checkBox.isChecked();
         setChecked(checked);
         return checked;
     }
 
-    private static Method sSetEnabled = null;
-
-    public void setEnabled(boolean value, ArrayList<Animator> animators) {
-        if (sSetEnabled == null) {
-            try {
-                sSetEnabled = mTarget.getClass().getMethod("setEnabled", boolean.class, ArrayList.class);
-            } catch (ReflectiveOperationException e) {
-                throw new NoSuchMethodError("TextCheckCell.setEnabled");
-            }
-        }
-        try {
-            sSetEnabled.invoke(mTarget, value, animators);
-        } catch (ReflectiveOperationException e) {
-            throw new UnsupportedOperationException(e);
-        }
-    }
-
-    public void setEnabled(boolean value) {
-        setEnabled(value, null);
-    }
-
-    public boolean isEnabled() {
-        return mTarget.isEnabled();
-    }
-
-    public void setBackgroundColor(int color) {
-        mTarget.setBackgroundColor(color);
-    }
-
-    private static Method sSetBackgroundColorAnimated = null;
-
-    public void setBackgroundColorAnimated(boolean checked, int color) {
-        if (sSetBackgroundColorAnimated == null) {
-            try {
-                sSetBackgroundColorAnimated = mTarget.getClass().getMethod("setBackgroundColorAnimated", boolean.class, int.class);
-            } catch (ReflectiveOperationException e) {
-                throw new NoSuchMethodError("TextCheckCell.setBackgroundColorAnimated");
-            }
-        }
-        try {
-            sSetBackgroundColorAnimated.invoke(mTarget, checked, color);
-        } catch (ReflectiveOperationException e) {
-            throw new UnsupportedOperationException(e);
-        }
-    }
-
-    private static Method sSetAnimationProgress = null;
-
-    private void setAnimationProgress(float value) {
-        if (sSetAnimationProgress == null) {
-            try {
-                sSetAnimationProgress = mTarget.getClass().getMethod("setAnimationProgress", float.class);
-            } catch (ReflectiveOperationException e) {
-                throw new NoSuchMethodError("TextCheckCell.setAnimationProgress");
-            }
-        }
-        try {
-            sSetAnimationProgress.invoke(mTarget, value);
-        } catch (ReflectiveOperationException e) {
-            throw new UnsupportedOperationException(e);
-        }
-    }
 }

@@ -19,6 +19,7 @@ import java.util.Objects;
 
 import cc.ioctl.tmoe.rtti.Bidirectional;
 import cc.ioctl.tmoe.rtti.ProxyFragmentRttiHandler;
+import cc.ioctl.tmoe.ui.Theme;
 
 public abstract class BaseProxyFragment {
 
@@ -192,6 +193,7 @@ public abstract class BaseProxyFragment {
     }
 
     public boolean onFragmentCreate() {
+        Theme.invalidate();
         return true;
     }
 

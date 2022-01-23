@@ -45,4 +45,16 @@ public class LocaleController {
         return "LC_ERR:" + key;
     }
 
+    public static boolean isRTL() {
+        Class<?> kLocaleController = Initiator.load("org.telegram.messenger.LocaleController");
+        if (kLocaleController != null) {
+            try {
+                return Boolean.TRUE.equals(Reflex.getStaticObject(kLocaleController, "isRTL", boolean.class));
+            } catch (NoSuchFieldException ignored) {
+            }
+        }
+        // unable to load LocaleController
+        return false;
+    }
+
 }

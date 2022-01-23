@@ -1,143 +1,115 @@
+/*
+ * This is the source code of Telegram for Android v. 5.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Nikolai Kudashov, 2013-2018.
+ */
 package cc.ioctl.tmoe.ui.wrapper;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.view.View;
-import android.view.ViewGroup;
+import android.text.TextUtils;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
+import androidx.core.view.ViewCompat;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.Objects;
+import java.util.ArrayList;
 
+import cc.ioctl.tmoe.ui.LayoutHelper;
+import cc.ioctl.tmoe.ui.LocaleController;
 import cc.ioctl.tmoe.ui.Theme;
-import cc.ioctl.tmoe.util.Initiator;
 
-public class HeaderCell implements CellWrapper {
-    private static final String TARGET_CLASS_NAME = "org.telegram.ui.Cells.HeaderCell";
-    private static Class<?> sTargetClass = null;
-    private static Constructor<?> sTargetConstructor = null;
-    private final ViewGroup mTarget;
+public class HeaderCell extends FrameLayout {
+
+    private TextView textView;
+    private TextView textView2;
+    private int height = 40;
 
     public HeaderCell(Context context) {
-        this(context, Theme.key_windowBackgroundWhiteBlueHeader, 21, 15, false, null);
-    }
-
-    public HeaderCell(Context context, Object resourcesProvider) {
-        this(context, Theme.key_windowBackgroundWhiteBlueHeader, 21, 15, false, resourcesProvider);
+        this(context, Theme.key_windowBackgroundWhiteBlueHeader, 21, 15, false);
     }
 
     public HeaderCell(Context context, int padding) {
-        this(context, Theme.key_windowBackgroundWhiteBlueHeader, padding, 15, false, null);
+        this(context, Theme.key_windowBackgroundWhiteBlueHeader, padding, 15, false);
     }
 
+    @SuppressLint("RtlHardcoded")
     public HeaderCell(Context context, String textColorKey, int padding, int topMargin, boolean text2) {
-        this(context, textColorKey, padding, topMargin, text2, null);
+        super(context);
+
+        textView = new TextView(getContext());
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+        textView.setTypeface(LayoutHelper.getTypeface("fonts/rmedium.ttf"));
+        textView.setEllipsize(TextUtils.TruncateAt.END);
+        textView.setGravity((LocaleController.isRTL() ? Gravity.RIGHT : Gravity.LEFT) | Gravity.CENTER_VERTICAL);
+        textView.setMinHeight(LayoutHelper.dp(height - topMargin));
+        textView.setTextColor(getThemedColor(textColorKey));
+        textView.setTag(textColorKey);
+        addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, (LocaleController.isRTL() ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, padding, topMargin, padding, 0));
+
+        if (text2) {
+            textView2 = new TextView(getContext());
+            textView2.setTextSize(13);
+            textView2.setGravity((LocaleController.isRTL() ? Gravity.LEFT : Gravity.RIGHT) | Gravity.TOP);
+            addView(textView2, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, (LocaleController.isRTL() ? Gravity.LEFT : Gravity.RIGHT) | Gravity.TOP, padding, 21, padding, 0));
+        }
+
+        ViewCompat.setAccessibilityHeading(this, true);
     }
 
-    public HeaderCell(Context context, String textColorKey, int padding, int topMargin, boolean text2, Object resourcesProvider) {
-        if (sTargetConstructor == null) {
-            sTargetClass = Initiator.load(TARGET_CLASS_NAME);
-            if (sTargetClass == null) {
-                throw new NoClassDefFoundError(TARGET_CLASS_NAME);
-            }
-            for (Constructor<?> constructor : sTargetClass.getDeclaredConstructors()) {
-                if (constructor.getParameterTypes().length == 6) {
-                    sTargetConstructor = constructor;
-                    break;
-                }
-            }
-            if (sTargetConstructor == null) {
-                throw new NoSuchMethodError("org.telegram.ui.Cells.HeaderCell.<init>(Context, String, int, int, boolean, Theme.ResourcesProvider)");
-            }
-        }
-        Objects.requireNonNull(context, "context == null");
-        try {
-            mTarget = (ViewGroup) sTargetConstructor.newInstance(context, textColorKey, padding, topMargin, text2, resourcesProvider);
-        } catch (ReflectiveOperationException e) {
-            throw new UnsupportedOperationException(e);
-        }
+    public void setHeight(int value) {
+        textView.setMinHeight(LayoutHelper.dp(height = value) - ((LayoutParams) textView.getLayoutParams()).topMargin);
     }
 
-    public HeaderCell wrap(View cell) {
-        Objects.requireNonNull(cell, "cell == null");
-        if (sTargetClass == null) {
-            sTargetClass = Initiator.load(TARGET_CLASS_NAME);
-            if (sTargetClass == null) {
-                throw new NoClassDefFoundError(TARGET_CLASS_NAME);
-            }
-        }
-        // check if the cell is a HeaderCell
-        if (sTargetClass.isInstance(cell)) {
-            return new HeaderCell((ViewGroup) cell);
+    public void setEnabled(boolean value, ArrayList<Animator> animators) {
+        if (animators != null) {
+            animators.add(ObjectAnimator.ofFloat(textView, "alpha", value ? 1.0f : 0.5f));
         } else {
-            throw new ClassCastException(cell + " is not " + sTargetClass.getName());
+            textView.setAlpha(value ? 1.0f : 0.5f);
         }
     }
 
-    private HeaderCell(ViewGroup target) {
-        mTarget = target;
-    }
-
-    @NonNull
     @Override
-    public ViewGroup getView() {
-        return mTarget;
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
     }
 
     public void setText(CharSequence text) {
-        getTextView().setText(text);
+        textView.setText(text);
     }
-
-    private static Method sSetText2 = null;
 
     public void setText2(CharSequence text) {
-        if (sSetText2 == null) {
-            try {
-                sSetText2 = sTargetClass.getDeclaredMethod("setText2", CharSequence.class);
-            } catch (NoSuchMethodException e) {
-                throw new NoSuchMethodError("org.telegram.ui.Cells.HeaderCell.setText2(CharSequence)");
-            }
+        if (textView2 == null) {
+            return;
         }
-        try {
-            sSetText2.invoke(getTextView(), text);
-        } catch (ReflectiveOperationException e) {
-            throw new UnsupportedOperationException(e);
-        }
+        textView2.setText(text);
     }
-
-    private static Method sGetTextView = null;
 
     public TextView getTextView() {
-        if (sGetTextView == null) {
-            try {
-                sGetTextView = sTargetClass.getDeclaredMethod("getTextView");
-            } catch (NoSuchMethodException e) {
-                throw new NoSuchMethodError("org.telegram.ui.Cells.HeaderCell.getTextView()");
-            }
-        }
-        try {
-            return (TextView) sGetTextView.invoke(getView());
-        } catch (ReflectiveOperationException e) {
-            throw new UnsupportedOperationException(e);
+        return textView;
+    }
+
+    public TextView getTextView2() {
+        return textView2;
+    }
+
+    @Override
+    public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
+        super.onInitializeAccessibilityNodeInfo(info);
+        AccessibilityNodeInfo.CollectionItemInfo collection = info.getCollectionItemInfo();
+        if (collection != null) {
+            info.setCollectionItemInfo(AccessibilityNodeInfo.CollectionItemInfo.obtain(collection.getRowIndex(), collection.getRowSpan(), collection.getColumnIndex(), collection.getColumnSpan(), true));
         }
     }
 
-    private static Method sGetTextView2 = null;
-
-    public View getTextView2() {
-        if (sGetTextView2 == null) {
-            try {
-                sGetTextView2 = sTargetClass.getDeclaredMethod("getTextView2");
-            } catch (NoSuchMethodException e) {
-                throw new NoSuchMethodError("org.telegram.ui.Cells.HeaderCell.getTextView2()");
-            }
-        }
-        try {
-            return (View) sGetTextView2.invoke(getView());
-        } catch (ReflectiveOperationException e) {
-            throw new UnsupportedOperationException(e);
-        }
+    private int getThemedColor(String key) {
+        return Theme.getColor(key);
     }
 }

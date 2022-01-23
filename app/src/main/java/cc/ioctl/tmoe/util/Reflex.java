@@ -17,19 +17,31 @@ public class Reflex {
         throw new AssertionError("no instance for you!");
     }
 
-    public static Object getStaticObject(Class clazz, String name) {
+    public static Object getStaticObjectOrNull(Class<?> clazz, String name, Class<?> type) {
+        try {
+            return getStaticObject(clazz, name, type);
+        } catch (NoSuchFieldException e) {
+            return null;
+        }
+    }
+
+    public static Object getStaticObjectOrNull(Class<?> clazz, String name) {
+        return getStaticObjectOrNull(clazz, name, null);
+    }
+
+    public static Object getStaticObject(Class<?> clazz, String name) throws NoSuchFieldException {
         return getStaticObject(clazz, name, null);
     }
 
-    public static Object getStaticObject(Class clazz, String name, Class type) {
+    public static Object getStaticObject(Class<?> clazz, String name, Class<?> type) throws NoSuchFieldException {
+        Field f = findField(clazz, type, name);
+        f.setAccessible(true);
         try {
-            Field f = findField(clazz, type, name);
-            f.setAccessible(true);
             return f.get(null);
-        } catch (Exception e) {
-            loge(e);
+        } catch (IllegalAccessException e) {
+            // should not happen
+            throw new AssertionError(e);
         }
-        return null;
     }
 
     public static Object invokeVirtualAny(Object obj, Object... argsTypesAndReturnType)
@@ -848,18 +860,23 @@ public class Reflex {
         return null;
     }
 
-    public static <T> T getInstanceObject(Object obj, String name, Class<T> type) throws ReflectiveOperationException {
-        Class clazz = obj.getClass();
+    public static <T> T getInstanceObject(Object obj, String name, Class<T> type) throws NoSuchFieldException {
+        Class<?> clazz = obj.getClass();
         Field f = findField(clazz, type, name);
         f.setAccessible(true);
-        return (T) f.get(obj);
+        try {
+            return (T) f.get(obj);
+        } catch (IllegalAccessException e) {
+            // should not happen
+            throw new AssertionError(e);
+        }
     }
 
     public static void setInstanceObject(Object obj, String name, Object value) {
         setInstanceObject(obj, name, null, value);
     }
 
-    public static void setInstanceObject(Object obj, String name, Class type, Object value) {
+    public static void setInstanceObject(Object obj, String name, Class<?> type, Object value) {
         Class clazz = obj.getClass();
         try {
             Field f = findField(clazz, type, name);
@@ -870,17 +887,29 @@ public class Reflex {
         }
     }
 
-    public static void setStaticObject(Class clz, String name, Object value) {
+    public static void setStaticObjectSilently(Class<?> clz, String name, Object value) {
+        setStaticObjectSilently(clz, name, null, value);
+    }
+
+    public static void setStaticObjectSilently(Class<?> clazz, String name, Class<?> type, Object value) {
+        try {
+            setStaticObject(clazz, name, type, value);
+        } catch (NoSuchFieldException ignored) {
+        }
+    }
+
+    public static void setStaticObject(Class<?> clz, String name, Object value) throws NoSuchFieldException {
         setStaticObject(clz, name, null, value);
     }
 
-    public static void setStaticObject(Class clazz, String name, Class type, Object value) {
+    public static void setStaticObject(Class<?> clazz, String name, Class<?> type, Object value)
+            throws NoSuchFieldException {
+        Field f = findField(clazz, type, name);
+        f.setAccessible(true);
         try {
-            Field f = findField(clazz, type, name);
-            f.setAccessible(true);
             f.set(null, value);
-        } catch (Exception e) {
-            loge(e);
+        } catch (IllegalAccessException e) {
+            throw new AssertionError(e);
         }
     }
 
@@ -965,20 +994,25 @@ public class Reflex {
         }
     }
 
-    public static Field findField(Class<?> clazz, Class<?> type, String name) {
-        if (clazz != null && name.length() > 0) {
-            Class<?> clz = clazz;
-            do {
-                for (Field field : clz.getDeclaredFields()) {
-                    if ((type == null || field.getType().equals(type)) && field.getName()
-                            .equals(name)) {
-                        field.setAccessible(true);
-                        return field;
-                    }
-                }
-            } while ((clz = clz.getSuperclass()) != null);
+    public static Field findField(Class<?> clazz, Class<?> type, String name) throws NoSuchFieldException {
+        if (clazz == null) {
+            throw new NullPointerException("clazz == null");
         }
-        return null;
+        if (name == null) {
+            throw new NullPointerException("name == null");
+        }
+        Class<?> clz = clazz;
+        do {
+            for (Field field : clz.getDeclaredFields()) {
+                if ((type == null || field.getType().equals(type)) && field.getName().equals(name)) {
+                    field.setAccessible(true);
+                    return field;
+                }
+            }
+        } while ((clz = clz.getSuperclass()) != null);
+        String errMsg = type == null ? ("field '" + name + "' not found in " + clazz.getName())
+                : ("field '" + name + "' of type " + type.getName() + " not found in " + clazz.getName());
+        throw new NoSuchFieldException(errMsg);
     }
 
     public static Method findMethodByTypes_1(Class<?> clazz, Class returnType, Class... argt)
@@ -1020,32 +1054,31 @@ public class Reflex {
         return method;
     }
 
-    public static Field hasField(Object obj, String name) {
+    public static Field hasField(Object obj, String name) throws ReflectiveOperationException {
         return hasField(obj, name, null);
     }
 
-    public static Field hasField(Object obj, String name, Class type) {
+    public static Field hasField(Object obj, String name, Class<?> type) throws ReflectiveOperationException {
         if (obj == null) {
             throw new NullPointerException("obj/class == null");
         }
-        Class clazz;
+        Class<?> clazz;
         if (obj instanceof Class) {
-            clazz = (Class) obj;
+            clazz = (Class<?>) obj;
         } else {
             clazz = obj.getClass();
         }
         return findField(clazz, type, name);
     }
 
-
-    public static <T> T getFirstByType(Object obj, Class<T> type) {
+    public static <T> T getFirstByType(Object obj, Class<T> type) throws NoSuchFieldException {
         if (obj == null) {
             throw new NullPointerException("obj == null");
         }
         if (type == null) {
             throw new NullPointerException("type == null");
         }
-        Class clz = obj.getClass();
+        Class<?> clz = obj.getClass();
         while (clz != null && !clz.equals(Object.class)) {
             for (Field f : clz.getDeclaredFields()) {
                 if (!f.getType().equals(type)) {
@@ -1055,12 +1088,21 @@ public class Reflex {
                 try {
                     return (T) f.get(obj);
                 } catch (IllegalAccessException ignored) {
-                    //should not happen
+                    // should not happen
                 }
             }
             clz = clz.getSuperclass();
         }
-        return null;
+        throw new NoSuchFieldException("No field of type " + type.getName() + " found in "
+                + obj.getClass().getName() + " and superclasses");
+    }
+
+    public static <T> T getFirstByTypeOrNull(Object obj, Class<T> type) {
+        try {
+            return getFirstByType(obj, type);
+        } catch (NoSuchFieldException e) {
+            return null;
+        }
     }
 
     /**
