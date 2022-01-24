@@ -55,18 +55,20 @@ public class DexKit {
      * failed, its failed result will be cached, which means that the same dex class will not be deobfuscated again.
      *
      * @param i the dex class index
-     * @return true if the dex class is deobfuscated and cached(regardless of success or failure) or not.
+     * @return true if the dex class is deobfuscated and cached(regardless of success or failure), false if debfuscation is required.
      */
-    public static boolean checkFor(int i) {
+    public static boolean isDeobfuscationRequiredFor(int i) {
         if (i / 10000 == 0) {
+            // for class
             if (loadClassFromCache(i) != null) {
-                return true;
+                return false;
             }
             DexMethodDescriptor desc = getMethodDescFromCache(i);
-            return desc != null && NO_SUCH_CLASS.equals(desc.declaringClass);
+            return desc == null;
         } else {
+            // for method
             DexMethodDescriptor desc = getMethodDescFromCache(i);
-            return desc != null && NO_SUCH_CLASS.equals(desc.declaringClass);
+            return desc == null;
         }
     }
 
@@ -202,7 +204,7 @@ public class DexKit {
      *
      * @param i the dex method index
      * @return the target method descriptor, null if the target is not found.
-     * @see #checkFor(int)
+     * @see #isDeobfuscationRequiredFor(int)
      */
     @Nullable
     public static DexMethodDescriptor doFindMethodDesc(int i) {

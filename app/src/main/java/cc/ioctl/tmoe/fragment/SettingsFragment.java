@@ -9,18 +9,15 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import cc.ioctl.tmoe.R;
 import cc.ioctl.tmoe.base.BaseProxyFragment;
+import cc.ioctl.tmoe.hook.func.EnableDebugMode;
 import cc.ioctl.tmoe.ui.LocaleController;
 import cc.ioctl.tmoe.ui.Theme;
 import cc.ioctl.tmoe.ui.wrapper.TextCheckCell;
-import cc.ioctl.tmoe.util.Initiator;
-import cc.ioctl.tmoe.util.Reflex;
-import cc.ioctl.tmoe.util.Utils;
 
 public class SettingsFragment extends BaseProxyFragment {
 
@@ -52,23 +49,12 @@ public class SettingsFragment extends BaseProxyFragment {
         scrollView.addView(ll, new ViewGroup.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
 
         {
-            boolean debugMode = false;
-            try {
-                debugMode = (boolean) Reflex.getStaticObject(Initiator.load("org.telegram.messenger.BuildVars"), "DEBUG_VERSION");
-            } catch (Exception e) {
-                Utils.logw(e);
-            }
             TextCheckCell cell = new TextCheckCell(context);
-            cell.setTextAndCheck(LocaleController.getString("EnableDebugMode", R.string.EnableDebugMode), debugMode, true);
+            cell.setTextAndCheck(LocaleController.getString("EnableDebugMode", R.string.EnableDebugMode), EnableDebugMode.INSTANCE.isEnabled(), true);
             cell.setOnClickListener(v -> {
                 TextCheckCell c = (TextCheckCell) v;
                 boolean checked = c.toggle();
-                try {
-                    Reflex.setStaticObject(Initiator.load("org.telegram.messenger.BuildVars"), "DEBUG_VERSION", checked);
-                    Reflex.setStaticObject(Initiator.load("org.telegram.messenger.BuildVars"), "DEBUG_PRIVATE_VERSION", checked);
-                } catch (NoSuchFieldException e) {
-                    Toast.makeText(c.getContext(), e.toString(), Toast.LENGTH_SHORT).show();
-                }
+                EnableDebugMode.INSTANCE.setEnabledByUser(checked);
             });
             ll.addView(cell, new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
         }

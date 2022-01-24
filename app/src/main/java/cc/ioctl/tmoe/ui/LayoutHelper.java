@@ -129,4 +129,7 @@ public class LayoutHelper {
         }
     }
 
+    public static void invalidate() {
+        // nothing to invalidate yet
+    }
 }

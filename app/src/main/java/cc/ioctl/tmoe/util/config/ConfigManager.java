@@ -23,7 +23,7 @@ public abstract class ConfigManager implements SharedPreferences, SharedPreferen
     @NonNull
     public static ConfigManager getDefaultConfig() {
         if (sDefaultConfig == null) {
-            sDefaultConfig = new MmkvConfigManagerImpl("default_config");
+            sDefaultConfig = new MmkvConfigManagerImpl("global_config");
         }
         return sDefaultConfig;
     }
@@ -110,7 +110,7 @@ public abstract class ConfigManager implements SharedPreferences, SharedPreferen
 
     public abstract void reload() throws IOException;
 
-    public abstract void save() throws IOException;
+    public abstract void save();
 
     public abstract void saveAndNotify(int what) throws IOException;
 

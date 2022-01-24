@@ -1,4 +1,4 @@
-package cc.ioctl.tmoe.hook;
+package cc.ioctl.tmoe.hook.core;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -24,7 +24,7 @@ import cc.ioctl.tmoe.util.Utils;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 
-public class SettingEntryHook {
+public class SettingEntryHook implements Initializable {
     public static final SettingEntryHook INSTANCE = new SettingEntryHook();
 
     private SettingEntryHook() {
@@ -39,7 +39,8 @@ public class SettingEntryHook {
     private static Field fProfileActivity_notificationRow = null;
     private static boolean sListViewOnItemClickListenerHooked = false;
 
-    public boolean init() {
+    @Override
+    public boolean initialize() {
         if (mInitialized) {
             return true;
         }
