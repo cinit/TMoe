@@ -5,4 +5,5 @@
 
     <string name="TMoeSettings">TMoe Settings</string>
     <string name="EnableDebugMode">Enable debug mode</string>
+    <string name="RestrictSaveMitigation">Force allow copying and saving message</string>
 </resources>

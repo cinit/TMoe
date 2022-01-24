@@ -36,6 +36,14 @@ public abstract class CommonDynamicHook extends BaseDynamicHook {
         this(keyName, null);
     }
 
+    protected CommonDynamicHook() {
+        String className = getClass().getName();
+        String[] parts = className.split("\\.");
+        mKeyName = parts[parts.length - 1];
+        mDexDeobfList = null;
+        mDefEnabled = false;
+    }
+
     public abstract boolean initOnce() throws Exception;
 
     @Override

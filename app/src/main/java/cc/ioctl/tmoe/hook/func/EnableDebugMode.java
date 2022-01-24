@@ -5,11 +5,9 @@ import cc.ioctl.tmoe.util.Initiator;
 import cc.ioctl.tmoe.util.Reflex;
 
 public class EnableDebugMode extends CommonDynamicHook {
-
     public static final EnableDebugMode INSTANCE = new EnableDebugMode();
 
     private EnableDebugMode() {
-        super("EnableDebugMode");
     }
 
     @Override

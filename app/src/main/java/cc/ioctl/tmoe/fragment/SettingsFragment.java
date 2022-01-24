@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import cc.ioctl.tmoe.R;
 import cc.ioctl.tmoe.base.BaseProxyFragment;
 import cc.ioctl.tmoe.hook.func.EnableDebugMode;
+import cc.ioctl.tmoe.hook.func.RestrictSaveMitigation;
 import cc.ioctl.tmoe.ui.LocaleController;
 import cc.ioctl.tmoe.ui.Theme;
 import cc.ioctl.tmoe.ui.wrapper.TextCheckCell;
@@ -55,6 +56,23 @@ public class SettingsFragment extends BaseProxyFragment {
                 TextCheckCell c = (TextCheckCell) v;
                 boolean checked = c.toggle();
                 EnableDebugMode.INSTANCE.setEnabledByUser(checked);
+                if (checked && !EnableDebugMode.INSTANCE.isInitialized()) {
+                    EnableDebugMode.INSTANCE.initialize();
+                }
+            });
+            ll.addView(cell, new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
+        }
+        {
+            TextCheckCell cell = new TextCheckCell(context);
+            cell.setTextAndCheck(LocaleController.getString("RestrictSaveMitigation", R.string.RestrictSaveMitigation),
+                    RestrictSaveMitigation.INSTANCE.isEnabledByUser(), true);
+            cell.setOnClickListener(v -> {
+                TextCheckCell c = (TextCheckCell) v;
+                boolean checked = c.toggle();
+                RestrictSaveMitigation.INSTANCE.setEnabledByUser(checked);
+                if (checked && !RestrictSaveMitigation.INSTANCE.isInitialized()) {
+                    RestrictSaveMitigation.INSTANCE.initialize();
+                }
             });
             ll.addView(cell, new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
         }

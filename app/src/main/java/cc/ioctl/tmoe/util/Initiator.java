@@ -1,5 +1,6 @@
 package cc.ioctl.tmoe.util;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
@@ -24,6 +25,15 @@ public class Initiator {
 
     public static ClassLoader getHostClassLoader() {
         return sHostClassLoader;
+    }
+
+    @NonNull
+    public static Class<?> loadClass(@NonNull String className) throws ClassNotFoundException {
+        Class<?> clazz = load(className);
+        if (clazz == null) {
+            throw new ClassNotFoundException(className);
+        }
+        return clazz;
     }
 
     @Nullable

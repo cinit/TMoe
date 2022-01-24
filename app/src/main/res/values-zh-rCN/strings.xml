@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="xposeddescription">为 Telegram 客户端提供更多功能。</string>
+
     <string name="TMoeSettings">TMoe 设置</string>
     <string name="EnableDebugMode">启用调试模式</string>
+    <string name="RestrictSaveMitigation">去除复制保存消息限制</string>
 </resources>
