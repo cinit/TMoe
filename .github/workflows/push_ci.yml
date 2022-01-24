@@ -55,4 +55,4 @@ jobs:
         # don't upload the artifacts if it's a pull request
         if: ${{ !github.event.pull_request }}
         with:
-          path: './app/build/outputs/*'
+          path: './app/build/outputs/apk/debug/app-debug.apk'
