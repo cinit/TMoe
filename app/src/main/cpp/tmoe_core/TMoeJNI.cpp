@@ -9,11 +9,11 @@ extern "C" __attribute__((visibility("default")))
 jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     logging::android::init();
     JNIEnv *env = nullptr;
-    if (vm->GetEnv((void **) &env, JNI_VERSION_1_4) != JNI_OK) {
+    if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
         return JNI_ERR;
     }
     LOGD("JNI_OnLoad");
-    return JNI_VERSION_1_4;
+    return JNI_VERSION_1_6;
 }
 
 /*

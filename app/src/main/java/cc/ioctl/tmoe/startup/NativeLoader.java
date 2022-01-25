@@ -84,19 +84,45 @@ public class NativeLoader {
         MMKV.mmkvWithID("global_cache", MMKV.SINGLE_PROCESS_MODE);
     }
 
+    private static void deleteDir(File dir) {
+        if (dir.isDirectory()) {
+            File[] files = dir.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    deleteDir(file);
+                }
+            }
+        }
+        dir.delete();
+    }
+
     /**
      * Extract or update native library into "tmoe_dyn_lib" dir
      *
      * @param libraryName library name without "lib" or ".so", eg. "mmkv"
      */
     private static File extractNativeLibrary(Context ctx, String libraryName) {
-        String abi = Build.CPU_ABI;
-        String soName = "lib" + libraryName + ".so." + BuildConfig.VERSION_CODE + "." + abi;
-        File dir = new File(ctx.getFilesDir(), "tmoe_dyn_lib");
-        if (!dir.isDirectory()) {
-            if (dir.isFile()) {
-                dir.delete();
+        final String abi = Build.CPU_ABI;
+        final String currentVersion = BuildConfig.BUILD_UUID;
+        final String soName = "lib" + libraryName + ".so." + BuildConfig.VERSION_CODE + "." + abi;
+        File dynLibBaseDir = new File(ctx.getFilesDir(), "tmoe_dyn_lib");
+        if (!dynLibBaseDir.isDirectory()) {
+            if (dynLibBaseDir.isFile()) {
+                dynLibBaseDir.delete();
             }
+            dynLibBaseDir.mkdir();
+        }
+        // clean up old version if exists
+        File[] files = dynLibBaseDir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory() && !file.getName().equals(currentVersion)) {
+                    deleteDir(file);
+                }
+            }
+        }
+        File dir = new File(dynLibBaseDir, currentVersion);
+        if (!dir.exists()) {
             dir.mkdir();
         }
         File soFile = new File(dir, soName);
@@ -105,13 +131,6 @@ public class NativeLoader {
                     .getResourceAsStream("lib/" + abi + "/lib" + libraryName + ".so");
             if (in == null) {
                 throw new UnsatisfiedLinkError("Unsupported ABI: " + abi);
-            }
-            //clean up old files
-            for (String name : dir.list()) {
-                if (name.startsWith("lib" + libraryName + "_")
-                        || name.startsWith("lib" + libraryName + ".so")) {
-                    new File(dir, name).delete();
-                }
             }
             try {
                 // extract so file
