@@ -77,20 +77,20 @@ void patchAntiXposed() {
         LOGE("ProcessView.readProcess self failed: %d", err);
         return;
     }
-    uint64_t libnekoBase = 0;
+    uintptr_t libnekoBase = 0;
     std::string modulePath;
     for (const auto &m: processView.getModules()) {
         if (m.name.find("libneko.") != std::string::npos) {
-            libnekoBase = m.baseAddress;
+            libnekoBase = (uintptr_t) m.baseAddress;
             modulePath = m.path;
-            LOGD("%s base: %llu", m.name.c_str(), m.baseAddress);
+            LOGD("%s base: %p", m.name.c_str(), (void *) m.baseAddress);
             break;
         }
     }
     if (libnekoBase == 0) {
         LOGE("libneko.*.so not found, dump modules: ");
         for (const auto &m: processView.getModules()) {
-            LOGE("%llu %s %s", m.baseAddress, m.name.c_str(), m.path.c_str());
+            LOGE("%p %s %s", (void *) m.baseAddress, m.name.c_str(), m.path.c_str());
         }
         LOGE("end dump modules");
         return;
@@ -122,7 +122,7 @@ void patchAntiXposed() {
             return;
         }
     }
-    uint64_t systemPropertyGet = libnekoBase + offsets[0];
+    uintptr_t systemPropertyGet = libnekoBase + (uintptr_t) offsets[0];
     // hook __system_property_get
     err = mprotect(reinterpret_cast<void *>(systemPropertyGet & ~0xfff), 0x1000, PROT_READ | PROT_WRITE);
     if (err != 0) {
@@ -133,5 +133,5 @@ void patchAntiXposed() {
     *p = reinterpret_cast<void *>(&fake_system_property_get);
     mprotect(reinterpret_cast<void *>(systemPropertyGet & ~0xfff), 0x1000, PROT_READ);
     makeXposedDetectorHappy = 2;
-    LOGD("hook __system_property_get success, orig addr: %lu", systemPropertyGet);
+    LOGD("hook __system_property_get success, orig addr: %p", (void *) systemPropertyGet);
 }
