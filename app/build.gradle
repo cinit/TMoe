@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'kotlin-android'
 }
 
 String BUILD_UUID = UUID.randomUUID().toString()
@@ -52,10 +53,10 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-//    kotlinOptions {
-//        jvmTarget = JavaVersion.VERSION_1_8
-//        useIR = true
-//    }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+        useIR = true
+    }
 
     externalNativeBuild {
         cmake {
@@ -80,6 +81,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'com.google.code.gson:gson:2.8.9'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     compileOnly("de.robv.android.xposed:api:82")
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
