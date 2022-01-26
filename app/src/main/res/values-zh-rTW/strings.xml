@@ -4,5 +4,5 @@
 
     <string name="TMoeSettings">TMoe 設定</string>
     <string name="EnableDebugMode">啟用除錯模式</string>
-    <string name="RestrictSaveMitigation">去除複製儲存訊息限制</string>
+    <string name="AntiAntiForward">反反轉發</string>
 </resources>
