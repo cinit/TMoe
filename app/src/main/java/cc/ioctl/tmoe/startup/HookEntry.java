@@ -1,5 +1,7 @@
 package cc.ioctl.tmoe.startup;
 
+import com.github.kyuubiran.ezxhelper.init.EzXHelperInit;
+
 import java.util.ArrayList;
 
 import cc.ioctl.tmoe.R;
@@ -42,11 +44,13 @@ public class HookEntry implements IXposedHookLoadPackage, IXposedHookZygoteInit 
         String packageName = lpparam.packageName;
         if (TELEGRAM_CLIENT_PACKAGE_NAME_LIST.contains(packageName)) {
             StartupHook.INSTANCE.doInit(lpparam.classLoader);
+            EzXHelperInit.INSTANCE.initHandleLoadPackage(lpparam);
         }
     }
 
     @Override
     public void initZygote(StartupParam startupParam) {
+        EzXHelperInit.INSTANCE.initZygote(startupParam);
         sModulePath = startupParam.modulePath;
     }
 

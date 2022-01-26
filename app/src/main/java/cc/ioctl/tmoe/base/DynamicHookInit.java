@@ -6,8 +6,8 @@ import cc.ioctl.tmoe.hook.base.DynamicHook;
 import cc.ioctl.tmoe.hook.core.Initializable;
 import cc.ioctl.tmoe.hook.core.InvalidationHook;
 import cc.ioctl.tmoe.hook.core.SettingEntryHook;
+import cc.ioctl.tmoe.hook.func.AntiAntiForward;
 import cc.ioctl.tmoe.hook.func.EnableDebugMode;
-import cc.ioctl.tmoe.hook.func.RestrictSaveMitigation;
 import cc.ioctl.tmoe.util.Utils;
 
 /**
@@ -42,7 +42,7 @@ public class DynamicHookInit {
         if (sAllFunctionHooks == null) {
             sAllFunctionHooks = new DynamicHook[]{
                     EnableDebugMode.INSTANCE,
-                    RestrictSaveMitigation.INSTANCE
+                    AntiAntiForward.INSTANCE
             };
         }
         return sAllFunctionHooks;

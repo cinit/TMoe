@@ -4,5 +4,5 @@
 
     <string name="TMoeSettings">TMoe 设置</string>
     <string name="EnableDebugMode">启用调试模式</string>
-    <string name="RestrictSaveMitigation">去除复制保存消息限制</string>
+    <string name="AntiAntiForward">反反转发</string>
 </resources>

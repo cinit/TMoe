@@ -14,8 +14,8 @@ import androidx.annotation.NonNull;
 
 import cc.ioctl.tmoe.R;
 import cc.ioctl.tmoe.base.BaseProxyFragment;
+import cc.ioctl.tmoe.hook.func.AntiAntiForward;
 import cc.ioctl.tmoe.hook.func.EnableDebugMode;
-import cc.ioctl.tmoe.hook.func.RestrictSaveMitigation;
 import cc.ioctl.tmoe.ui.LocaleController;
 import cc.ioctl.tmoe.ui.Theme;
 import cc.ioctl.tmoe.ui.wrapper.TextCheckCell;
@@ -64,14 +64,14 @@ public class SettingsFragment extends BaseProxyFragment {
         }
         {
             TextCheckCell cell = new TextCheckCell(context);
-            cell.setTextAndCheck(LocaleController.getString("RestrictSaveMitigation", R.string.RestrictSaveMitigation),
-                    RestrictSaveMitigation.INSTANCE.isEnabledByUser(), true);
+            cell.setTextAndCheck(LocaleController.getString("AntiAntiForward", R.string.AntiAntiForward),
+                    AntiAntiForward.INSTANCE.isEnabledByUser(), true);
             cell.setOnClickListener(v -> {
                 TextCheckCell c = (TextCheckCell) v;
                 boolean checked = c.toggle();
-                RestrictSaveMitigation.INSTANCE.setEnabledByUser(checked);
-                if (checked && !RestrictSaveMitigation.INSTANCE.isInitialized()) {
-                    RestrictSaveMitigation.INSTANCE.initialize();
+                AntiAntiForward.INSTANCE.setEnabledByUser(checked);
+                if (checked && !AntiAntiForward.INSTANCE.isInitialized()) {
+                    AntiAntiForward.INSTANCE.initialize();
                 }
             });
             ll.addView(cell, new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
