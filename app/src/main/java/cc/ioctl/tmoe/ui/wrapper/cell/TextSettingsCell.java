@@ -5,10 +5,11 @@
  *
  * Copyright Nikolai Kudashov, 2013-2018.
  */
-package cc.ioctl.tmoe.ui.wrapper;
+package cc.ioctl.tmoe.ui.wrapper.cell;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -29,6 +30,7 @@ import cc.ioctl.tmoe.ui.LayoutHelper;
 import cc.ioctl.tmoe.ui.LocaleController;
 import cc.ioctl.tmoe.ui.Theme;
 
+@SuppressLint("RtlHardcoded")
 public class TextSettingsCell extends FrameLayout {
 
     private TextView textView;
@@ -254,7 +256,6 @@ public class TextSettingsCell extends FrameLayout {
                     getMeasuredWidth() - (LocaleController.isRTL() ? LayoutHelper.dp(20) : 0), getMeasuredHeight() - 1, Theme.getDividerPaint());
         }
     }
-
 
     @Override
     public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {

@@ -5,11 +5,12 @@
  *
  * Copyright Nikolai Kudashov, 2013-2018.
  */
-package cc.ioctl.tmoe.ui.wrapper;
+package cc.ioctl.tmoe.ui.wrapper.cell;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -33,6 +34,7 @@ import cc.ioctl.tmoe.ui.anim.AnimationProperties;
 import cc.ioctl.tmoe.ui.anim.CubicBezierInterpolator;
 import cc.ioctl.tmoe.ui.wrapper.component.Switch;
 
+@SuppressLint("RtlHardcoded")
 public class TextCheckCell extends FrameLayout {
 
     private boolean isAnimatingToThumbInsteadOfTouch;
@@ -49,6 +51,7 @@ public class TextCheckCell extends FrameLayout {
     private float lastTouchX;
     private ObjectAnimator animator;
     private boolean drawCheckRipple;
+    private boolean drawVerticalSwitchDividerLine = false;
 
     public static final Property<TextCheckCell, Float> ANIMATION_PROGRESS = new AnimationProperties.FloatProperty<TextCheckCell>("animationProgress") {
         @Override
@@ -291,6 +294,24 @@ public class TextCheckCell extends FrameLayout {
         return isAnimatingToThumbInsteadOfTouch ? (LocaleController.isRTL() ? LayoutHelper.dp(22) : getMeasuredWidth() - LayoutHelper.dp(42)) : lastTouchX;
     }
 
+    public void setDrawLine(boolean value) {
+        drawVerticalSwitchDividerLine = value;
+        invalidate();
+    }
+
+    public boolean getDrawLine() {
+        return drawVerticalSwitchDividerLine;
+    }
+
+    public boolean isInSwitchRange(int x) {
+        return LocaleController.isRTL() && x <= LayoutHelper.dp(76)
+                || !LocaleController.isRTL() && x >= getMeasuredWidth() - LayoutHelper.dp(76);
+    }
+
+    public boolean isDividedAndInSwitchRange(int x) {
+        return drawVerticalSwitchDividerLine && isInSwitchRange(x);
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
         if (animatedColorBackground != 0) {
@@ -300,6 +321,11 @@ public class TextCheckCell extends FrameLayout {
             int cy = getMeasuredHeight() / 2;
             float animatedRad = rad * animationProgress;
             canvas.drawCircle(cx, cy, animatedRad, animationPaint);
+        }
+        if (drawVerticalSwitchDividerLine) {
+            int x = LocaleController.isRTL() ? LayoutHelper.dp(76) : getMeasuredWidth() - LayoutHelper.dp(76) - 1;
+            int y = (getMeasuredHeight() - LayoutHelper.dp(22)) / 2;
+            canvas.drawRect(x, y, x + 2, y + LayoutHelper.dp(22), Theme.getDividerPaint());
         }
         if (needDivider) {
             canvas.drawLine(LocaleController.isRTL() ? 0 : LayoutHelper.dp(20), getMeasuredHeight() - 1,

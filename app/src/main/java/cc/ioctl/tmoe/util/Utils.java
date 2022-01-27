@@ -1,5 +1,7 @@
 package cc.ioctl.tmoe.util;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import java.util.concurrent.ExecutorService;
@@ -88,5 +90,29 @@ public class Utils {
             return;
         }
         sExecutorService.execute(r);
+    }
+
+    private static Handler sAppHandler = null;
+
+    public static void runOnUIThread(Runnable runnable) {
+        runOnUIThread(runnable, 0);
+    }
+
+    public static void runOnUIThread(Runnable runnable, long delay) {
+        if (sAppHandler == null) {
+            sAppHandler = new Handler(Looper.getMainLooper());
+        }
+        if (delay == 0) {
+            sAppHandler.post(runnable);
+        } else {
+            sAppHandler.postDelayed(runnable, delay);
+        }
+    }
+
+    public static void cancelRunOnUIThread(Runnable runnable) {
+        if (sAppHandler == null) {
+            return;
+        }
+        sAppHandler.removeCallbacks(runnable);
     }
 }

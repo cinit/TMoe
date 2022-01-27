@@ -79,4 +79,11 @@ public interface DynamicHook extends Initializable {
      * @return true if the hook is prepared successfully and ready to initialize.
      */
     boolean makePreparations();
+
+    /**
+     * Is an application restart required to use this hook?
+     *
+     * @return true if a restart is required.
+     */
+    boolean isApplicationRestartRequired();
 }

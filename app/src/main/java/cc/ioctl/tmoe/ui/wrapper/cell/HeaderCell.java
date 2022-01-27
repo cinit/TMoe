@@ -5,7 +5,7 @@
  *
  * Copyright Nikolai Kudashov, 2013-2018.
  */
-package cc.ioctl.tmoe.ui.wrapper;
+package cc.ioctl.tmoe.ui.wrapper.cell;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -26,6 +26,7 @@ import cc.ioctl.tmoe.ui.LayoutHelper;
 import cc.ioctl.tmoe.ui.LocaleController;
 import cc.ioctl.tmoe.ui.Theme;
 
+@SuppressLint("RtlHardcoded")
 public class HeaderCell extends FrameLayout {
 
     private TextView textView;
@@ -40,7 +41,6 @@ public class HeaderCell extends FrameLayout {
         this(context, Theme.key_windowBackgroundWhiteBlueHeader, padding, 15, false);
     }
 
-    @SuppressLint("RtlHardcoded")
     public HeaderCell(Context context, String textColorKey, int padding, int topMargin, boolean text2) {
         super(context);
 

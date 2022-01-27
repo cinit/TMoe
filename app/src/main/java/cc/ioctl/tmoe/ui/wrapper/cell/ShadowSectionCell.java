@@ -5,7 +5,7 @@
  *
  * Copyright Nikolai Kudashov, 2013-2018.
  */
-package cc.ioctl.tmoe.ui.wrapper;
+package cc.ioctl.tmoe.ui.wrapper.cell;
 
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;

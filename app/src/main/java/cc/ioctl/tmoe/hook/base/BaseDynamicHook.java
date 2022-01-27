@@ -37,4 +37,9 @@ public abstract class BaseDynamicHook implements DynamicHook {
     public boolean makePreparations() {
         return true;
     }
+
+    @Override
+    public boolean isApplicationRestartRequired() {
+        return false;
+    }
 }

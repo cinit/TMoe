@@ -5,4 +5,6 @@
     <string name="TMoeSettings">TMoe 设置</string>
     <string name="EnableDebugMode">启用调试模式</string>
     <string name="AntiAntiForward">反反转发</string>
+    <string name="ChatUiSettings">聊天页面设置</string>
+    <string name="BasicFunction">基础功能</string>
 </resources>
