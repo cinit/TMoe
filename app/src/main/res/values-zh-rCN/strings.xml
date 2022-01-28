@@ -9,4 +9,6 @@
     <string name="BasicFunction">基础功能</string>
     <string name="AboutTMoe">关于 TMoe</string>
     <string name="About">关于</string>
+    <string name="SourceCode">源代码</string>
+    <string name="LicenseNotices">开放源代码许可</string>
 </resources>

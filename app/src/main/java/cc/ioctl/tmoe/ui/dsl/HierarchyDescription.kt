@@ -54,7 +54,12 @@ open class HierarchyDescription(
         titleResId: Int,
         descProvider: ((Context) -> String?)? = null,
         onClick: View.OnClickListener? = null
-    ) = TextDetailItem(titleKey, titleResId, descProvider, onClick).also {
+    ) = TextDetailItem(
+        title = LocaleController.getString(titleKey, titleResId),
+        description = descProvider,
+        onClick = onClick,
+        multiLine = true
+    ).also {
         dslItems.add(it)
     }
 
@@ -86,6 +91,14 @@ open class HierarchyDescription(
         LocaleController.getString(valueKey, valueResId)
     }, onClick).also {
         dslItems.add(it)
+    }
+
+    open fun add(item: TMsgListItem) {
+        dslItems.add(item)
+    }
+
+    open fun add(items: List<TMsgListItem>) {
+        dslItems.addAll(items)
     }
 
     open fun collectItems(context: Context): List<TMsgListItem> {

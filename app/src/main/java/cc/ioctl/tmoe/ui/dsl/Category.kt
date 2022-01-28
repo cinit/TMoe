@@ -49,4 +49,12 @@ open class Category(
     ).also {
         dslItems.add(it)
     }
+
+    open fun add(item: TMsgListItem) {
+        dslItems.add(item)
+    }
+
+    open fun add(items: List<TMsgListItem>) {
+        dslItems.addAll(items)
+    }
 }

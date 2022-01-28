@@ -11,4 +11,6 @@
     <string name="AboutTMoe">About TMoe</string>
     <string name="About">About</string>
     <string name="GitHub" translatable="false">GitHub</string>
+    <string name="SourceCode">Source code</string>
+    <string name="LicenseNotices">License notices</string>
 </resources>
