@@ -12,6 +12,7 @@ class ShadowSection : TMsgListItem {
     class ViewHolder(cell: ShadowSectionCell) : RecyclerView.ViewHolder(cell)
 
     override val isEnabled = false
+    override val isVoidBackground = true
 
     override fun createViewHolder(context: Context, parent: ViewGroup): RecyclerView.ViewHolder {
         return ViewHolder(ShadowSectionCell(context))

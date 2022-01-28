@@ -17,6 +17,7 @@ class DescriptionItem(
     class HeaderViewHolder(cell: TextInfo2Cell) : RecyclerView.ViewHolder(cell)
 
     override val isEnabled = false
+    override val isVoidBackground = false
 
     override fun createViewHolder(context: Context, parent: ViewGroup): RecyclerView.ViewHolder {
         return HeaderViewHolder(TextInfo2Cell(context))

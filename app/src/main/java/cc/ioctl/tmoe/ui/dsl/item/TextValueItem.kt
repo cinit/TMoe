@@ -19,6 +19,7 @@ class TextValueItem(
     class ViewHolder(cell: TextSettingsCell) : RecyclerView.ViewHolder(cell)
 
     override val isEnabled = true
+    override val isVoidBackground = false
 
     override fun createViewHolder(context: Context, parent: ViewGroup) =
         ViewHolder(TextSettingsCell(context))

@@ -9,6 +9,8 @@ interface TMsgListItem : DslTMsgListItemInflatable {
 
     val isEnabled: Boolean
 
+    val isVoidBackground: Boolean
+
     fun createViewHolder(context: Context, parent: ViewGroup): RecyclerView.ViewHolder
 
     fun bindView(viewHolder: RecyclerView.ViewHolder, position: Int, context: Context)

@@ -70,7 +70,11 @@ abstract class BaseHierarchyFragment : BaseProxyFragment() {
                 viewType: Int
             ): RecyclerView.ViewHolder {
                 val delegate = itemTypeDelegate[viewType]
-                return delegate.createViewHolder(context, parent)
+                val vh = delegate.createViewHolder(context, parent)
+                if (!delegate.isVoidBackground) {
+                    vh.itemView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite))
+                }
+                return vh
             }
 
             override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
