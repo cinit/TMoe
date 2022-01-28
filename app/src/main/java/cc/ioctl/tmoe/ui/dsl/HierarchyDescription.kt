@@ -17,12 +17,16 @@ open class HierarchyDescription(
 ) {
     private val dslItems = ArrayList<DslTMsgListItemInflatable>()
     private lateinit var listItems: ArrayList<TMsgListItem>
+    private var isAfterBuild: Boolean = false;
 
     open fun category(
         titleKey: String,
         titleResId: Int,
         initializer: (Category.() -> Unit)? = null
-    ): Category = Category(titleKey, titleResId, initializer).also { dslItems.add(it) }
+    ): Category = Category(titleKey, titleResId, initializer).also {
+        checkState()
+        dslItems.add(it)
+    }
 
     open fun functionSwitch(
         hook: DynamicHook,
@@ -41,13 +45,17 @@ open class HierarchyDescription(
         onClick = onClick,
         hook = hook
     ).also {
+        checkState()
         dslItems.add(it)
     }
 
     open fun description(
         titleKey: String,
         titleResId: Int
-    ) = DescriptionItem(titleKey, titleResId).also { dslItems.add(it) }
+    ) = DescriptionItem(titleKey, titleResId).also {
+        checkState()
+        dslItems.add(it)
+    }
 
     open fun textDetail(
         titleKey: String,
@@ -60,6 +68,7 @@ open class HierarchyDescription(
         onClick = onClick,
         multiLine = true
     ).also {
+        checkState()
         dslItems.add(it)
     }
 
@@ -69,6 +78,7 @@ open class HierarchyDescription(
         valueProvider: ((Context) -> String?)? = null,
         onClick: View.OnClickListener? = null
     ) = TextValueItem(titleKey, titleResId, valueProvider, onClick).also {
+        checkState()
         dslItems.add(it)
     }
 
@@ -78,6 +88,7 @@ open class HierarchyDescription(
         valueConstant: String,
         onClick: View.OnClickListener? = null
     ) = TextValueItem(titleKey, titleResId, { valueConstant }, onClick).also {
+        checkState()
         dslItems.add(it)
     }
 
@@ -90,25 +101,35 @@ open class HierarchyDescription(
     ) = TextValueItem(titleKey, titleResId, {
         LocaleController.getString(valueKey, valueResId)
     }, onClick).also {
+        checkState()
         dslItems.add(it)
     }
 
-    open fun add(item: TMsgListItem) {
+    open fun add(item: DslTMsgListItemInflatable) {
+        checkState()
         dslItems.add(item)
     }
 
     open fun add(items: List<TMsgListItem>) {
+        checkState()
         dslItems.addAll(items)
     }
 
     open fun collectItems(context: Context): List<TMsgListItem> {
         if (!::listItems.isInitialized) {
             initializer?.invoke(this)
+            isAfterBuild = true
             listItems = ArrayList()
             dslItems.forEach {
                 listItems.addAll(it.inflateTMsgListItems(context))
             }
         }
         return listItems.toMutableList()
+    }
+
+    private fun checkState() {
+        if (isAfterBuild) {
+            throw IllegalStateException("you can't add item after build")
+        }
     }
 }
