@@ -55,5 +55,11 @@ class FunctionSwitch(
         } else {
             onClick.onClick(v)
         }
+        // update description if dynamic
+        if (descProvider != null) {
+            val descString = descProvider.invoke(v.context)
+            val titleString = LocaleController.getString(titleKey, titleResId)
+            cell.setTextAndValueAndCheck(titleString, descString, hook.isEnabledByUser, true, true)
+        }
     }
 }

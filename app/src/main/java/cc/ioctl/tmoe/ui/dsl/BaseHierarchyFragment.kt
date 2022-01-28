@@ -106,12 +106,15 @@ abstract class BaseHierarchyFragment : BaseProxyFragment() {
         return rootView
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     override fun onResume() {
         super.onResume()
+        updateUi()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    open fun updateUi() {
         if (::adapter.isInitialized) {
             adapter.notifyDataSetChanged()
         }
     }
-
 }

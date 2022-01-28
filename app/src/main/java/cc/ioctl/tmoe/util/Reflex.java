@@ -799,7 +799,7 @@ public class Reflex {
     }
 
     public static Object invokeStatic(Class<?> staticClass, String name, Object... argsTypesAndReturnType)
-            throws ReflectiveOperationException, IllegalArgumentException {
+            throws NoSuchMethodException, InvocationTargetException, IllegalArgumentException {
         Class clazz = staticClass;
         int argc = argsTypesAndReturnType.length / 2;
         Class[] argt = new Class[argc];
@@ -842,7 +842,12 @@ public class Reflex {
             throw new NoSuchMethodException(name + paramsTypesToString(argt));
         }
         method.setAccessible(true);
-        return method.invoke(null, argv);
+        try {
+            return method.invoke(null, argv);
+        } catch (IllegalAccessException e) {
+            // should not happen
+            throw new AssertionError(e);
+        }
     }
 
     public static Object getInstanceObjectOrNull(Object obj, String name) {

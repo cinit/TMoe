@@ -8,6 +8,7 @@ import cc.ioctl.tmoe.hook.core.InvalidationHook;
 import cc.ioctl.tmoe.hook.core.SettingEntryHook;
 import cc.ioctl.tmoe.hook.func.AntiAntiForward;
 import cc.ioctl.tmoe.hook.func.EnableDebugMode;
+import cc.ioctl.tmoe.hook.func.HideUserAvatar;
 import cc.ioctl.tmoe.util.Utils;
 
 /**
@@ -23,7 +24,8 @@ public class DynamicHookInit {
     private static void initializeCoreHooks() {
         Initializable[] coreHooks = new Initializable[]{
                 InvalidationHook.INSTANCE,
-                SettingEntryHook.INSTANCE
+                SettingEntryHook.INSTANCE,
+                HideUserAvatar.INSTANCE
         };
         for (Initializable hook : coreHooks) {
             try {
