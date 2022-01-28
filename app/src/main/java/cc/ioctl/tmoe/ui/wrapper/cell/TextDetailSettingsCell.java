@@ -96,7 +96,11 @@ public class TextDetailSettingsCell extends FrameLayout {
 
     public void setTextAndValue(String text, CharSequence value, boolean divider) {
         textView.setText(text);
-        valueTextView.setText(value);
+        if (value == null) {
+            valueTextView.setVisibility(GONE);
+        } else {
+            valueTextView.setText(value);
+        }
         needDivider = divider;
         imageView.setVisibility(GONE);
         setWillNotDraw(!divider);

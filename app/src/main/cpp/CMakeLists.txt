@@ -4,12 +4,27 @@ project(tmoe)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
-find_library( # Defines the name of the path variable that stores the
-        # location of the NDK library.
-        ANDROID_LIBS
-        # Specifies the name of the NDK library that
-        # CMake needs to locate.
-        log)
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
+    find_library( # Defines the name of the path variable that stores the
+            # location of the NDK library.
+            ANDROID_LIBS
+            # Specifies the name of the NDK library that
+            # CMake needs to locate.
+            pthread)
+else ()
+
+    find_library( # Defines the name of the path variable that stores the
+            # location of the NDK library.
+            ANDROID_LIBS
+            # Specifies the name of the NDK library that
+            # CMake needs to locate.
+            log)
+endif ()
+
+if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
+    include_directories("/usr/lib/jvm/java-8-openjdk/include")
+    include_directories("/usr/lib/jvm/java-8-openjdk/include/linux")
+endif ()
 
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
     SET(CLANG_CXX_EXTRA_OPT "-Werror=unknown-warning-option -Werror=format-invalid-specifier -Werror=call-to-pure-virtual-from-ctor-dtor")

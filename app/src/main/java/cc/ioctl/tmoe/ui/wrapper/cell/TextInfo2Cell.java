@@ -1,0 +1,159 @@
+/*
+ * This is the source code of Telegram for Android v. 5.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Nikolai Kudashov, 2013-2018.
+ */
+
+package cc.ioctl.tmoe.ui.wrapper.cell;
+
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.graphics.Canvas;
+import android.text.SpannableString;
+import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.AbsoluteSizeSpan;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+
+import cc.ioctl.tmoe.ui.LayoutHelper;
+import cc.ioctl.tmoe.ui.LocaleController;
+import cc.ioctl.tmoe.ui.Theme;
+
+@SuppressLint("RtlHardcoded")
+public class TextInfo2Cell extends FrameLayout {
+
+    private final TextView textView;
+    private String linkTextColorKey = Theme.key_windowBackgroundWhiteLinkText;
+    private int topPadding = 10;
+    private int bottomPadding = 17;
+    private int fixedSize;
+
+    private CharSequence text;
+
+    public TextInfo2Cell(Context context) {
+        this(context, 21);
+    }
+
+
+    public TextInfo2Cell(Context context, int padding) {
+        super(context);
+
+        textView = new androidx.appcompat.widget.AppCompatTextView(context) {
+            @Override
+            protected void onDraw(Canvas canvas) {
+                onTextDraw();
+                super.onDraw(canvas);
+                afterTextDraw();
+            }
+        };
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        textView.setGravity(LocaleController.isRTL() ? Gravity.RIGHT : Gravity.LEFT);
+        textView.setPadding(0, LayoutHelper.dp(10), 0, LayoutHelper.dp(17));
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
+        textView.setTextColor(getThemedColor(Theme.key_windowBackgroundWhiteGrayText4));
+        textView.setLinkTextColor(getThemedColor(linkTextColorKey));
+        textView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
+        addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT,
+                (LocaleController.isRTL() ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, padding, 0, padding, 0));
+    }
+
+    protected void onTextDraw() {
+    }
+
+    protected void afterTextDraw() {
+    }
+
+    public void setLinkTextColorKey(String key) {
+        linkTextColorKey = key;
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (fixedSize != 0) {
+            super.onMeasure(MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(LayoutHelper.dp(fixedSize), MeasureSpec.EXACTLY));
+        } else {
+            super.onMeasure(MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+        }
+    }
+
+    public void setTopPadding(int topPadding) {
+        this.topPadding = topPadding;
+    }
+
+    public void setBottomPadding(int value) {
+        bottomPadding = value;
+    }
+
+    public void setFixedSize(int size) {
+        fixedSize = size;
+    }
+
+    public void setText(CharSequence text) {
+        if (!TextUtils.equals(text, this.text)) {
+            this.text = text;
+            if (text == null) {
+                textView.setPadding(0, LayoutHelper.dp(2), 0, 0);
+            } else {
+                textView.setPadding(0, LayoutHelper.dp(topPadding), 0, LayoutHelper.dp(bottomPadding));
+            }
+            SpannableString spannableString = null;
+            if (text != null) {
+                for (int i = 0, len = text.length(); i < len - 1; i++) {
+                    if (text.charAt(i) == '\n' && text.charAt(i + 1) == '\n') {
+                        if (spannableString == null) {
+                            spannableString = new SpannableString(text);
+                        }
+                        spannableString.setSpan(new AbsoluteSizeSpan(10, true), i + 1, i + 2, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    }
+                }
+            }
+            textView.setText(spannableString != null ? spannableString : text);
+        }
+    }
+
+    public void setTextColor(int color) {
+        textView.setTextColor(color);
+    }
+
+    public void setTextColor(String key) {
+        textView.setTextColor(getThemedColor(key));
+        textView.setTag(key);
+    }
+
+    public TextView getTextView() {
+        return textView;
+    }
+
+    public int length() {
+        return textView.length();
+    }
+
+    public void setEnabled(boolean value, ArrayList<Animator> animators) {
+        if (animators != null) {
+            animators.add(ObjectAnimator.ofFloat(textView, "alpha", value ? 1.0f : 0.5f));
+        } else {
+            textView.setAlpha(value ? 1.0f : 0.5f);
+        }
+    }
+
+    @Override
+    public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
+        super.onInitializeAccessibilityNodeInfo(info);
+        info.setClassName(TextView.class.getName());
+        info.setText(text);
+    }
+
+    private int getThemedColor(String key) {
+        return Theme.getColor(key);
+    }
+}

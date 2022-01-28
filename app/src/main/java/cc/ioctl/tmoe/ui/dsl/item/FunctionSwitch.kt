@@ -1,4 +1,4 @@
-package cc.ioctl.tmoe.ui.dsl
+package cc.ioctl.tmoe.ui.dsl.item
 
 import android.content.Context
 import android.view.View
@@ -6,15 +6,18 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import cc.ioctl.tmoe.hook.base.DynamicHook
 import cc.ioctl.tmoe.ui.LocaleController
+import cc.ioctl.tmoe.ui.dsl.DslTMsgListItemInflatable
+import cc.ioctl.tmoe.ui.dsl.TMsgListItem
 import cc.ioctl.tmoe.ui.wrapper.cell.TextCheckCell
 
 class FunctionSwitch(
     val hook: DynamicHook,
     val titleKey: String,
     val titleResId: Int,
-    val descKey: String? = null,
-    val descResId: Int? = null,
-    val onClick: View.OnClickListener? = null
+    private val descKey: String? = null,
+    private val descResId: Int? = null,
+    private val descProvider: ((Context) -> String?)? = null,
+    private val onClick: View.OnClickListener? = null
 ) : DslTMsgListItemInflatable, TMsgListItem {
 
     class ViewHolder(cell: TextCheckCell) : RecyclerView.ViewHolder(cell)
@@ -27,7 +30,7 @@ class FunctionSwitch(
     override fun bindView(viewHolder: RecyclerView.ViewHolder, position: Int, context: Context) {
         val cell = viewHolder.itemView as TextCheckCell
         val titleString = LocaleController.getString(titleKey, titleResId)
-        val descString: String? = descKey?.let {
+        val descString: String? = descProvider?.invoke(context) ?: descKey?.let {
             LocaleController.getString(it, descResId ?: 0)
         }
         if (descString != null) {

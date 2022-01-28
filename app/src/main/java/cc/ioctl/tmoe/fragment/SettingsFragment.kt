@@ -19,5 +19,9 @@ class SettingsFragment : BaseHierarchyFragment() {
                 AntiAntiForward, "AntiAntiForward", R.string.AntiAntiForward
             )
         }
+
+        textValue("AboutTMoe", R.string.AboutTMoe, onClick = {
+            presentFragment(AboutFragment())
+        })
     }
 }

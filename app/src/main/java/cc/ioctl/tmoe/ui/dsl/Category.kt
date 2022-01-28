@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.View
 import cc.ioctl.tmoe.hook.base.DynamicHook
 import cc.ioctl.tmoe.ui.LocaleController
+import cc.ioctl.tmoe.ui.dsl.item.FunctionSwitch
 import cc.ioctl.tmoe.ui.dsl.item.Header
 import cc.ioctl.tmoe.ui.dsl.item.ShadowSection
 
@@ -35,12 +36,14 @@ open class Category(
         titleResId: Int,
         descKey: String? = null,
         descResId: Int? = null,
+        descProvider: ((Context) -> String?)? = null,
         onClick: View.OnClickListener? = null
     ): FunctionSwitch = FunctionSwitch(
         titleKey = titleKey,
         titleResId = titleResId,
         descKey = descKey,
         descResId = descResId,
+        descProvider = descProvider,
         onClick = onClick,
         hook = hook
     ).also {
