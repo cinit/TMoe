@@ -324,8 +324,8 @@ public class TextCheckCell extends FrameLayout {
         }
         if (drawVerticalSwitchDividerLine) {
             int x = LocaleController.isRTL() ? LayoutHelper.dp(76) : getMeasuredWidth() - LayoutHelper.dp(76) - 1;
-            int y = (getMeasuredHeight() - LayoutHelper.dp(36)) / 2;
-            canvas.drawRect(x, y, x + 2, y + LayoutHelper.dp(36), Theme.getDividerPaint());
+            int y = (getMeasuredHeight() - LayoutHelper.dp(28)) / 2;
+            canvas.drawRect(x, y, x + 2, y + LayoutHelper.dp(28), Theme.getDividerPaint());
         }
         if (needDivider) {
             canvas.drawLine(LocaleController.isRTL() ? 0 : LayoutHelper.dp(20), getMeasuredHeight() - 1,
