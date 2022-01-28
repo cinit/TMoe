@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import cc.ioctl.tmoe.td.AccountController;
+
 public abstract class ConfigManager implements SharedPreferences, SharedPreferences.Editor {
 
     private static ConfigManager sDefaultConfig;
@@ -47,6 +49,24 @@ public abstract class ConfigManager implements SharedPreferences, SharedPreferen
             sUserConfigs.put(uid, config);
         }
         return config;
+    }
+
+    @NonNull
+    public static ConfigManager forCurrentUser() throws AccountController.NoUserLoginException {
+        long uid = AccountController.getCurrentActiveUserId();
+        if (uid == -1 || uid == 0) {
+            throw new AccountController.NoUserLoginException();
+        }
+        return forUser(uid);
+    }
+
+    @Nullable
+    public static ConfigManager forCurrentUserOrNull() {
+        long uid = AccountController.getCurrentActiveUserId();
+        if (uid == -1 || uid == 0) {
+            return null;
+        }
+        return forUser(uid);
     }
 
     public abstract void reinit() throws IOException;
