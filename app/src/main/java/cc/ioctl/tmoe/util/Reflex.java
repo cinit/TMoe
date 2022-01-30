@@ -2,6 +2,9 @@ package cc.ioctl.tmoe.util;
 
 import static cc.ioctl.tmoe.util.Utils.loge;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -877,18 +880,21 @@ public class Reflex {
         }
     }
 
-    public static void setInstanceObject(Object obj, String name, Object value) {
+    public static void setInstanceObject(@NonNull Object obj, @NonNull String name,
+                                         @Nullable Object value) throws NoSuchFieldException {
         setInstanceObject(obj, name, null, value);
     }
 
-    public static void setInstanceObject(Object obj, String name, Class<?> type, Object value) {
-        Class clazz = obj.getClass();
+    public static void setInstanceObject(@NonNull Object obj, @NonNull String name,
+                                         @Nullable Class<?> type, @Nullable Object value) throws NoSuchFieldException {
+        Class<?> clazz = obj.getClass();
+        Field f = findField(clazz, type, name);
+        f.setAccessible(true);
         try {
-            Field f = findField(clazz, type, name);
-            f.setAccessible(true);
             f.set(obj, value);
-        } catch (Exception e) {
-            loge(e);
+        } catch (IllegalAccessException e) {
+            // should not happen
+            throw new AssertionError(e);
         }
     }
 

@@ -51,7 +51,12 @@ public class ProxyFragmentRttiHandler {
 
     public void setFragmentView(View view) {
         Object proxy = getProxyInstance();
-        Reflex.setInstanceObject(proxy, "fragmentView", view);
+        try {
+            Reflex.setInstanceObject(proxy, "fragmentView", view);
+        } catch (NoSuchFieldException e) {
+            // if this fails, we're probably unable to do anything
+            throw new RuntimeException(e);
+        }
     }
 
     public View getFragmentView() {

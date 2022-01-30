@@ -11,11 +11,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Objects;
 
 import cc.ioctl.tmoe.BuildConfig;
 import de.robv.android.xposed.XposedBridge;
 
 public class NativeLoader {
+    private NativeLoader() {
+        throw new UnsupportedOperationException("u can't instantiate me...");
+    }
 
     private static final String LIB_NAME = "tmoe";
     private static final String SO_NAME = "lib" + LIB_NAME + ".so";
@@ -27,7 +31,7 @@ public class NativeLoader {
         try {
             Class<?> xp = Class.forName("de.robv.android.xposed.XposedBridge");
             try {
-                xp.getClassLoader()
+                Objects.requireNonNull(xp.getClassLoader())
                         .loadClass("org.lsposed.lspd.nativebridge.NativeAPI")
                         .getMethod("recordNativeEntrypoint", String.class)
                         .invoke(null, soTailingName);
@@ -127,7 +131,7 @@ public class NativeLoader {
         }
         File soFile = new File(dir, soName);
         if (!soFile.exists()) {
-            InputStream in = NativeLoader.class.getClassLoader()
+            InputStream in = Objects.requireNonNull(NativeLoader.class.getClassLoader())
                     .getResourceAsStream("lib/" + abi + "/lib" + libraryName + ".so");
             if (in == null) {
                 throw new UnsatisfiedLinkError("Unsupported ABI: " + abi);
