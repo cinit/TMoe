@@ -5,4 +5,14 @@
     <string name="TMoeSettings">TMoe 設定</string>
     <string name="EnableDebugMode">啟用除錯模式</string>
     <string name="AntiAntiForward">反反轉發</string>
+    <string name="ChatUiSettings">聊天頁面設定</string>
+    <string name="BasicFunction">基礎功能</string>
+    <string name="AboutTMoe">關於 TMoe</string>
+    <string name="About">關於</string>
+    <string name="SourceCode">原始碼</string>
+    <string name="LicenseNotices">開放原始碼許可</string>
+    <string name="HideUserAvatar">隱藏指定使用者頭像</string>
+    <string name="NotEnabled">未啟用</string>
+    <string name="HideUserAvatarEnabledTargetCount" formatted="false">%d 個使用者, %d 個頻道, %d 個群組</string>
+    <string name="NotImplemented">咕咕咕</string>
 </resources>
