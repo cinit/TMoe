@@ -49,6 +49,7 @@ public class ClassLocator {
             return kUserConfigClass;
         }
         kUserConfigClass = Initiator.load("org.telegram.messenger.UserConfig");
+        // TODO: 2022-01-30 this class is obfuscated
         if (kUserConfigClass != null) {
             return kUserConfigClass;
         }
