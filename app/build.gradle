@@ -9,6 +9,7 @@ println "Current build ID is " + BUILD_UUID
 android {
     compileSdk 31
     buildToolsVersion "31.0.0"
+    ndkVersion "23.1.7779620"
 
     defaultConfig {
         applicationId "cc.ioctl.tmoe"
@@ -59,7 +60,7 @@ android {
     externalNativeBuild {
         cmake {
             path "src/main/cpp/CMakeLists.txt"
-            version "3.10.2"
+            version "3.18.1"
         }
     }
     androidResources {
