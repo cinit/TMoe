@@ -169,7 +169,10 @@ public class SettingEntryHook implements Initializable {
                 fragment = Reflex.getFirstByType(param.thisObject, kProfileActivity);
             } catch (NoSuchFieldException e) {
                 // strange, but it happens if R8 was asked to repackage the app aggressively
-                fragment = Reflex.getInstanceObjectOrNull(param.thisObject, "a", Object.class);
+                fragment = Reflex.getInstanceObjectOrNull(param.thisObject, "f$0", Object.class);
+                if (fragment == null) {
+                    fragment = Reflex.getInstanceObjectOrNull(param.thisObject, "a", Object.class);
+                }
                 if (fragment == null) {
                     // unable to find the fragment, so we can't do anything
                     Utils.loge(e);
