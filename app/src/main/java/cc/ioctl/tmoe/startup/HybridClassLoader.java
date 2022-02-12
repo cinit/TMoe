@@ -13,6 +13,7 @@ public class HybridClassLoader extends ClassLoader {
      * The bootstrap class loader for Android, effectively NonNull.
      */
     private static final ClassLoader BOOT_CLASS_LOADER = Context.class.getClassLoader();
+    private static String sObfuscatedPackageName = null;
     private final ClassLoader clPreload;
     private final ClassLoader clBase;
 
@@ -75,5 +76,21 @@ public class HybridClassLoader extends ClassLoader {
             return ret;
         }
         return clBase.getResource(name);
+    }
+
+    public static void setObfuscatedXposedApiPackage(String packageName) {
+        sObfuscatedPackageName = packageName;
+    }
+
+    public static String getObfuscatedXposedApiPackage() {
+        return sObfuscatedPackageName;
+    }
+
+    public static String getXposedBridgeClassName() {
+        if (sObfuscatedPackageName == null) {
+            return "de.robv.android.xposed.XposedBridge";
+        } else {
+            return sObfuscatedPackageName + ".XposedBridge";
+        }
     }
 }

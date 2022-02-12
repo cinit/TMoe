@@ -45,6 +45,13 @@ public class HookEntry implements IXposedHookLoadPackage, IXposedHookZygoteInit 
             return;
         }
         String packageName = lpparam.packageName;
+        // check LSPosed dex-obfuscation
+        Class<?> kXposedBridge = XposedBridge.class;
+        if (!"de.robv.android.xposed.XposedBridge".equals(kXposedBridge.getName())) {
+            String className = kXposedBridge.getName();
+            String pkgName = className.substring(0, className.lastIndexOf('.'));
+            HybridClassLoader.setObfuscatedXposedApiPackage(pkgName);
+        }
         if (TELEGRAM_CLIENT_PACKAGE_NAME_LIST.contains(packageName)) {
             StartupHook.INSTANCE.doInit(lpparam.classLoader);
             EzXHelperInit.INSTANCE.initHandleLoadPackage(lpparam);

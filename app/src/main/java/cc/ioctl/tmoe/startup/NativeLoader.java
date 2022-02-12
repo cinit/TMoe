@@ -29,7 +29,7 @@ public class NativeLoader {
             return;
         }
         try {
-            Class<?> xp = Class.forName("de.robv.android.xposed.XposedBridge");
+            Class<?> xp = Class.forName(HybridClassLoader.getXposedBridgeClassName());
             try {
                 Objects.requireNonNull(xp.getClassLoader())
                         .loadClass("org.lsposed.lspd.nativebridge.NativeAPI")
@@ -55,7 +55,7 @@ public class NativeLoader {
         } catch (UnsatisfiedLinkError ignored) {
         }
         try {
-            Class.forName("de.robv.android.xposed.XposedBridge");
+            Class.forName(HybridClassLoader.getXposedBridgeClassName());
             // in host process
             try {
                 String modulePath = HookEntry.getModulePath();
