@@ -20,5 +20,9 @@
         <item>me.luvletter.nekox</item>
         <item>org.nift4.catox</item>
         <item>ua.itaysonlab.messenger</item>
+        <item>icu.ketal.yunigram</item>
+        <item>icu.ketal.yunigram.lspatch</item>
+        <item>icu.ketal.yunigram.beta</item>
+        <item>icu.ketal.yunigram.lspatch.beta</item>
     </string-array>
 </resources>

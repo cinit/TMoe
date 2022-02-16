@@ -34,6 +34,10 @@ public class HookEntry implements IXposedHookLoadPackage, IXposedHookZygoteInit 
         TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("me.luvletter.nekox");
         TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("org.nift4.catox");
         TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("ua.itaysonlab.messenger");
+        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("icu.ketal.yunigram");
+        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("icu.ketal.yunigram.lspatch");
+        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("icu.ketal.yunigram.beta");
+        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("icu.ketal.yunigram.lspatch.beta");
     }
 
     private static String sModulePath = null;
