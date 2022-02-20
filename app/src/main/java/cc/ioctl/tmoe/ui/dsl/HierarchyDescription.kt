@@ -4,10 +4,7 @@ import android.content.Context
 import android.view.View
 import cc.ioctl.tmoe.hook.base.DynamicHook
 import cc.ioctl.tmoe.ui.LocaleController
-import cc.ioctl.tmoe.ui.dsl.item.DescriptionItem
-import cc.ioctl.tmoe.ui.dsl.item.FunctionSwitch
-import cc.ioctl.tmoe.ui.dsl.item.TextDetailItem
-import cc.ioctl.tmoe.ui.dsl.item.TextValueItem
+import cc.ioctl.tmoe.ui.dsl.item.*
 
 open class HierarchyDescription(
     val titleKey: String,
@@ -101,6 +98,15 @@ open class HierarchyDescription(
     ) = TextValueItem(titleKey, titleResId, {
         LocaleController.getString(valueKey, valueResId)
     }, onClick).also {
+        checkState()
+        dslItems.add(it)
+    }
+
+    open fun textValueStatic(
+        titleString: String,
+        valueString: String?,
+        onClick: View.OnClickListener? = null
+    ) = TextValueStaticItem(titleString = titleString, { valueString }, onClick).also {
         checkState()
         dslItems.add(it)
     }

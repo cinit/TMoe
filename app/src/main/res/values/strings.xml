@@ -17,4 +17,6 @@
     <string name="NotEnabled">Not enabled</string>
     <string name="HideUserAvatarEnabledTargetCount" formatted="false">%d user(s), %d channel(s), %d group(s)</string>
     <string name="NotImplemented">Not implemented yet</string>
+    <string name="VersionInfo">Version</string>
+    <string name="TextCopied">Text copied to clipboard.</string>
 </resources>

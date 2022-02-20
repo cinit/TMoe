@@ -107,6 +107,15 @@ open class Category(
         dslItems.add(it)
     }
 
+    open fun textValueStatic(
+        titleString: String,
+        valueString: String?,
+        onClick: View.OnClickListener? = null
+    ) = TextValueStaticItem(titleString = titleString, { valueString }, onClick).also {
+        checkState()
+        dslItems.add(it)
+    }
+
     open fun add(item: DslTMsgListItemInflatable) {
         checkState()
         dslItems.add(item)

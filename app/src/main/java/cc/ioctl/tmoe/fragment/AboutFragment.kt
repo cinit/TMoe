@@ -1,18 +1,37 @@
 package cc.ioctl.tmoe.fragment
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
+import androidx.annotation.UiThread
 import androidx.core.content.ContextCompat.startActivity
+import cc.ioctl.tmoe.BuildConfig
 import cc.ioctl.tmoe.R
+import cc.ioctl.tmoe.ui.LocaleController
 import cc.ioctl.tmoe.ui.dsl.BaseHierarchyFragment
 import cc.ioctl.tmoe.ui.dsl.HierarchyDescription
 import cc.ioctl.tmoe.ui.dsl.item.TextDetailItem
+import cc.ioctl.tmoe.util.HostInfo
 
 class AboutFragment : BaseHierarchyFragment() {
     override val hierarchy = HierarchyDescription(
         titleKey = "About",
         titleResId = R.string.About,
     ) {
+        category("VersionInfo", R.string.VersionInfo) {
+            val hostVersionStr = HostInfo.getVersionName() + "(" + HostInfo.getVersionCode() + ")"
+            val moduleVersionStr = BuildConfig.VERSION_NAME + "(" + BuildConfig.VERSION_CODE + ")"
+            val hostName = HostInfo.getAppName()
+            textValueStatic("TMoe", moduleVersionStr) {
+                copyTextToClipboardWithToast(it.context, moduleVersionStr)
+            }
+            textValueStatic(hostName, hostVersionStr) {
+                copyTextToClipboardWithToast(it.context, hostVersionStr)
+            }
+        }
         category("SourceCode", R.string.SourceCode) {
             textValue("GitHub", R.string.GitHub, valueConstant = "cinit/TMoe") {
                 openUrl("https://github.com/cinit/TMoe")
@@ -74,6 +93,18 @@ class AboutFragment : BaseHierarchyFragment() {
                 "CC 4.0"
             )
         )
+    }
+
+    @UiThread
+    private fun copyTextToClipboardWithToast(context: Context, text: String) {
+        if (text.isEmpty()) return
+        val item = ClipData.Item(text)
+        val clipData = ClipData("", arrayOf("text/plain"), item)
+        val clipboardManager =
+            context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+        clipboardManager!!.setPrimaryClip(clipData)
+        val msg = LocaleController.getString("TextCopied", R.string.TextCopied)
+        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
     }
 
     private fun noticeToUiItem(notice: LicenseNotice) = TextDetailItem(

@@ -15,4 +15,6 @@
     <string name="NotEnabled">未启用</string>
     <string name="HideUserAvatarEnabledTargetCount" formatted="false">%d 个用户, %d 个频道, %d 个群组</string>
     <string name="NotImplemented">咕咕咕</string>
+    <string name="VersionInfo">版本</string>
+    <string name="TextCopied">已复制文本</string>
 </resources>
