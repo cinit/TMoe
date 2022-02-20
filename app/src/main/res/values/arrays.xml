@@ -24,5 +24,7 @@
         <item>icu.ketal.yunigram.lspatch</item>
         <item>icu.ketal.yunigram.beta</item>
         <item>icu.ketal.yunigram.lspatch.beta</item>
+        <item>org.forkgram.messenger</item>
+        <item>com.blxueya.GuGugram</item>
     </string-array>
 </resources>
