@@ -44,7 +44,6 @@ public class SettingEntryHook implements Initializable {
         if (mInitialized) {
             return true;
         }
-        // TODO: 2022-01-30 test whether this class is obfuscated
         kProfileActivity = Initiator.load("org.telegram.ui.ProfileActivity");
         if (kProfileActivity == null) {
             Utils.loge("unable to load ProfileActivity");

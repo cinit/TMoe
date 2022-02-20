@@ -97,11 +97,11 @@ public class ProxyFragmentImplDexCreator {
         for (Method m : IProxyFragmentObject.class.getDeclaredMethods()) {
             if (m.getName().endsWith("$super")) {
                 boolean found = false;
-                int argCount = m.getTypeParameters().length;
+                int argCount = m.getParameterTypes().length;
                 // find corresponding method in host BaseFragment class
                 String originalMethodName = m.getName().substring(0, m.getName().length() - "$super".length());
                 for (Method hostMethod : baseFragmentClass.getDeclaredMethods()) {
-                    if (hostMethod.getName().equals(originalMethodName) && hostMethod.getTypeParameters().length == argCount) {
+                    if (hostMethod.getName().equals(originalMethodName) && hostMethod.getParameterTypes().length == argCount) {
                         // use original method name
                         importedSuperMethods.add(new DexMethodDescriptor(hostMethod));
                         found = true;
