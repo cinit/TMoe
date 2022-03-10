@@ -19,4 +19,5 @@
     <string name="NotImplemented">Not implemented yet</string>
     <string name="VersionInfo">Version</string>
     <string name="TextCopied">Text copied to clipboard.</string>
+    <string name="HideSponsoredMsg">Hide sponsored message</string>
 </resources>
