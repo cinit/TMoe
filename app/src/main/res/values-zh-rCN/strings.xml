@@ -17,4 +17,5 @@
     <string name="NotImplemented">咕咕咕</string>
     <string name="VersionInfo">版本</string>
     <string name="TextCopied">已复制文本</string>
+    <string name="HideSponsoredMsg">隐藏赞助消息</string>
 </resources>

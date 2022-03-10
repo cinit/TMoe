@@ -15,4 +15,7 @@
     <string name="NotEnabled">未啟用</string>
     <string name="HideUserAvatarEnabledTargetCount" formatted="false">%d 個使用者, %d 個頻道, %d 個群組</string>
     <string name="NotImplemented">咕咕咕</string>
+    <string name="VersionInfo">版本</string>
+    <string name="TextCopied">已複製文本</string>
+    <string name="HideSponsoredMsg">隱藏贊助消息</string>
 </resources>

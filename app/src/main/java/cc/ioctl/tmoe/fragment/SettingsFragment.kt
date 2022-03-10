@@ -4,6 +4,7 @@ import android.widget.Toast
 import cc.ioctl.tmoe.R
 import cc.ioctl.tmoe.hook.func.AntiAntiForward
 import cc.ioctl.tmoe.hook.func.EnableDebugMode
+import cc.ioctl.tmoe.hook.func.HideSponsoredMsg
 import cc.ioctl.tmoe.hook.func.HideUserAvatar
 import cc.ioctl.tmoe.ui.LocaleController
 import cc.ioctl.tmoe.ui.dsl.BaseHierarchyFragment
@@ -20,6 +21,9 @@ class SettingsFragment : BaseHierarchyFragment() {
             )
             functionSwitch(
                 AntiAntiForward, "AntiAntiForward", R.string.AntiAntiForward
+            )
+            functionSwitch(
+                HideSponsoredMsg, "HideSponsoredMsg", R.string.HideSponsoredMsg
             )
             functionSwitch(
                 HideUserAvatar.INSTANCE, "HideUserAvatar", R.string.HideUserAvatar,
