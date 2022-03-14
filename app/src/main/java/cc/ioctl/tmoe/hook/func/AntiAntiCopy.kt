@@ -9,7 +9,6 @@ import kotlin.collections.ArrayList
 
 object AntiAntiCopy : CommonDynamicHook() {
     override fun initOnce(): Boolean = tryOrFalse {
-        //反反复制
         var isOF=true
         var isNoForw=false
         findAllMethods("org.telegram.messenger.MessagesController") { name == "isChatNoForwards" }.hookAfter {
