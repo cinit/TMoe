@@ -6,6 +6,10 @@
     <string name="TMoeSettings">TMoe Settings</string>
     <string name="EnableDebugMode">Enable debug mode</string>
     <string name="AntiAntiForward">Anti-Anti-Forward message</string>
+    <string name="ProhibitChannelSwitching">Prohibit Channel Switching</string>
+    <string name="ProhibitEnableReactions">Prohibit Enable Reactions</string>
+    <string name="AntiAntiCopy">Anti-Anti-Copy message</string>
+    <string name="AntiAntiCopyD">Conflict with Anti-Anti-Forward</string>
     <string name="ChatUiSettings">Chat Settings</string>
     <string name="BasicFunction">Basic</string>
     <string name="AboutTMoe">About TMoe</string>

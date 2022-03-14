@@ -18,4 +18,8 @@
     <string name="VersionInfo">版本</string>
     <string name="TextCopied">已复制文本</string>
     <string name="HideSponsoredMsg">隐藏赞助消息</string>
+    <string name="AntiAntiCopy">反反复制</string>
+    <string name="ProhibitEnableReactions">禁止表情回应</string>
+    <string name="ProhibitChannelSwitching">禁止频道切换</string>
+    <string name="AntiAntiCopyD">与反反转发冲突</string>
 </resources>
