@@ -58,6 +58,9 @@ class SettingsFragment : BaseHierarchyFragment() {
             functionSwitch(
                 ProhibitEnableReactions, "ProhibitEnableReactions",  R.string.ProhibitEnableReactions
             )
+            functionSwitch(
+                ProhibitSpoilers, "ProhibitSpoilers",  R.string.ProhibitSpoilers
+            )
 
         }
         category("About", R.string.About) {
