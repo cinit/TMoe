@@ -22,4 +22,5 @@
     <string name="ProhibitEnableReactions">禁止表情回應</string>
     <string name="AntiAntiCopy">反反複製</string>
     <string name="AntiAntiCopyD">與反反轉發衝突</string>
+    <string name="ProhibitSpoilers">禁用劇透</string>
 </resources>

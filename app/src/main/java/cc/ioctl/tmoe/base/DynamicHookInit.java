@@ -12,6 +12,7 @@ import cc.ioctl.tmoe.hook.func.EnableDebugMode;
 import cc.ioctl.tmoe.hook.func.HideUserAvatar;
 import cc.ioctl.tmoe.hook.func.ProhibitChannelSwitching;
 import cc.ioctl.tmoe.hook.func.ProhibitEnableReactions;
+import cc.ioctl.tmoe.hook.func.ProhibitSpoilers;
 import cc.ioctl.tmoe.util.Utils;
 
 /**
@@ -50,7 +51,8 @@ public class DynamicHookInit {
                     AntiAntiForward.INSTANCE,
                     ProhibitChannelSwitching.INSTANCE,
                     ProhibitEnableReactions.INSTANCE,
-                    AntiAntiCopy.INSTANCE
+                    AntiAntiCopy.INSTANCE,
+                    ProhibitSpoilers.INSTANCE
             };
         }
         return sAllFunctionHooks;
