@@ -2,10 +2,7 @@ package cc.ioctl.tmoe.fragment
 
 import android.widget.Toast
 import cc.ioctl.tmoe.R
-import cc.ioctl.tmoe.hook.func.AntiAntiForward
-import cc.ioctl.tmoe.hook.func.EnableDebugMode
-import cc.ioctl.tmoe.hook.func.HideSponsoredMsg
-import cc.ioctl.tmoe.hook.func.HideUserAvatar
+import cc.ioctl.tmoe.hook.func.*
 import cc.ioctl.tmoe.ui.LocaleController
 import cc.ioctl.tmoe.ui.dsl.BaseHierarchyFragment
 import cc.ioctl.tmoe.ui.dsl.HierarchyDescription
@@ -48,6 +45,20 @@ class SettingsFragment : BaseHierarchyFragment() {
                     ).show()
                 }
             )
+
+            functionSwitch(
+                AntiAntiCopy, "AntiAntiCopy",  R.string.AntiAntiCopy,
+                descProvider ={
+                    LocaleController.getString("AntiAntiCopyD", R.string.AntiAntiCopyD)
+                }
+            )
+            functionSwitch(
+                ProhibitChannelSwitching, "ProhibitChannelSwitching", R.string.ProhibitChannelSwitching
+            )
+            functionSwitch(
+                ProhibitEnableReactions, "ProhibitEnableReactions",  R.string.ProhibitEnableReactions
+            )
+
         }
         category("About", R.string.About) {
             textValue("AboutTMoe", R.string.AboutTMoe, onClick = {
