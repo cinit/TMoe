@@ -16,11 +16,11 @@
     <string name="HideUserAvatarEnabledTargetCount" formatted="false">%d 個使用者, %d 個頻道, %d 個群組</string>
     <string name="NotImplemented">咕咕咕</string>
     <string name="VersionInfo">版本</string>
-    <string name="TextCopied">已複製文本</string>
-    <string name="HideSponsoredMsg">隱藏贊助消息</string>
-    <string name="ProhibitChannelSwitching">禁止頻道切換</string>
-    <string name="ProhibitEnableReactions">禁止表情回應</string>
+    <string name="TextCopied">已複製文字</string>
+    <string name="HideSponsoredMsg">隱藏贊助訊息</string>
     <string name="AntiAntiCopy">反反複製</string>
+    <string name="ProhibitEnableReactions">禁止表情迴應</string>
+    <string name="ProhibitChannelSwitching">禁止頻道切換</string>
     <string name="AntiAntiCopyD">與反反轉發衝突</string>
     <string name="ProhibitSpoilers">禁用劇透</string>
 </resources>
