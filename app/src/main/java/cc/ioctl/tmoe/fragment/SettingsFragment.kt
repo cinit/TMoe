@@ -53,13 +53,16 @@ class SettingsFragment : BaseHierarchyFragment() {
                 }
             )
             functionSwitch(
+                ProhibitSpoilers, "ProhibitSpoilers",  R.string.ProhibitSpoilers
+            )
+            functionSwitch(
+                HistoricalNewsOption, "HistoricalNewsOption",  R.string.HistoricalNewsOption
+            )
+            functionSwitch(
                 ProhibitChannelSwitching, "ProhibitChannelSwitching", R.string.ProhibitChannelSwitching
             )
             functionSwitch(
                 ProhibitEnableReactions, "ProhibitEnableReactions",  R.string.ProhibitEnableReactions
-            )
-            functionSwitch(
-                ProhibitSpoilers, "ProhibitSpoilers",  R.string.ProhibitSpoilers
             )
 
         }

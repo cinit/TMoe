@@ -23,4 +23,5 @@
     <string name="ProhibitChannelSwitching">禁止频道切换</string>
     <string name="AntiAntiCopyD">与反反转发冲突</string>
     <string name="ProhibitSpoilers">禁用剧透</string>
+    <string name="HistoricalNewsOption">历史消息</string>
 </resources>
