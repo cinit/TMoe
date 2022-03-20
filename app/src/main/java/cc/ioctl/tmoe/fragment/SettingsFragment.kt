@@ -64,6 +64,32 @@ class SettingsFragment : BaseHierarchyFragment() {
             functionSwitch(
                 ProhibitEnableReactions, "ProhibitEnableReactions",  R.string.ProhibitEnableReactions
             )
+            functionSwitch(
+                ProhibitChatGreetings, "ProhibitChatGreetings",  R.string.ProhibitChatGreetings
+            )
+            functionSwitch(
+                HidePhoneNumber, "HidePhoneNumber",  R.string.HidePhoneNumber
+            )
+            functionSwitch(
+                AddSubItemChannel, "AddSubItemChannel",  R.string.AddSubItemChannel,
+                descProvider ={
+                    LocaleController.getString("AddSubItemChannelD", R.string.AddSubItemChannelD)
+                }
+            )
+            functionSwitch(
+                ChannelDetailNumbers, "ChannelDetailNumbers",  R.string.ChannelDetailNumbers,
+                descProvider ={
+                    LocaleController.getString("ChannelDetailNumbersD", R.string.ChannelDetailNumbersD)
+                }
+            )
+
+            functionSwitch(
+                AddInfoContainer, "AddInfoContainer",  R.string.AddInfoContainer,
+                descProvider ={
+                    LocaleController.getString("AddInfoContainerD", R.string.AddInfoContainerD)
+                }
+            )
+
 
         }
         category("About", R.string.About) {
