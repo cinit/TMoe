@@ -64,6 +64,23 @@ class SettingsFragment : BaseHierarchyFragment() {
             functionSwitch(
                 ProhibitEnableReactions, "ProhibitEnableReactions",  R.string.ProhibitEnableReactions
             )
+            functionSwitch(
+                ProhibitChatGreetings, "ProhibitChatGreetings",  R.string.ProhibitChatGreetings
+            )
+            functionSwitch(
+                HidePhoneNumber, "HidePhoneNumber",  R.string.HidePhoneNumber
+            )
+
+            functionSwitch(
+                AddSubItemChannel, "AddSubItemChannel",  R.string.AddSubItemChannel
+            )
+            functionSwitch(
+                ChannelDetailNumbers, "ChannelDetailNumbers",  R.string.ChannelDetailNumbers
+            )
+            functionSwitch(
+                AddInfoContainer, "AddInfoContainer",  R.string.AddInfoContainer
+            )
+
 
         }
         category("About", R.string.About) {

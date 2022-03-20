@@ -24,4 +24,6 @@
     <string name="AntiAntiCopyD">与反反转发冲突</string>
     <string name="ProhibitSpoilers">禁用剧透</string>
     <string name="HistoricalNewsOption">历史消息</string>
+    <string name="ProhibitChatGreetings">禁用问候贴纸</string>
+    <string name="HidePhoneNumber">隐藏电话号码</string>
 </resources>

@@ -8,6 +8,11 @@
     <string name="AntiAntiForward">Anti-Anti-Forward message</string>
     <string name="ProhibitChannelSwitching">Prohibit Channel Switching</string>
     <string name="ProhibitEnableReactions">Prohibit Enable Reactions</string>
+    <string name="ProhibitChatGreetings">Prohibit Chat Greetings</string>
+    <string name="HidePhoneNumber">Hide Phone Number</string>
+    <string name="AddSubItemChannel">AddSubItemChannel</string>
+    <string name="ChannelDetailNumbers">ChannelDetailNumbers</string>
+    <string name="AddInfoContainer">AddInfoContainer</string>
     <string name="ProhibitSpoilers">Prohibit Spoilers</string>
     <string name="HistoricalNewsOption">Historical News Option</string>
     <string name="AntiAntiCopy">Anti-Anti-Copy message</string>

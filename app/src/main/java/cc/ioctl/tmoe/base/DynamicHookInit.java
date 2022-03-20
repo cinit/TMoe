@@ -6,14 +6,19 @@ import cc.ioctl.tmoe.hook.base.DynamicHook;
 import cc.ioctl.tmoe.hook.core.Initializable;
 import cc.ioctl.tmoe.hook.core.InvalidationHook;
 import cc.ioctl.tmoe.hook.core.SettingEntryHook;
+import cc.ioctl.tmoe.hook.func.AddInfoContainer;
 import cc.ioctl.tmoe.hook.func.AntiAntiCopy;
 import cc.ioctl.tmoe.hook.func.AntiAntiForward;
+import cc.ioctl.tmoe.hook.func.ChannelDetailNumbers;
 import cc.ioctl.tmoe.hook.func.EnableDebugMode;
+import cc.ioctl.tmoe.hook.func.HidePhoneNumber;
 import cc.ioctl.tmoe.hook.func.HideUserAvatar;
 import cc.ioctl.tmoe.hook.func.HistoricalNewsOption;
 import cc.ioctl.tmoe.hook.func.ProhibitChannelSwitching;
 import cc.ioctl.tmoe.hook.func.ProhibitEnableReactions;
 import cc.ioctl.tmoe.hook.func.ProhibitSpoilers;
+import cc.ioctl.tmoe.hook.func.ProhibitChatGreetings;
+import cc.ioctl.tmoe.hook.func.AddSubItemChannel;
 import cc.ioctl.tmoe.util.Utils;
 
 /**
@@ -54,7 +59,12 @@ public class DynamicHookInit {
                     ProhibitEnableReactions.INSTANCE,
                     AntiAntiCopy.INSTANCE,
                     ProhibitSpoilers.INSTANCE,
-                    HistoricalNewsOption.INSTANCE
+                    HistoricalNewsOption.INSTANCE,
+                    ProhibitChatGreetings.INSTANCE,
+                    HidePhoneNumber.INSTANCE,
+                    AddSubItemChannel.INSTANCE,
+                    ChannelDetailNumbers.INSTANCE,
+                    AddInfoContainer.INSTANCE
             };
         }
         return sAllFunctionHooks;
