@@ -23,6 +23,13 @@
     <string name="ProhibitChannelSwitching">禁止頻道切換</string>
     <string name="AntiAntiCopyD">與反反轉發衝突</string>
     <string name="ProhibitSpoilers">禁用劇透</string>
-    <string name="ProhibitChatGreetings">禁用問候貼紙</string>
     <string name="HistoricalNewsOption">歷史訊息</string>
+    <string name="ProhibitChatGreetings">禁用問候貼紙</string>
+    <string name="HidePhoneNumber">隱藏電話號碼</string>
+    <string name="AddSubItemChannel">開啟頻道</string>
+    <string name="AddSubItemChannelD">新增開啟關聯頻道選項</string>
+    <string name="ChannelDetailNumbers">拒絕舍入</string>
+    <string name="ChannelDetailNumbersD">頻道關注者顯示詳細人數 3k → 3000</string>
+    <string name="AddInfoContainer">允許查詢</string>
+    <string name="AddInfoContainerD">非管理員也可檢視一些資訊</string>
 </resources>
