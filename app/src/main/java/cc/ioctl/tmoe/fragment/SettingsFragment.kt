@@ -70,15 +70,24 @@ class SettingsFragment : BaseHierarchyFragment() {
             functionSwitch(
                 HidePhoneNumber, "HidePhoneNumber",  R.string.HidePhoneNumber
             )
+            functionSwitch(
+                AddSubItemChannel, "AddSubItemChannel",  R.string.AddSubItemChannel,
+                descProvider ={
+                    LocaleController.getString("AddSubItemChannelD", R.string.AddSubItemChannelD)
+                }
+            )
+            functionSwitch(
+                ChannelDetailNumbers, "ChannelDetailNumbers",  R.string.ChannelDetailNumbers,
+                descProvider ={
+                    LocaleController.getString("ChannelDetailNumbersD", R.string.ChannelDetailNumbersD)
+                }
+            )
 
             functionSwitch(
-                AddSubItemChannel, "AddSubItemChannel",  R.string.AddSubItemChannel
-            )
-            functionSwitch(
-                ChannelDetailNumbers, "ChannelDetailNumbers",  R.string.ChannelDetailNumbers
-            )
-            functionSwitch(
-                AddInfoContainer, "AddInfoContainer",  R.string.AddInfoContainer
+                AddInfoContainer, "AddInfoContainer",  R.string.AddInfoContainer,
+                descProvider ={
+                    LocaleController.getString("AddInfoContainerD", R.string.AddInfoContainerD)
+                }
             )
 
 

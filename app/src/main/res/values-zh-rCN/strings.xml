@@ -26,4 +26,10 @@
     <string name="HistoricalNewsOption">历史消息</string>
     <string name="ProhibitChatGreetings">禁用问候贴纸</string>
     <string name="HidePhoneNumber">隐藏电话号码</string>
+    <string name="AddSubItemChannel">打开频道</string>
+    <string name="AddSubItemChannelD">添加打开关联频道选项</string>
+    <string name="ChannelDetailNumbers">拒绝舍入</string>
+    <string name="ChannelDetailNumbersD">频道关注者显示详细人数 3k → 3000</string>
+    <string name="AddInfoContainer">允许查询</string>
+    <string name="AddInfoContainerD">非管理员也可查看一些信息</string>
 </resources>
