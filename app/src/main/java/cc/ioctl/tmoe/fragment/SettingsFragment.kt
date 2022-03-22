@@ -82,14 +82,15 @@ class SettingsFragment : BaseHierarchyFragment() {
                     LocaleController.getString("ChannelDetailNumbersD", R.string.ChannelDetailNumbersD)
                 }
             )
-
             functionSwitch(
                 AddInfoContainer, "AddInfoContainer",  R.string.AddInfoContainer,
                 descProvider ={
                     LocaleController.getString("AddInfoContainerD", R.string.AddInfoContainerD)
                 }
             )
-
+            functionSwitch(
+                SendCommand, "SendCommand",  R.string.SendCommand
+            )
 
         }
         category("About", R.string.About) {
