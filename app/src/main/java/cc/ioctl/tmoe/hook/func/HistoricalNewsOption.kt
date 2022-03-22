@@ -362,7 +362,8 @@ object HistoricalNewsOption : CommonDynamicHook() {
 
          var name1=""
          if (obj!=null){
-             name1=obj::class.java.canonicalName!!
+             val na=obj::class.java.canonicalName
+             if (na!=null){ name1=na }
          }
 
 

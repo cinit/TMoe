@@ -32,5 +32,5 @@
     <string name="ChannelDetailNumbersD">频道关注者显示详细人数 3k → 3000</string>
     <string name="AddInfoContainer">允许查询</string>
     <string name="AddInfoContainerD">非管理员也可查看一些信息</string>
-    <string name="SendCommand">询问点按命令</string>
+    <string name="SendCommand">询问是否送出 Bot 指令</string>
 </resources>
