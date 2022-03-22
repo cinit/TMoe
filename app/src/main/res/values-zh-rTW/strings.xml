@@ -32,5 +32,9 @@
     <string name="ChannelDetailNumbersD">頻道關注者顯示詳細人數 3k → 3000</string>
     <string name="AddInfoContainer">允許查詢</string>
     <string name="AddInfoContainerD">非管理員也可檢視一些資訊</string>
+<<<<<<< Updated upstream
     <string name="SendCommand">詢問點按命令</string>
+=======
+    <string name="SendCommand">詢問是否送出 Bot 指令</string>
+>>>>>>> Stashed changes
 </resources>
