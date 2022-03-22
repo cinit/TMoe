@@ -19,6 +19,7 @@ import cc.ioctl.tmoe.hook.func.ProhibitEnableReactions;
 import cc.ioctl.tmoe.hook.func.ProhibitSpoilers;
 import cc.ioctl.tmoe.hook.func.ProhibitChatGreetings;
 import cc.ioctl.tmoe.hook.func.AddSubItemChannel;
+import cc.ioctl.tmoe.hook.func.SendCommand;
 import cc.ioctl.tmoe.util.Utils;
 
 /**
@@ -64,7 +65,8 @@ public class DynamicHookInit {
                     HidePhoneNumber.INSTANCE,
                     AddSubItemChannel.INSTANCE,
                     ChannelDetailNumbers.INSTANCE,
-                    AddInfoContainer.INSTANCE
+                    AddInfoContainer.INSTANCE,
+                    SendCommand.INSTANCE
             };
         }
         return sAllFunctionHooks;
