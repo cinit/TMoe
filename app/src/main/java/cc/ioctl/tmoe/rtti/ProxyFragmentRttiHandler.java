@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import cc.ioctl.tmoe.base.BaseProxyFragment;
+import cc.ioctl.tmoe.lifecycle.Parasitics;
 import cc.ioctl.tmoe.util.HostFirstClassReferencer;
 import cc.ioctl.tmoe.util.HostInfo;
 import cc.ioctl.tmoe.util.Reflex;
@@ -246,6 +247,8 @@ public class ProxyFragmentRttiHandler {
     // proxy methods
 
     public View createView$dispatcher(Context context) {
+        // just in case
+        Parasitics.injectModuleResources(context.getResources());
         return mTargetFragment.onCreateView(context);
     }
 
