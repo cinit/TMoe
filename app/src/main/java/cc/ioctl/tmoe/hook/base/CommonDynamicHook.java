@@ -79,7 +79,7 @@ public abstract class CommonDynamicHook extends BaseDynamicHook {
         cfg.commit();
     }
 
-    protected void logError(Throwable e) {
+    public void logError(Throwable e) {
         // check if there is already an error with the same error message and stack trace
         boolean alreadyLogged = false;
         for (Throwable error : mErrors) {

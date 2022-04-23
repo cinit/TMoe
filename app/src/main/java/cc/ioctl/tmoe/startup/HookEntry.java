@@ -63,6 +63,7 @@ public class HookEntry implements IXposedHookLoadPackage, IXposedHookZygoteInit 
         if (TELEGRAM_CLIENT_PACKAGE_NAME_LIST.contains(packageName)) {
             StartupHook.INSTANCE.doInit(lpparam.classLoader);
             EzXHelperInit.INSTANCE.initHandleLoadPackage(lpparam);
+            EzXHelperInit.INSTANCE.setLogTag("TMoe");
         }
     }
 

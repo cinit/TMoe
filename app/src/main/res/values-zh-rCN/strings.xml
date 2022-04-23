@@ -33,4 +33,5 @@
     <string name="AddInfoContainer">允许查询</string>
     <string name="AddInfoContainerD">非管理员也可查看一些信息</string>
     <string name="SendCommand">询问是否送出 Bot 指令</string>
+    <string name="ShowMsgId">显示消息 ID</string>
 </resources>

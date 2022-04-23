@@ -56,6 +56,9 @@ class SettingsFragment : BaseHierarchyFragment() {
                 ProhibitSpoilers, "ProhibitSpoilers",  R.string.ProhibitSpoilers
             )
             functionSwitch(
+                ShowMsgId.INSTANCE, "ShowMsgId", R.string.ShowMsgId
+            )
+            functionSwitch(
                 HistoricalNewsOption, "HistoricalNewsOption",  R.string.HistoricalNewsOption
             )
             functionSwitch(
