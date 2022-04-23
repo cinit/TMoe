@@ -39,4 +39,7 @@
     <string name="ShowMsgId">Show message ID</string>
     <string name="ReloadMessage">Reload Message</string>
     <string name="RestartClient">Restart Telegram</string>
+    <string name="LostMsgMitigation">If you have lost messages</string>
+    <string name="AddReloadMsgBtn">Reload Message Button</string>
+    <string name="AddReloadMsgBtnDesc">Add Reload Message Button in chat menu</string>
 </resources>

@@ -57,9 +57,6 @@ class SettingsFragment : BaseHierarchyFragment() {
                 ProhibitSpoilers, "ProhibitSpoilers",  R.string.ProhibitSpoilers
             )
             functionSwitch(
-                ShowMsgId.INSTANCE, "ShowMsgId", R.string.ShowMsgId
-            )
-            functionSwitch(
                 HistoricalNewsOption, "HistoricalNewsOption",  R.string.HistoricalNewsOption
             )
             functionSwitch(
@@ -96,6 +93,16 @@ class SettingsFragment : BaseHierarchyFragment() {
                 SendCommand, "SendCommand",  R.string.SendCommand
             )
 
+        }
+        category("LostMsgMitigation", R.string.LostMsgMitigation) {
+            functionSwitch(
+                ShowMsgId.INSTANCE, "ShowMsgId", R.string.ShowMsgId
+            )
+            functionSwitch(
+                AddReloadMsgBtn.INSTANCE,
+                "AddReloadMsgBtn", R.string.AddReloadMsgBtn,
+                "AddReloadMsgBtnDesc", R.string.AddReloadMsgBtnDesc
+            )
         }
         category("Misc", R.string.Misc) {
             textValue("RestartClient", R.string.RestartClient) {

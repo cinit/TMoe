@@ -1184,4 +1184,26 @@ public class Reflex {
         }
         return null;
     }
+
+    @NonNull
+    public static String getShortClassName(Object obj) {
+        String name;
+        if (obj == null) {
+            return "null";
+        }
+        if (obj instanceof String) {
+            name = ((String) obj).replace("/", ".");
+        } else if (obj instanceof Class) {
+            name = ((Class<?>) obj).getName();
+        } else if (obj instanceof Field) {
+            name = ((Field) obj).getType().getName();
+        } else {
+            name = obj.getClass().getName();
+        }
+        if (!name.contains(".")) {
+            return name;
+        }
+        int p = name.lastIndexOf('.');
+        return name.substring(p + 1);
+    }
 }

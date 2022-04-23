@@ -84,6 +84,22 @@ public class HookUtils {
         };
     }
 
+    public static XC_MethodHook afterAlways(final @NonNull CommonDynamicHook this0, int priority,
+                                            final @NonNull AfterHookedMethod afterHookedMethod) {
+        Objects.requireNonNull(this0, "this0 == null");
+        return new XC_MethodHook(priority) {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                try {
+                    afterHookedMethod.afterHookedMethod(param);
+                } catch (Throwable e) {
+                    this0.logError(e);
+                    throw e;
+                }
+            }
+        };
+    }
+
     public static XC_MethodHook beforeIfEnabled(final @NonNull CommonDynamicHook this0,
                                                 final @NonNull BeforeHookedMethod beforeHookedMethod) {
         return beforeIfEnabled(this0, 50, beforeHookedMethod);

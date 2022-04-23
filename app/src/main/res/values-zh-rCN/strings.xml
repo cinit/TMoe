@@ -37,4 +37,7 @@
     <string name="ShowMsgId">显示消息 ID</string>
     <string name="RestartClient">重启 Telegram</string>
     <string name="ReloadMessage">刷新消息</string>
+    <string name="LostMsgMitigation">针对丢消息的辅助手段</string>
+    <string name="AddReloadMsgBtn">添加刷新消息按钮</string>
+    <string name="AddReloadMsgBtnDesc">在聊天菜单添加刷新消息按钮</string>
 </resources>
