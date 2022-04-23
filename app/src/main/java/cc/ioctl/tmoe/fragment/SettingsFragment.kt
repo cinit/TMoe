@@ -6,6 +6,7 @@ import cc.ioctl.tmoe.hook.func.*
 import cc.ioctl.tmoe.ui.LocaleController
 import cc.ioctl.tmoe.ui.dsl.BaseHierarchyFragment
 import cc.ioctl.tmoe.ui.dsl.HierarchyDescription
+import kotlin.system.exitProcess
 
 class SettingsFragment : BaseHierarchyFragment() {
     override val hierarchy = HierarchyDescription(
@@ -95,6 +96,13 @@ class SettingsFragment : BaseHierarchyFragment() {
                 SendCommand, "SendCommand",  R.string.SendCommand
             )
 
+        }
+        category("Misc", R.string.Misc) {
+            textValue("RestartClient", R.string.RestartClient) {
+                // calling System.exit(0) will work, because AM will automatically restart the app
+                // so we don't need to restart the app manually
+                exitProcess(0)
+            }
         }
         category("About", R.string.About) {
             textValue("AboutTMoe", R.string.AboutTMoe, onClick = {

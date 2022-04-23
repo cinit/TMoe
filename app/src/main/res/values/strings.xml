@@ -25,6 +25,7 @@
     <string name="BasicFunction">Basic</string>
     <string name="AboutTMoe">About TMoe</string>
     <string name="About">About</string>
+    <string name="Misc">Miscellaneous</string>
     <string name="GitHub" translatable="false">GitHub</string>
     <string name="SourceCode">Source code</string>
     <string name="LicenseNotices">License notices</string>
@@ -36,4 +37,6 @@
     <string name="TextCopied">Text copied to clipboard.</string>
     <string name="HideSponsoredMsg">Hide sponsored message</string>
     <string name="ShowMsgId">Show message ID</string>
+    <string name="ReloadMessage">Reload Message</string>
+    <string name="RestartClient">Restart Telegram</string>
 </resources>
