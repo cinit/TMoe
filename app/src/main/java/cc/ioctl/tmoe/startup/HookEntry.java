@@ -2,7 +2,7 @@ package cc.ioctl.tmoe.startup;
 
 import com.github.kyuubiran.ezxhelper.init.EzXHelperInit;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import cc.ioctl.tmoe.R;
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -12,37 +12,36 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class HookEntry implements IXposedHookLoadPackage, IXposedHookZygoteInit {
 
-    private static final ArrayList<String> TELEGRAM_CLIENT_PACKAGE_NAME_LIST = new ArrayList<>(16);
+    private static final List<String> TELEGRAM_CLIENT_PACKAGE_NAME_LIST = List.of(
+            "org.telegram.messenger",
+            "org.telegram.messenger.beta",
+            "org.telegram.plus",
+            "nekox.messenger",
+            "com.jasonkhew96.pigeongram",
+            "app.nicegram",
+            "ir.ilmili.telegraph",
+            "xyz.nextalone.nagram",
+            "org.telegram.messenger.web",
+            "com.cool2645.nekolite",
+            "com.iMe.android",
+            "org.telegram.BifToGram",
+            "ua.itaysonlab.messenger",
+            "org.forkclient.messenger.beta",
+            "org.aka.messenger",
+            "ellipi.messenger",
+            "me.luvletter.nekox",
+            "org.nift4.catox",
+            "ua.itaysonlab.messenger",
+            "icu.ketal.yunigram",
+            "icu.ketal.yunigram.lspatch",
+            "icu.ketal.yunigram.beta",
+            "it.owlgram.android",
+            "icu.ketal.yunigram.lspatch.beta",
+            "org.forkgram.messenger",
+            "com.blxueya.gugugram",
+            "com.blxueya.gugugramx"
+    );
 
-    static {
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("org.telegram.messenger");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("org.telegram.messenger.beta");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("org.telegram.plus");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("nekox.messenger");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("com.jasonkhew96.pigeongram");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("app.nicegram");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("ir.ilmili.telegraph");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("xyz.nextalone.nagram");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("org.telegram.messenger.web");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("com.cool2645.nekolite");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("com.iMe.android");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("org.telegram.BifToGram");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("ua.itaysonlab.messenger");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("org.forkclient.messenger.beta");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("org.aka.messenger");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("ellipi.messenger");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("me.luvletter.nekox");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("org.nift4.catox");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("ua.itaysonlab.messenger");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("icu.ketal.yunigram");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("icu.ketal.yunigram.lspatch");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("icu.ketal.yunigram.beta");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("icu.ketal.yunigram.lspatch.beta");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("org.forkgram.messenger");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("com.blxueya.gugugram");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("com.blxueya.gugugramx");
-        TELEGRAM_CLIENT_PACKAGE_NAME_LIST.add("it.owlgram.android");
-    }
 
     private static String sModulePath = null;
 
