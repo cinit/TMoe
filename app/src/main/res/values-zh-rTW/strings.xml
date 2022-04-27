@@ -8,6 +8,7 @@
     <string name="ChatUiSettings">聊天頁面設定</string>
     <string name="BasicFunction">基礎功能</string>
     <string name="AboutTMoe">關於 TMoe</string>
+    <string name="Misc">其他</string>
     <string name="About">關於</string>
     <string name="SourceCode">原始碼</string>
     <string name="LicenseNotices">開放原始碼許可</string>
@@ -33,4 +34,10 @@
     <string name="AddInfoContainer">允許查詢</string>
     <string name="AddInfoContainerD">非管理員也可檢視一些資訊</string>
     <string name="SendCommand">詢問是否送出 Bot 指令</string>
+    <string name="ShowMsgId">顯示訊息 ID</string>
+    <string name="RestartClient">重啟 Telegram</string>
+    <string name="ReloadMessage">重新整理訊息</string>
+    <string name="LostMsgMitigation">針對訊息遺失的輔助手段</string>
+    <string name="AddReloadMsgBtn">新增重新整理訊息按鈕</string>
+    <string name="AddReloadMsgBtnDesc">在聊天選單新增重新整理訊息按鈕</string>
 </resources>
