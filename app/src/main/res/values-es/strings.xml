@@ -1,0 +1,45 @@
+<resources>
+    <string name="app_name" translatable="false">TMoe</string>
+    <string name="res_inject_success" translatable="false">Resources injection success</string>
+    <string name="xposeddescription">Funciones adicionales para los clientes de Telegram.</string>
+
+    <string name="TMoeSettings">Ajustes de TMoe</string>
+    <string name="EnableDebugMode">Habilitar modo de depuración</string>
+    <string name="AntiAntiForward">Anti-Anti-Forward message</string>
+    <string name="ProhibitChannelSwitching">Prohibir el cambio de canal</string>
+    <string name="ProhibitEnableReactions">Prohibir las reacciones</string>
+    <string name="ProhibitChatGreetings">Prohibir los saludos de chat</string>
+    <string name="HidePhoneNumber">Ocultar el número de teléfono</string>
+    <string name="HistoricalNewsOption">Opción de noticias históricas</string>
+    <string name="AddSubItemChannel">AddSubItemChannel</string>
+    <string name="AddSubItemChannelD">AddSubItemChannel</string>
+    <string name="ChannelDetailNumbers">ChannelDetailNumbers</string>
+    <string name="ChannelDetailNumbersD">ChannelDetailNumbers</string>
+    <string name="AddInfoContainer">AddInfoContainer</string>
+    <string name="AddInfoContainerD">AddInfoContainer</string>
+    <string name="ProhibitSpoilers">Prohibir los spoilers</string>
+    <string name="SendCommand">Preguntar por comando de toque</string>
+    <string name="AntiAntiCopy">Anti-Anti-Copiar mensaje</string>
+    <string name="AntiAntiCopyD">Conflicto con el Anti-Anti-Reenviar</string>
+    <string name="ChatUiSettings">Ajustes de chat</string>
+    <string name="BasicFunction">Básico</string>
+    <string name="AboutTMoe">Acerca de TMoe</string>
+    <string name="About">Acerca de</string>
+    <string name="Misc">Varios</string>
+    <string name="GitHub" translatable="false">GitHub</string>
+    <string name="SourceCode">Código fuente</string>
+    <string name="LicenseNotices">Avisos de licencia</string>
+    <string name="HideUserAvatar">Ocultar avatares de usuarios específicos</string>
+    <string name="NotEnabled">No habilitado</string>
+    <string name="HideUserAvatarEnabledTargetCount" formatted="false">%d usuario(s), %d canal(es), %d grupo(s)</string>
+    <string name="NotImplemented">No se ha implementado todavía</string>
+    <string name="VersionInfo">Versión</string>
+    <string name="TextCopied">Texto copiado en el portapapeles.</string>
+    <string name="HideSponsoredMsg">Ocultar mensajes patrocinados</string>
+    <string name="ShowMsgId">Mostrar ID del mensaje</string>
+    <string name="ReloadMessage">Recargar mensajes</string>
+    <string name="RestartClient">Reiniciar Telegram</string>
+    <string name="LostMsgMitigation">Si se han perdido mensajes</string>
+    <string name="AddReloadMsgBtn">Botón de recarga de mensajes</string>
+    <string name="AddReloadMsgBtnDesc">Añadir el botón de recarga de mensajes en el menú del chat</string>
+</resources>
