@@ -42,4 +42,5 @@
     <string name="LostMsgMitigation">If you have lost messages</string>
     <string name="AddReloadMsgBtn">Reload Message Button</string>
     <string name="AddReloadMsgBtnDesc">Add Reload Message Button in chat menu</string>
+    <string name="RestrictContentMitigationDesc">Allow copy, save and screenshot in secret chats</string>
 </resources>

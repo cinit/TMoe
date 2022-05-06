@@ -18,7 +18,8 @@ class SettingsFragment : BaseHierarchyFragment() {
                 EnableDebugMode.INSTANCE, "EnableDebugMode", R.string.EnableDebugMode
             )
             functionSwitch(
-                AntiAntiForward, "AntiAntiForward", R.string.AntiAntiForward
+                AntiAntiForward, "AntiAntiForward", R.string.AntiAntiForward,
+                "RestrictContentMitigationDesc", R.string.RestrictContentMitigationDesc
             )
             functionSwitch(
                 HideSponsoredMsg, "HideSponsoredMsg", R.string.HideSponsoredMsg
