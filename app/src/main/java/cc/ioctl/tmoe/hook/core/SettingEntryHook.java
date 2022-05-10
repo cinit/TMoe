@@ -16,8 +16,10 @@ import java.util.Objects;
 
 import cc.ioctl.tmoe.R;
 import cc.ioctl.tmoe.fragment.SettingsFragment;
+import cc.ioctl.tmoe.lifecycle.Parasitics;
 import cc.ioctl.tmoe.rtti.ProxyFragmentRttiHandler;
 import cc.ioctl.tmoe.ui.LocaleController;
+import cc.ioctl.tmoe.util.HostInfo;
 import cc.ioctl.tmoe.util.Initiator;
 import cc.ioctl.tmoe.util.Reflex;
 import cc.ioctl.tmoe.util.Utils;
@@ -151,6 +153,9 @@ public class SettingEntryHook implements Initializable {
         if (textCell != null) {
             // color and theme is already set by Telegram, we only need to set the text and icon
             // textCell.setTextAndIcon(text, iconResId, true)
+            // inject resources
+            Parasitics.injectModuleResources(textCell.getContext().getResources());
+            Parasitics.injectModuleResources(HostInfo.getApplication().getResources());
             String text = LocaleController.getString("TMoeSettings", R.string.TMoeSettings);
             int iconResId = R.drawable.ic_setting_hex_outline_24;
             Reflex.invokeVirtual(textCell, "setTextAndIcon", text, iconResId, true,

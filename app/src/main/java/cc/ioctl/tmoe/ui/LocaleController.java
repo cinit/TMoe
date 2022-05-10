@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
 
+import cc.ioctl.tmoe.lifecycle.Parasitics;
 import cc.ioctl.tmoe.util.HostInfo;
 import cc.ioctl.tmoe.util.Initiator;
 import cc.ioctl.tmoe.util.Reflex;
@@ -63,7 +64,13 @@ public class LocaleController {
         if (res != 0) {
             try {
                 return HostInfo.getApplication().getString(res);
-            } catch (Resources.NotFoundException ignored) {
+            } catch (Resources.NotFoundException e1) {
+                Parasitics.injectModuleResources(HostInfo.getApplication().getResources());
+                // second try
+                try {
+                    return HostInfo.getApplication().getString(res);
+                } catch (Resources.NotFoundException ignored) {
+                }
             }
         }
         // fallback to key

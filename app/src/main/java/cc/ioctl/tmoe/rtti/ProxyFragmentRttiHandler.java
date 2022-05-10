@@ -249,6 +249,7 @@ public class ProxyFragmentRttiHandler {
     public View createView$dispatcher(Context context) {
         // just in case
         Parasitics.injectModuleResources(context.getResources());
+        Parasitics.injectModuleResources(HostInfo.getApplication().getResources());
         return mTargetFragment.onCreateView(context);
     }
 
