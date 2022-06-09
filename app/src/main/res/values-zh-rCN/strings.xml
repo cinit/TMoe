@@ -41,4 +41,5 @@
     <string name="AddReloadMsgBtn">添加刷新消息按钮</string>
     <string name="AddReloadMsgBtnDesc">在聊天菜单添加刷新消息按钮</string>
     <string name="RestrictContentMitigationDesc">允许在私密聊天界面复制消息保存文件以及截图</string>
+    <string name="ForceBlurChatAvailable">强制显示顶栏模糊选项</string>
 </resources>

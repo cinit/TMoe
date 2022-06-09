@@ -93,6 +93,9 @@ class SettingsFragment : BaseHierarchyFragment() {
             functionSwitch(
                 SendCommand, "SendCommand",  R.string.SendCommand
             )
+            functionSwitch(
+                ForceBlurChatAvailable, "ForceBlurChatAvailable",  R.string.ForceBlurChatAvailable
+            )
 
         }
         category("LostMsgMitigation", R.string.LostMsgMitigation) {

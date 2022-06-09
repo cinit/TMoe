@@ -13,6 +13,7 @@ import cc.ioctl.tmoe.hook.func.AntiAntiCopy;
 import cc.ioctl.tmoe.hook.func.AntiAntiForward;
 import cc.ioctl.tmoe.hook.func.ChannelDetailNumbers;
 import cc.ioctl.tmoe.hook.func.EnableDebugMode;
+import cc.ioctl.tmoe.hook.func.ForceBlurChatAvailable;
 import cc.ioctl.tmoe.hook.func.HidePhoneNumber;
 import cc.ioctl.tmoe.hook.func.HideUserAvatar;
 import cc.ioctl.tmoe.hook.func.HistoricalNewsOption;
@@ -71,6 +72,7 @@ public class DynamicHookInit {
                     SendCommand.INSTANCE,
                     ShowMsgId.INSTANCE,
                     AddReloadMsgBtn.INSTANCE,
+                    ForceBlurChatAvailable.INSTANCE,
             };
         }
         return sAllFunctionHooks;

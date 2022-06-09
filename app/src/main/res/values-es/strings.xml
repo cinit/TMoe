@@ -42,4 +42,5 @@
     <string name="LostMsgMitigation">Si se han perdido mensajes</string>
     <string name="AddReloadMsgBtn">Botón de recarga de mensajes</string>
     <string name="AddReloadMsgBtnDesc">Añadir el botón de recarga de mensajes en el menú del chat</string>
+    <string name="ForceBlurChatAvailable">Forzar la opción de desenfoque de la barra superior</string>
 </resources>
