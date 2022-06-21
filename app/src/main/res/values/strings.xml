@@ -20,6 +20,7 @@
     <string name="ProhibitSpoilers">Prohibit Spoilers</string>
     <string name="SendCommand">Ask for tap command</string>
     <string name="ForceBlurChatAvailable">Force Chat Blur Option Available</string>
+    <string name="DisablePremiumStickerAnimation">Disable Premium Sticker Animation</string>
     <string name="AntiAntiCopy">Anti-Anti-Copy message</string>
     <string name="AntiAntiCopyD">Conflict with Anti-Anti-Forward</string>
     <string name="ChatUiSettings">Chat Settings</string>

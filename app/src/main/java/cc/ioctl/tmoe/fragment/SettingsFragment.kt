@@ -96,6 +96,9 @@ class SettingsFragment : BaseHierarchyFragment() {
             functionSwitch(
                 ForceBlurChatAvailable, "ForceBlurChatAvailable",  R.string.ForceBlurChatAvailable
             )
+            functionSwitch(
+                DisablePremiumStickerAnimation, "DisablePremiumStickerAnimation",  R.string.DisablePremiumStickerAnimation
+            )
 
         }
         category("LostMsgMitigation", R.string.LostMsgMitigation) {
