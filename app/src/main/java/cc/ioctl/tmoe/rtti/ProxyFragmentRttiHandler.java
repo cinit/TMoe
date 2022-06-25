@@ -183,11 +183,18 @@ public class ProxyFragmentRttiHandler {
         }
         try {
             return (Boolean) Objects.requireNonNull(sHostActionBarLayoutClass.getMethod("presentFragment", sHostBaseFragmentClass,
-                            boolean.class, boolean.class, boolean.class, boolean.class, Initiator.load("org.telegram.ui.ActionBar.ActionBarPopupWindow$ActionBarPopupWindowLayout"))
+                            boolean.class, boolean.class, boolean.class, boolean.class, Initiator.loadClass("org.telegram.ui.ActionBar.ActionBarPopupWindow$ActionBarPopupWindowLayout"))
                     .invoke(parentLayout, fragment, removeLast, forceWithoutAnimation, check, preview, menu));
-        } catch (ReflectiveOperationException e) {
-            Utils.loge(e);
-            return false;
+        } catch (ReflectiveOperationException e1) {
+            // for older versions before v8.2.2
+            try {
+                return (Boolean) Objects.requireNonNull(sHostActionBarLayoutClass.getMethod("presentFragment", sHostBaseFragmentClass,
+                                boolean.class, boolean.class, boolean.class, boolean.class, View.class)
+                        .invoke(parentLayout, fragment, removeLast, forceWithoutAnimation, check, preview, menu));
+            } catch (ReflectiveOperationException e2) {
+                Utils.loge(e1);
+                return false;
+            }
         }
     }
 
