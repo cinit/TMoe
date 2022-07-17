@@ -50,10 +50,10 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew :app:assemble
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
+      #- name: Upload Artifacts
+        #uses: actions/upload-artifact@v2
         # don't upload the artifacts if it's a pull request
-        if: ${{ !github.event.pull_request }}
-        with:
-          path: './app/build/outputs/*'
-          name: build_output_${{ github.event.head_commit.id }}.zip
+        #if: ${{ !github.event.pull_request }}
+        #with:
+          #path: './app/build/outputs/*'
+          #name: build_output_${{ github.event.head_commit.id }}.zip
