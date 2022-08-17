@@ -111,6 +111,13 @@ class SettingsFragment : BaseHierarchyFragment() {
                 "AddReloadMsgBtnDesc", R.string.AddReloadMsgBtnDesc
             )
         }
+        category("Export Data", R.string.ExportData) {
+            functionSwitch(
+                DumpGroupMember,
+                "DumpGroupMember", R.string.DumpGroupMember,
+                "DumpGroupMemberDesc", R.string.DumpGroupMemberDesc
+            )
+        }
         category("Misc", R.string.Misc) {
             textValue("RestartClient", R.string.RestartClient) {
                 // calling System.exit(0) will work, because AM will automatically restart the app

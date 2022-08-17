@@ -28,6 +28,7 @@
     <string name="AboutTMoe">About TMoe</string>
     <string name="About">About</string>
     <string name="Misc">Miscellaneous</string>
+    <string name="ExportData">Export Data</string>
     <string name="GitHub" translatable="false">GitHub</string>
     <string name="SourceCode">Source code</string>
     <string name="LicenseNotices">License notices</string>
@@ -44,5 +45,7 @@
     <string name="LostMsgMitigation">If you have lost messages</string>
     <string name="AddReloadMsgBtn">Reload Message Button</string>
     <string name="AddReloadMsgBtnDesc">Add Reload Message Button in chat menu</string>
+    <string name="DumpGroupMember">Group Member List</string>
+    <string name="DumpGroupMemberDesc">Save group member list to ctx.filesDir/TMoe_group_dump.db, usually not useful.</string>
     <string name="RestrictContentMitigationDesc">Allow copy, save and screenshot in secret chats</string>
 </resources>
