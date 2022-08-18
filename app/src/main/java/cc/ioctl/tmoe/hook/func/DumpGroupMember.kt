@@ -1,17 +1,24 @@
 package cc.ioctl.tmoe.hook.func
 
+import android.content.Context
 import android.database.sqlite.SQLiteDatabase
+import android.view.View
+import androidx.annotation.UiThread
+import androidx.appcompat.app.AlertDialog
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
+import cc.ioctl.tmoe.lifecycle.Parasitics
 import cc.ioctl.tmoe.td.AccountController
-import cc.ioctl.tmoe.util.HookUtils
-import cc.ioctl.tmoe.util.HostInfo
-import cc.ioctl.tmoe.util.Initiator
-import cc.ioctl.tmoe.util.Log
-import cc.ioctl.tmoe.util.Reflex
+import cc.ioctl.tmoe.ui.util.FaultyDialog
+import cc.ioctl.tmoe.util.*
 import de.robv.android.xposed.XposedBridge
 import java.io.File
 import java.lang.ref.WeakReference
 import java.lang.reflect.Field
+import java.lang.reflect.InvocationHandler
+import java.lang.reflect.Method
+import java.lang.reflect.Proxy
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
 
 object DumpGroupMember : CommonDynamicHook() {
 
@@ -74,6 +81,10 @@ object DumpGroupMember : CommonDynamicHook() {
             val onComplete = params.args[1] ?: return@hookBeforeIfEnabled
             kRequestDelegate.cast(onComplete)
             val klass = onComplete.javaClass
+            if (klass.name.startsWith("\$Proxy")) {
+                // don't hook proxy
+                return@hookBeforeIfEnabled
+            }
             if (isInterestedRequest(request.javaClass)) {
                 if (!mHookedClasses.contains(klass)) {
                     val run = klass.getDeclaredMethod("run", kTLObject, kTL_error)
@@ -90,7 +101,82 @@ object DumpGroupMember : CommonDynamicHook() {
                 }
             }
         }
+        // add btn long click listener
+        val kProfileActivity = Initiator.loadClass("org.telegram.ui.ProfileActivity")
+        val fProfileActivity_onlineTextView = kProfileActivity.getDeclaredField("onlineTextView").apply {
+            isAccessible = true
+        }
+        kProfileActivity.getDeclaredMethod("createView", Context::class.java).let {
+            HookUtils.hookAfterIfEnabled(this, it) { params ->
+                val that = params.thisObject
+                val onlineTextView = fProfileActivity_onlineTextView.get(that) as Array<out View?>
+                val v0 = onlineTextView[0]
+                val v1 = onlineTextView[1]
+                val listener = OnOnlineCountTextViewLongListener(that)
+                v0?.setOnLongClickListener(listener)
+                v1?.setOnLongClickListener(listener)
+            }
+        }
         return true
+    }
+
+    private class RequestDelegateInvocationHandler(private val fp: (Any?, Any?) -> Unit) : InvocationHandler {
+        override fun invoke(proxy: Any, method: Method, args: Array<out Any?>?): Any? {
+            return if (method.name == "run") {
+                fp(args!![0], args[1])
+                null
+            } else {
+                // Object.class
+                method.invoke(this, args)
+            }
+        }
+    }
+
+    @Throws(ReflectiveOperationException::class)
+    private fun createRequestDelegate(fp: (Any?, Any?) -> Unit): Any {
+        // ensure method name and signature is correct
+        kRequestDelegate.getDeclaredMethod("run", kTLObject, kTL_error)
+        return Proxy.newProxyInstance(
+            Initiator.getHostClassLoader(),
+            arrayOf(kRequestDelegate),
+            RequestDelegateInvocationHandler(fp)
+        )
+    }
+
+    private fun handleRequestComplete(originalRequest: Any, response: Any) {
+        val klass = response.javaClass
+        when (klass) {
+            kTL_channels_channelParticipants -> {
+                val inputChannel = fTL_channels_getParticipants_channel.get(originalRequest)
+                val channelId = fInputChannel_channel_id.getLong(inputChannel)
+                check(channelId > 0) { "invalid channel_id: $channelId" }
+                val channelParticipants = fTL_channels_channelParticipants_participants.get(response) as ArrayList<*>
+                val channelParticipantCount = channelParticipants.size
+                // Log.d("channelParticipants.size = $channelParticipantCount")
+                val members = ArrayList<MemberInfo>(channelParticipantCount)
+                channelParticipants.forEach {
+                    var userId: Long = 0
+                    val date = fChannelParticipant_date.getInt(it)
+                    val peer = fChannelParticipant_peer.get(it)
+                    if (peer != null) {
+                        userId = fPeer_user_id.getLong(peer)
+                    }
+                    if (userId != 0L) {
+                        check(channelId > 0 && userId > 0) { "channel = $channelId, user = $userId" }
+                        members.add(MemberInfo(channelId, userId, date.toLong()))
+                    }
+                }
+                if (members.isNotEmpty()) {
+                    val slot = AccountController.getCurrentActiveSlot()
+                    check(slot >= 0) { "invalid slot: $slot" }
+                    updateMemberInfoList(slot, members)
+                    // Log.d("${members.size} rows affected.")
+                }
+            }
+            else -> {
+                Log.w("unhandled response: $klass")
+            }
+        }
     }
 
     private val mHookedOnCompleteHandler = HookUtils.afterIfEnabled(this) { params ->
@@ -118,37 +204,141 @@ object DumpGroupMember : CommonDynamicHook() {
             Log.w("original request lost, resp = " + klass.name + ", this = " + params.thisObject.javaClass.name)
             return@afterIfEnabled
         }
-        when (klass) {
-            kTL_channels_channelParticipants -> {
-                val inputChannel = fTL_channels_getParticipants_channel.get(originalRequest)
-                val channelId = fInputChannel_channel_id.getLong(inputChannel)
-                check(channelId > 0) { "invalid channel_id: $channelId" }
-                val channelParticipants = fTL_channels_channelParticipants_participants.get(resp) as ArrayList<*>
-                val channelParticipantCount = channelParticipants.size
-                // Log.d("channelParticipants.size = $channelParticipantCount")
-                val members = ArrayList<MemberInfo>(channelParticipantCount)
-                channelParticipants.forEach {
-                    var userId: Long = 0
-                    val date = fChannelParticipant_date.getInt(it)
-                    val peer = fChannelParticipant_peer.get(it)
-                    if (peer != null) {
-                        userId = fPeer_user_id.getLong(peer)
-                    }
-                    if (userId != 0L) {
-                        check(channelId > 0 && userId > 0) { "channel = $channelId, user = $userId" }
-                        members.add(MemberInfo(channelId, userId, date.toLong()))
+        handleRequestComplete(originalRequest!!, resp)
+    }
+
+    @Throws(ReflectiveOperationException::class)
+    private fun createTL_channels_getParticipants(acctSlot: Int, chatId: Long, offset: Int, filter: Any? = null): Any {
+        check(acctSlot >= 0)
+        val accountInstance = Reflex.invokeStatic(
+            Initiator.loadClass("org.telegram.messenger.AccountInstance"),
+            "getInstance", acctSlot, Integer.TYPE
+        )!!
+        val messagesController = Reflex.invokeVirtual(accountInstance, "getMessagesController")!!
+        val inputChannel = Reflex.invokeVirtual(messagesController, "getInputChannel", chatId, java.lang.Long.TYPE)!!
+        val obj = kTL_channels_getParticipants.getConstructor().newInstance()
+        Reflex.setInstanceObject(obj, "channel", null, inputChannel)
+        Reflex.setInstanceObject(obj, "offset", null, offset)
+        Reflex.setInstanceObject(
+            obj, "filter", null, filter
+                ?: Initiator.loadClass("org.telegram.tgnet.TLRPC\$TL_channelParticipantsRecent").newInstance()
+        )
+        Reflex.setInstanceObject(obj, "limit", null, 200)
+        return obj
+    }
+
+    @UiThread
+    private fun fetchGroupMembersForeground(fragment: Any, ctx: Context) {
+        var progressDialog: AlertDialog? = null
+        val isCancelled = AtomicBoolean(false)
+        try {
+            val slot = AccountController.getCurrentActiveSlot()
+            check(slot >= 0) { "invalid slot: $slot" }
+            val chatId = Reflex.getInstanceObject(fragment, "chatId", java.lang.Long.TYPE) as Long
+            check(chatId != 0L) { "invalid chatId: $chatId" }
+            val dialog = AlertDialog.Builder(ctx).apply {
+                setTitle("TLRPC")
+                setMessage("TL_channelParticipantsRecent\nuser = $slot, chat = $chatId")
+                setNegativeButton(android.R.string.cancel) { _, _ ->
+                    isCancelled.set(true)
+                }
+            }.show()
+            progressDialog = dialog
+            val accountInstance = Reflex.invokeStatic(
+                Initiator.loadClass("org.telegram.messenger.AccountInstance"),
+                "getInstance", slot, Integer.TYPE
+            )!!
+            val connMgr = Reflex.invokeVirtual(accountInstance, "getConnectionsManager")!!
+            val sendRequest2 = Initiator.loadClass("org.telegram.tgnet.ConnectionsManager")
+                .getDeclaredMethod("sendRequest", kTLObject, kRequestDelegate)
+            val currentOffset = AtomicInteger(0)
+            val startTime = System.currentTimeMillis()
+            val task = object : Runnable {
+                override fun run() {
+                    try {
+                        if (isCancelled.get()) {
+                            return
+                        }
+                        val startOffset = currentOffset.get()
+                        val request = createTL_channels_getParticipants(slot, chatId, startOffset, null)
+                        val resp = createRequestDelegate { result, error ->
+                            if (error != null) {
+                                isCancelled.set(true)
+                                dialog.dismiss()
+                                FaultyDialog.show(ctx, "TL_error", getMessageForTL_error(error))
+                                return@createRequestDelegate
+                            }
+                            kTL_channels_channelParticipants.cast(result!!)
+                            val participants = fTL_channels_channelParticipants_participants.get(result) as ArrayList<*>
+                            currentOffset.set(startOffset + participants.size)
+                            handleRequestComplete(request, result)
+                            if (participants.size < 100) {
+                                // reached the end
+                                isCancelled.set(true)
+                                dialog.dismiss()
+                                SyncUtils.runOnUiThread {
+                                    val elapsed = System.currentTimeMillis() - startTime
+                                    val totalCount = currentOffset.get()
+                                    AlertDialog.Builder(ctx).apply {
+                                        setTitle("Finished")
+                                        setMessage(
+                                            "TL_channelParticipantsRecent\n" +
+                                                    "user = $slot, chat = $chatId, " +
+                                                    "total = $totalCount, elapsed = $elapsed ms"
+                                        )
+                                        setPositiveButton(android.R.string.ok) { _, _ -> }
+                                    }.show()
+                                }
+                            } else {
+                                // update progress
+                                SyncUtils.runOnUiThread {
+                                    val elapsed = System.currentTimeMillis() - startTime
+                                    val offset = currentOffset.get()
+                                    val last = participants.size
+                                    dialog.setMessage(
+                                        "TL_channelParticipantsRecent\n" +
+                                                "user = $slot, chat = $chatId, offset = $offset, " +
+                                                "batch_size = $last, elapsed = ${elapsed}ms"
+                                    )
+                                }
+                                // wait 1s and continue
+                                SyncUtils.postDelayed(1000L, this)
+                            }
+                        }
+                        sendRequest2.invoke(connMgr, request, resp)
+                    } catch (e: Exception) {
+                        isCancelled.set(true)
+                        dialog.dismiss()
+                        FaultyDialog.show(ctx, e)
                     }
                 }
-                if (members.isNotEmpty()) {
-                    val slot = AccountController.getCurrentActiveSlot()
-                    check(slot >= 0) { "invalid slot: $slot" }
-                    updateMemberInfoList(slot, members)
-                    // Log.d("${members.size} rows affected.")
+            }
+            task.run()
+        } catch (e: Exception) {
+            progressDialog?.dismiss()
+            FaultyDialog.show(ctx, e)
+        }
+    }
+
+    private class OnOnlineCountTextViewLongListener(profileFragment: Any) : View.OnLongClickListener {
+
+        private val mFragmentRef = WeakReference(profileFragment)
+        override fun onLongClick(v: View): Boolean {
+            val fragment = mFragmentRef.get() ?: return false
+            val ctx = CommonContextWrapper.createAppCompatContext(v.context)
+            Parasitics.injectModuleResources(ctx.resources)
+            // confirm action
+            AlertDialog.Builder(ctx).apply {
+                setTitle("Confirm")
+                setMessage("Fetch group members?")
+                setCancelable(true)
+                setNegativeButton(android.R.string.cancel, null)
+                setPositiveButton(android.R.string.ok) { _, _ ->
+                    fetchGroupMembersForeground(fragment, ctx)
                 }
+                show()
             }
-            else -> {
-                Log.w("unhandled response: $klass")
-            }
+            return true
         }
     }
 
@@ -224,4 +414,13 @@ object DumpGroupMember : CommonDynamicHook() {
         }
     }
 
+    private fun getMessageForTL_error(err: Any): String {
+        return try {
+            val code = Reflex.getInstanceObject(err, "code", Integer.TYPE) as Int
+            val text = Reflex.getInstanceObject(err, "text", String::class.java) as String
+            "code: $code, text: $text"
+        } catch (e: ReflectiveOperationException) {
+            e.toString()
+        }
+    }
 }
