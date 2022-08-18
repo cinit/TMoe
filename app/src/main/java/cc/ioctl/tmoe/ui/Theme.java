@@ -559,7 +559,6 @@ public class Theme {
     }
 
     public static Drawable createRadSelectorDrawable(int color, int topRad, int bottomRad) {
-        Drawable drawable;
         sMaskPaint.setColor(0xffffffff);
         Drawable maskDrawable = new RippleRadMaskDrawable(topRad, bottomRad);
         ColorStateList colorStateList = new ColorStateList(new int[][]{StateSet.WILD_CARD}, new int[]{color});
@@ -568,5 +567,13 @@ public class Theme {
 
     public static void invalidate() {
         sDividerPaint = null;
+    }
+
+    public static boolean isDarkTheme() {
+        int backgroundColor = getColor(key_windowBackgroundWhite);
+        int textColor = getColor(key_windowBackgroundWhiteBlackText);
+        int bg = ((backgroundColor >> 16) & 0xff) * 2 + ((backgroundColor >> 8) & 0xff) * 7 + (backgroundColor & 0xff);
+        int fg = ((textColor >> 16) & 0xff) * 2 + ((textColor >> 8) & 0xff) * 7 + (textColor & 0xff);
+        return bg < fg;
     }
 }
