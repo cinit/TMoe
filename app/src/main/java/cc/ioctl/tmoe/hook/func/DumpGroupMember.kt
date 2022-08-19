@@ -211,7 +211,8 @@ object DumpGroupMember : CommonDynamicHook() {
                     val userSet = ArrayList<UserInfo9>(userCount)
                     users.forEach {
                         val uid = fUser_id.getLong(it)
-                        val firstName = fUser_first_name.get(it) as String
+                        check(uid > 0) { "invalid user_id: $uid" }
+                        val firstName = (fUser_first_name.get(it) as String?) ?: ""
                         val lastName = (fUser_last_name.get(it) as String?)?.ifEmpty { null }
                         val username = (fUser_username.get(it) as String?)?.ifEmpty { null }
                         val accessHash = fUser_access_hash.getLong(it)
