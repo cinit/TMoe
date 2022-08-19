@@ -51,10 +51,17 @@ object DumpGroupMember : CommonDynamicHook() {
     private lateinit var fChannelParticipant_flags: Field
     private lateinit var fTL_channels_channelParticipants_participants: Field
     private lateinit var fTL_channels_channelParticipants_users: Field
+    private lateinit var fTL_channels_channelParticipants_chats: Field
     private lateinit var kPeer: Class<*>
     private lateinit var fPeer_user_id: Field
     private lateinit var fPeer_chat_id: Field
     private lateinit var fPeer_channel_id: Field
+    private lateinit var kChat: Class<*>
+    private lateinit var fChat_id: Field
+    private lateinit var fChat_title: Field
+    private lateinit var fChat_flags: Field
+    private lateinit var fChat_access_hash: Field
+    private lateinit var fChat_username: Field
 
     private val mRuntimeHookLock = Any()
     private val mHookedClasses = HashSet<Class<*>>()
@@ -71,6 +78,9 @@ object DumpGroupMember : CommonDynamicHook() {
         )
         fTL_channels_channelParticipants_users = Reflex.findField(
             kTL_channels_channelParticipants, java.util.ArrayList::class.java, "users"
+        )
+        fTL_channels_channelParticipants_chats = Reflex.findField(
+            kTL_channels_channelParticipants, java.util.ArrayList::class.java, "chats"
         )
         kChannelParticipant = Initiator.loadClass("org.telegram.tgnet.TLRPC\$ChannelParticipant")
         kTL_channels_getParticipants = Initiator.loadClass("org.telegram.tgnet.TLRPC\$TL_channels_getParticipants")
@@ -97,6 +107,12 @@ object DumpGroupMember : CommonDynamicHook() {
         fUser_bot = Reflex.findField(kUser, java.lang.Boolean.TYPE, "bot")
         fUser_lang_code = Reflex.findField(kUser, String::class.java, "lang_code")
         fUser_inactive = Reflex.findField(kUser, java.lang.Boolean.TYPE, "inactive")
+        kChat = Initiator.loadClass("org.telegram.tgnet.TLRPC\$Chat")
+        fChat_id = Reflex.findField(kChat, java.lang.Long.TYPE, "id")
+        fChat_title = Reflex.findField(kChat, String::class.java, "title")
+        fChat_flags = Reflex.findField(kChat, Integer.TYPE, "flags")
+        fChat_access_hash = Reflex.findField(kChat, java.lang.Long.TYPE, "access_hash")
+        fChat_username = Reflex.findField(kChat, String::class.java, "username")
 
         // test linkage
         val currentSlot = AccountController.getCurrentActiveSlot()
@@ -131,6 +147,9 @@ object DumpGroupMember : CommonDynamicHook() {
                 }
             }
         }
+        val putChatsInternal = Initiator.loadClass("org.telegram.messenger.MessagesStorage")
+            .getDeclaredMethod("putChatsInternal", java.util.ArrayList::class.java)
+        XposedBridge.hookMethod(putChatsInternal, mPutChatsInternalHook)
         // add btn long click listener
         val kProfileActivity = Initiator.loadClass("org.telegram.ui.ProfileActivity")
         val fProfileActivity_onlineTextView = kProfileActivity.getDeclaredField("onlineTextView").apply {
@@ -230,11 +249,43 @@ object DumpGroupMember : CommonDynamicHook() {
                     }
                     updateUserInfoList(slot, userSet)
                 }
+                val chats = fTL_channels_channelParticipants_chats.get(response) as ArrayList<*>
+                if (chats.isNotEmpty()) {
+                    val chatCount = chats.size
+                    // Log.d("chats.size = $chatCount")
+                    val chatSet = ArrayList<ChannelInfo>(chatCount)
+                    chats.forEach {
+                        chatSet.add(channelInfoFromChat(it))
+                    }
+                    updateChannelInfoList(slot, chatSet)
+                }
             }
             else -> {
                 Log.w("unhandled response: $klass")
             }
         }
+    }
+
+    private val mPutChatsInternalHook = HookUtils.beforeIfEnabled(this) { params ->
+        val chats = params.args[0] as ArrayList<*>?
+        val slot = AccountController.getCurrentActiveSlot()
+        if (!chats.isNullOrEmpty()) {
+            val chatInfoList = ArrayList<ChannelInfo>(chats.size)
+            chats.forEach { chatObj ->
+                chatInfoList.add(channelInfoFromChat(chatObj))
+            }
+            updateChannelInfoList(slot, chatInfoList)
+        }
+    }
+
+    private fun channelInfoFromChat(chatObj: Any): ChannelInfo {
+        val chatId = fChat_id.getLong(chatObj)
+        check(chatId > 0) { "invalid chat_id: $chatId" }
+        val title = (fChat_title.get(chatObj) as String?) ?: ""
+        val flags = fChat_flags.getInt(chatObj)
+        val accessHash = fChat_access_hash.getLong(chatObj)
+        val username = (fChat_username.get(chatObj) as String?)?.ifEmpty { null }
+        return ChannelInfo(chatId, accessHash, title, flags, username)
     }
 
     private val mHookedOnCompleteHandler = HookUtils.afterIfEnabled(this) { params ->
@@ -465,6 +516,25 @@ object DumpGroupMember : CommonDynamicHook() {
             )
             """.trimIndent()
         )
+        database.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS channels
+            (
+                uid          INTEGER PRIMARY KEY,
+                access_hash  INTEGER NOT NULL,
+                name         TEXT    NOT NULL,
+                flags        INTEGER NOT NULL,
+                username     TEXT,
+                broadcast    INTEGER NOT NULL,
+                megagroup    INTEGER NOT NULL,
+                gigagroup    INTEGER NOT NULL,
+                has_link     INTEGER NOT NULL,
+                noforwards   INTEGER NOT NULL,
+                join_to_send INTEGER NOT NULL,
+                join_request INTEGER NOT NULL
+            )
+            """.trimIndent()
+        )
         mDatabase[slot] = database
         return database
     }
@@ -494,6 +564,25 @@ object DumpGroupMember : CommonDynamicHook() {
     ) {
         init {
             check(gid > 0 && uid > 0) { "gid and uid must be positive" }
+        }
+    }
+
+    data class ChannelInfo(
+        val uid: Long,
+        val accessHash: Long,
+        val name: String,
+        val flags: Int,
+        val username: String?,
+        val broadcast: Boolean = (flags and 32 != 0),
+        val megagroup: Boolean = (flags and 256 != 0),
+        val gigagroup: Boolean = (flags and 67108864 != 0),
+        val hasLink: Boolean = (flags and 1048576 != 0),
+        val noForwards: Boolean = (flags and 134217728 != 0),
+        val joinToSend: Boolean = (flags and 268435456 != 0),
+        val joinRequest: Boolean = (flags and 536870912 != 0)
+    ) {
+        init {
+            check(uid > 0) { "uid must be positive" }
         }
     }
 
@@ -546,6 +635,38 @@ object DumpGroupMember : CommonDynamicHook() {
                         if (userInfo.deleted) "1" else "0",
                         if (userInfo.inactive) "1" else "0",
                         userInfo.langCode
+                    )
+                )
+            }
+            database.setTransactionSuccessful()
+        } finally {
+            database.endTransaction()
+        }
+    }
+
+    private fun updateChannelInfoList(slot: Int, info: List<ChannelInfo>) {
+        val database = ensureDatabase(slot)
+        database.beginTransaction()
+        try {
+            for (channelInfo in info) {
+                database.execSQL(
+                    "INSERT OR REPLACE INTO channels " +
+                            "(uid, access_hash, name, flags, username, broadcast, megagroup, gigagroup, has_link, " +
+                            "noforwards, join_to_send, join_request) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    arrayOf(
+                        channelInfo.uid.toString(),
+                        channelInfo.accessHash.toString(),
+                        channelInfo.name,
+                        channelInfo.flags.toString(),
+                        channelInfo.username,
+                        if (channelInfo.broadcast) "1" else "0",
+                        if (channelInfo.megagroup) "1" else "0",
+                        if (channelInfo.gigagroup) "1" else "0",
+                        if (channelInfo.hasLink) "1" else "0",
+                        if (channelInfo.noForwards) "1" else "0",
+                        if (channelInfo.joinToSend) "1" else "0",
+                        if (channelInfo.joinRequest) "1" else "0"
                     )
                 )
             }
