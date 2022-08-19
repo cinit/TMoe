@@ -46,6 +46,6 @@
     <string name="AddReloadMsgBtn">Reload Message Button</string>
     <string name="AddReloadMsgBtnDesc">Add Reload Message Button in chat menu</string>
     <string name="DumpGroupMember">Group Member List</string>
-    <string name="DumpGroupMemberDesc">Save group member list to ctx.filesDir/TMoe_group_dump.db, usually not useful.</string>
+    <string name="DumpGroupMemberDesc">Save group member list to ctx.filesDir/TMoe_channel_dump.db, usually not useful.</string>
     <string name="RestrictContentMitigationDesc">Allow copy, save and screenshot in secret chats</string>
 </resources>

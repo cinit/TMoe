@@ -32,12 +32,26 @@ object DumpGroupMember : CommonDynamicHook() {
     private lateinit var fTL_channels_getParticipants_channel: Field
     private lateinit var kInputChannel: Class<*>
     private lateinit var fInputChannel_channel_id: Field
+    private lateinit var kUser: Class<*>
+    private lateinit var fUser_id: Field
+    private lateinit var fUser_first_name: Field
+    private lateinit var fUser_last_name: Field
+    private lateinit var fUser_access_hash: Field
+    private lateinit var fUser_username: Field
+    private lateinit var fUser_flags: Field
+    private lateinit var fUser_deleted: Field
+    private lateinit var fUser_bot: Field
+    private lateinit var fUser_lang_code: Field
+    private lateinit var fUser_inactive: Field
     private lateinit var kChannelParticipant: Class<*>
-    private lateinit var kPeer: Class<*>
     private lateinit var fChannelParticipant_peer: Field
     private lateinit var fChannelParticipant_date: Field
     private lateinit var fChannelParticipant_user_id: Field
+    private lateinit var fChannelParticipant_inviter_id: Field
+    private lateinit var fChannelParticipant_flags: Field
     private lateinit var fTL_channels_channelParticipants_participants: Field
+    private lateinit var fTL_channels_channelParticipants_users: Field
+    private lateinit var kPeer: Class<*>
     private lateinit var fPeer_user_id: Field
     private lateinit var fPeer_chat_id: Field
     private lateinit var fPeer_channel_id: Field
@@ -55,6 +69,9 @@ object DumpGroupMember : CommonDynamicHook() {
         fTL_channels_channelParticipants_participants = Reflex.findField(
             kTL_channels_channelParticipants, java.util.ArrayList::class.java, "participants"
         )
+        fTL_channels_channelParticipants_users = Reflex.findField(
+            kTL_channels_channelParticipants, java.util.ArrayList::class.java, "users"
+        )
         kChannelParticipant = Initiator.loadClass("org.telegram.tgnet.TLRPC\$ChannelParticipant")
         kTL_channels_getParticipants = Initiator.loadClass("org.telegram.tgnet.TLRPC\$TL_channels_getParticipants")
         kInputChannel = Initiator.loadClass("org.telegram.tgnet.TLRPC\$InputChannel")
@@ -64,9 +81,22 @@ object DumpGroupMember : CommonDynamicHook() {
         fChannelParticipant_peer = Reflex.findField(kChannelParticipant, kPeer, "peer")
         fChannelParticipant_date = Reflex.findField(kChannelParticipant, Integer.TYPE, "date")
         fChannelParticipant_user_id = Reflex.findField(kChannelParticipant, java.lang.Long.TYPE, "user_id")
+        fChannelParticipant_inviter_id = Reflex.findField(kChannelParticipant, java.lang.Long.TYPE, "inviter_id")
+        fChannelParticipant_flags = Reflex.findField(kChannelParticipant, Integer.TYPE, "flags")
         fPeer_user_id = Reflex.findField(kPeer, java.lang.Long.TYPE, "user_id")
         fPeer_chat_id = Reflex.findField(kPeer, java.lang.Long.TYPE, "chat_id")
         fPeer_channel_id = Reflex.findField(kPeer, java.lang.Long.TYPE, "channel_id")
+        kUser = Initiator.loadClass("org.telegram.tgnet.TLRPC\$User")
+        fUser_id = Reflex.findField(kUser, java.lang.Long.TYPE, "id")
+        fUser_first_name = Reflex.findField(kUser, String::class.java, "first_name")
+        fUser_last_name = Reflex.findField(kUser, String::class.java, "last_name")
+        fUser_username = Reflex.findField(kUser, String::class.java, "username")
+        fUser_access_hash = Reflex.findField(kUser, java.lang.Long.TYPE, "access_hash")
+        fUser_flags = Reflex.findField(kUser, Integer.TYPE, "flags")
+        fUser_deleted = Reflex.findField(kUser, java.lang.Boolean.TYPE, "deleted")
+        fUser_bot = Reflex.findField(kUser, java.lang.Boolean.TYPE, "bot")
+        fUser_lang_code = Reflex.findField(kUser, String::class.java, "lang_code")
+        fUser_inactive = Reflex.findField(kUser, java.lang.Boolean.TYPE, "inactive")
 
         // test linkage
         val currentSlot = AccountController.getCurrentActiveSlot()
@@ -150,6 +180,8 @@ object DumpGroupMember : CommonDynamicHook() {
                 val inputChannel = fTL_channels_getParticipants_channel.get(originalRequest)
                 val channelId = fInputChannel_channel_id.getLong(inputChannel)
                 check(channelId > 0) { "invalid channel_id: $channelId" }
+                val slot = AccountController.getCurrentActiveSlot()
+                check(slot >= 0) { "invalid slot: $slot" }
                 val channelParticipants = fTL_channels_channelParticipants_participants.get(response) as ArrayList<*>
                 val channelParticipantCount = channelParticipants.size
                 // Log.d("channelParticipants.size = $channelParticipantCount")
@@ -162,15 +194,40 @@ object DumpGroupMember : CommonDynamicHook() {
                         userId = fPeer_user_id.getLong(peer)
                     }
                     if (userId != 0L) {
+                        val inviterUserId = fChannelParticipant_inviter_id.getLong(it)
+                        val flags = fChannelParticipant_flags.getInt(it)
                         check(channelId > 0 && userId > 0) { "channel = $channelId, user = $userId" }
-                        members.add(MemberInfo(channelId, userId, date.toLong()))
+                        members.add(MemberInfo(channelId, userId, flags, date.toLong(), inviterUserId))
                     }
                 }
                 if (members.isNotEmpty()) {
-                    val slot = AccountController.getCurrentActiveSlot()
-                    check(slot >= 0) { "invalid slot: $slot" }
-                    updateMemberInfoList(slot, members)
+                    updateChannelMemberInfoList(slot, members)
                     // Log.d("${members.size} rows affected.")
+                }
+                val users = fTL_channels_channelParticipants_users.get(response) as ArrayList<*>
+                if (users.isNotEmpty()) {
+                    val userCount = users.size
+                    // Log.d("users.size = $userCount")
+                    val userSet = ArrayList<UserInfo9>(userCount)
+                    users.forEach {
+                        val uid = fUser_id.getLong(it)
+                        val firstName = fUser_first_name.get(it) as String
+                        val lastName = (fUser_last_name.get(it) as String?)?.ifEmpty { null }
+                        val username = (fUser_username.get(it) as String?)?.ifEmpty { null }
+                        val accessHash = fUser_access_hash.getLong(it)
+                        val flags = fUser_flags.getInt(it)
+                        val languageCode = (fUser_lang_code.get(it) as String?)?.ifEmpty { null }
+                        val isBot = fUser_bot.getBoolean(it)
+                        val isDeleted = fUser_deleted.getBoolean(it)
+                        val isInactive = fUser_inactive.getBoolean(it)
+                        check(uid > 0) { "invalid user_id: $uid" }
+                        val name = if (lastName.isNullOrEmpty()) firstName else "$firstName $lastName"
+                        val user = UserInfo9(
+                            uid, accessHash, name, flags, username, isBot, isDeleted, isInactive, languageCode,
+                        )
+                        userSet.add(user)
+                    }
+                    updateUserInfoList(slot, userSet)
                 }
             }
             else -> {
@@ -352,12 +409,6 @@ object DumpGroupMember : CommonDynamicHook() {
         }
     }
 
-    data class MemberInfo(val gid: Long, val uid: Long, val updateTime: Long) {
-        init {
-            check(gid > 0 && uid > 0) { "gid and uid must be positive" }
-        }
-    }
-
     @Synchronized
     private fun ensureDatabase(slot: Int): SQLiteDatabase {
         check(slot >= 0 && slot < Short.MAX_VALUE) { "invalid slot: $slot" }
@@ -366,7 +417,7 @@ object DumpGroupMember : CommonDynamicHook() {
         }
         val context = HostInfo.getApplication()
         val filesDir = context.filesDir
-        val databaseFile = File(if (slot == 0) filesDir else File(filesDir, "account$slot"), "TMoe_group_dump.db")
+        val databaseFile = File(if (slot == 0) filesDir else File(filesDir, "account$slot"), "TMoe_channel_dump.db")
         val createTable = !databaseFile.exists()
         val database = SQLiteDatabase.openDatabase(
             databaseFile.absolutePath, null,
@@ -384,28 +435,117 @@ object DumpGroupMember : CommonDynamicHook() {
                 endTransaction()
             }
         }
-        // group(int64 gid, int64 uid, int64 update_time)
-        database.execSQL("CREATE TABLE IF NOT EXISTS group_member(gid INTEGER, uid INTEGER, update_time INTEGER, PRIMARY KEY(gid, uid))")
+        database.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS channel_members
+            (
+                gid        INTEGER NOT NULL,
+                uid        INTEGER NOT NULL,
+                flags      INTEGER NOT NULL,
+                join_date  INTEGER,
+                inviter_id INTEGER,
+                PRIMARY KEY (gid, uid)
+            )
+        """.trimIndent()
+        )
+        database.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS users
+            (
+                uid         INTEGER PRIMARY KEY,
+                access_hash INTEGER NOT NULL,
+                name        TEXT    NOT NULL,
+                flags       INTEGER NOT NULL,
+                username    TEXT,
+                bot         INTEGER,
+                deleted     INTEGER,
+                inactive    INTEGER,
+                lang_code   TEXT
+            )
+            """.trimIndent()
+        )
         mDatabase[slot] = database
         return database
+    }
+
+    data class UserInfo9(
+        val uid: Long,
+        val accessHash: Long,
+        val name: String,
+        val flags: Int,
+        val username: String?,
+        val bot: Boolean,
+        val deleted: Boolean,
+        val inactive: Boolean,
+        val langCode: String?
+    ) {
+        init {
+            check(uid > 0) { "uid must be positive" }
+        }
+    }
+
+    data class MemberInfo(
+        val gid: Long,
+        val uid: Long,
+        val flags: Int,
+        val joinTime: Long,
+        val inviterId: Long
+    ) {
+        init {
+            check(gid > 0 && uid > 0) { "gid and uid must be positive" }
+        }
     }
 
     private fun SQLiteDatabase.exec(stmt: String) {
         rawQuery(stmt, null)?.close()
     }
 
-    private fun updateMemberInfo(slot: Int, info: MemberInfo) {
-        updateMemberInfoList(slot, listOf(info))
+    private fun updateChannelMemberInfo(slot: Int, info: MemberInfo) {
+        updateChannelMemberInfoList(slot, listOf(info))
     }
 
-    private fun updateMemberInfoList(slot: Int, info: List<MemberInfo>) {
+    private fun updateChannelMemberInfoList(slot: Int, info: List<MemberInfo>) {
         val database = ensureDatabase(slot)
         database.beginTransaction()
         try {
             for (memberInfo in info) {
                 database.execSQL(
-                    "INSERT OR REPLACE INTO group_member(gid, uid, update_time) VALUES(?, ?, ?)",
-                    arrayOf<Any>(memberInfo.gid, memberInfo.uid, memberInfo.updateTime)
+                    "INSERT OR REPLACE INTO channel_members (gid, uid, flags, join_date, inviter_id) " +
+                            "VALUES (?, ?, ?, ?, ?)",
+                    arrayOf(
+                        memberInfo.gid.toString(),
+                        memberInfo.uid.toString(),
+                        memberInfo.flags.toString(),
+                        memberInfo.joinTime.toString(),
+                        memberInfo.inviterId.toString()
+                    )
+                )
+            }
+            database.setTransactionSuccessful()
+        } finally {
+            database.endTransaction()
+        }
+    }
+
+    private fun updateUserInfoList(slot: Int, info: List<UserInfo9>) {
+        val database = ensureDatabase(slot)
+        database.beginTransaction()
+        try {
+            for (userInfo in info) {
+                database.execSQL(
+                    "INSERT OR REPLACE INTO users (uid, access_hash, name, flags, username, bot, deleted, inactive, lang_code) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    arrayOf(
+                        userInfo.uid.toString(),
+                        userInfo.accessHash.toString(),
+                        userInfo.name,
+                        userInfo.flags.toString(),
+                        userInfo.username,
+                        if (userInfo.bot) "1" else "0",
+                        if (userInfo.deleted) "1" else "0",
+                        if (userInfo.inactive) "1" else "0",
+                        userInfo.langCode
+                    )
                 )
             }
             database.setTransactionSuccessful()
