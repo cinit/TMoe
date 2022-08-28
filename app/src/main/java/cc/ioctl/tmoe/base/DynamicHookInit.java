@@ -12,6 +12,7 @@ import cc.ioctl.tmoe.hook.func.AddSubItemChannel;
 import cc.ioctl.tmoe.hook.func.AntiAntiCopy;
 import cc.ioctl.tmoe.hook.func.AntiAntiForward;
 import cc.ioctl.tmoe.hook.func.ChannelDetailNumbers;
+import cc.ioctl.tmoe.hook.func.DatabaseCorruptionWarning;
 import cc.ioctl.tmoe.hook.func.DisablePremiumStickerAnimation;
 import cc.ioctl.tmoe.hook.func.DumpGroupMember;
 import cc.ioctl.tmoe.hook.func.EnableDebugMode;
@@ -77,6 +78,7 @@ public class DynamicHookInit {
                     ForceBlurChatAvailable.INSTANCE,
                     DisablePremiumStickerAnimation.INSTANCE,
                     DumpGroupMember.INSTANCE,
+                    DatabaseCorruptionWarning.INSTANCE,
             };
         }
         return sAllFunctionHooks;

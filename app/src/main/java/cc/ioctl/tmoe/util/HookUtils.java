@@ -2,6 +2,7 @@ package cc.ioctl.tmoe.util;
 
 import androidx.annotation.NonNull;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
@@ -156,6 +157,23 @@ public class HookUtils {
         });
     }
 
+    public static void hookAfterAlways(final @NonNull CommonDynamicHook this0, final @NonNull Constructor<?> ctor,
+                                       int priority, final @NonNull AfterHookedMethod afterHookedMethod) {
+        Objects.requireNonNull(this0, "this0 == null");
+        Objects.requireNonNull(ctor, "ctor == null");
+        XposedBridge.hookMethod(ctor, new XC_MethodHook(priority) {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                try {
+                    afterHookedMethod.afterHookedMethod(param);
+                } catch (Throwable e) {
+                    this0.logError(e);
+                    throw e;
+                }
+            }
+        });
+    }
+
     public static void hookBeforeAlways(final @NonNull CommonDynamicHook this0, final @NonNull Method method,
                                         int priority, final @NonNull BeforeHookedMethod beforeHookedMethod) {
         Objects.requireNonNull(this0, "this0 == null");
@@ -176,6 +194,11 @@ public class HookUtils {
     public static void hookAfterAlways(final @NonNull CommonDynamicHook this0, final @NonNull Method method,
                                        final @NonNull AfterHookedMethod afterHookedMethod) {
         hookAfterAlways(this0, method, 50, afterHookedMethod);
+    }
+
+    public static void hookAfterAlways(final @NonNull CommonDynamicHook this0, final @NonNull Constructor<?> ctor,
+                                       final @NonNull AfterHookedMethod afterHookedMethod) {
+        hookAfterAlways(this0, ctor, 50, afterHookedMethod);
     }
 
     public static void hookBeforeAlways(final @NonNull CommonDynamicHook this0, final @NonNull Method method,

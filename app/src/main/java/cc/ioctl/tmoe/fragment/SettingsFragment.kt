@@ -110,6 +110,11 @@ class SettingsFragment : BaseHierarchyFragment() {
                 "AddReloadMsgBtn", R.string.AddReloadMsgBtn,
                 "AddReloadMsgBtnDesc", R.string.AddReloadMsgBtnDesc
             )
+            functionSwitch(
+                DatabaseCorruptionWarning,
+                "DatabaseCorruptionWarning", R.string.DatabaseCorruptionWarning,
+                "DatabaseCorruptionWarningDesc", R.string.DatabaseCorruptionWarningDesc
+            )
         }
         category("Export Data", R.string.ExportData) {
             functionSwitch(

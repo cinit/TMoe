@@ -4,6 +4,7 @@
     <string name="xposeddescription">Extra features for Telegram clients.</string>
 
     <string name="TMoeSettings">TMoe Settings</string>
+    <string name="Cancel">Cancel</string>
     <string name="EnableDebugMode">Enable debug mode</string>
     <string name="AntiAntiForward">Anti-Anti-Forward message</string>
     <string name="ProhibitChannelSwitching">Prohibit Channel Switching</string>
@@ -45,7 +46,10 @@
     <string name="LostMsgMitigation">If you have lost messages</string>
     <string name="AddReloadMsgBtn">Reload Message Button</string>
     <string name="AddReloadMsgBtnDesc">Add Reload Message Button in chat menu</string>
+    <string name="DatabaseCorruptionWarning">Database Corruption Warning</string>
+    <string name="DatabaseCorruptionWarningDesc">Show database corruption warning if detected.</string>
     <string name="DumpGroupMember">Group Member List</string>
     <string name="DumpGroupMemberDesc">Save group member list to ctx.filesDir/TMoe_channel_dump.db, usually not useful.</string>
+    <string name="Ignore">Ignore</string>
     <string name="RestrictContentMitigationDesc">Allow copy, save and screenshot in secret chats</string>
 </resources>
