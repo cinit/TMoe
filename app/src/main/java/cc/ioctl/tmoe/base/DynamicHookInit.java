@@ -104,4 +104,24 @@ public class DynamicHookInit {
             }
         }
     }
+
+    public static void allowEarlyInit(DynamicHook hook) {
+        try {
+            if (hook.isAvailable() && hook.isEnabledByUser()
+                    && !hook.isPreparationRequired() && !hook.isInitialized()) {
+                // initialize hook
+                if (!hook.initialize()) {
+                    Utils.logw("initialize failed: " + hook.getClass().getName());
+                    List<Throwable> errors = hook.getErrors();
+                    if (errors != null && !errors.isEmpty()) {
+                        for (Throwable error : errors) {
+                            Utils.loge(error);
+                        }
+                    }
+                }
+            }
+        } catch (Exception | LinkageError e) {
+            Utils.loge(e);
+        }
+    }
 }

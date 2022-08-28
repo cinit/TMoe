@@ -4,6 +4,7 @@ import android.app.Application;
 
 import java.lang.reflect.Field;
 
+import cc.ioctl.tmoe.hook.func.DatabaseCorruptionWarning;
 import cc.ioctl.tmoe.lifecycle.Parasitics;
 import cc.ioctl.tmoe.rtti.ProxyFragmentRttiHandler;
 import cc.ioctl.tmoe.rtti.deobf.ClassLocator;
@@ -18,10 +19,20 @@ public class MainStartInit {
     private MainStartInit() {
     }
 
-    private boolean mInitialized = false;
+    private boolean mPreInitialized = false;
+    private boolean mPostInitialized = false;
 
-    public void initForStartup() {
-        if (mInitialized) {
+    public void initForPreStartup() {
+        if (mPreInitialized) {
+            return;
+        }
+        // init early hooks
+        DynamicHookInit.allowEarlyInit(DatabaseCorruptionWarning.INSTANCE);
+        mPreInitialized = true;
+    }
+
+    public void initForPostStartup() {
+        if (mPostInitialized) {
             return;
         }
         Application app = HostInfo.getApplication();
@@ -34,7 +45,7 @@ public class MainStartInit {
             // init functional hooks
             DynamicHookInit.loadHooks();
         }
-        mInitialized = true;
+        mPostInitialized = true;
         // auxiliary init
         initForClassLocator();
     }

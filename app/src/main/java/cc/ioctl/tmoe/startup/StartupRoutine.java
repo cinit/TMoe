@@ -24,13 +24,17 @@ public class StartupRoutine {
      * @param lpwReserved null, not used
      * @param bReserved   false, not used
      */
-    public static void execPostStartupInit(Application application, String lpwReserved, boolean bReserved) {
+    public static void execPreStartupInit(Application application, String lpwReserved, boolean bReserved) {
         // native library was already loaded before this method is called
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             HiddenApiBypass.setHiddenApiExemptions("L");
         }
         HostInfo.setHostApplication(application);
         Initiator.initWithHostClassLoader(application.getClassLoader());
-        MainStartInit.INSTANCE.initForStartup();
+        MainStartInit.INSTANCE.initForPreStartup();
+    }
+
+    public static void execPostStartupInit() {
+        MainStartInit.INSTANCE.initForPostStartup();
     }
 }

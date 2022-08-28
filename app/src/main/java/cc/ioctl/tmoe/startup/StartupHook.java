@@ -67,6 +67,10 @@ public class StartupHook {
                     throw new AssertionError("app == null");
                 }
                 NativeLoader.loadAllSharedLibraries(app);
+                if (!NativeLoader.isNativeLibraryLoaded()) {
+                    throw new AssertionError("NativeLoader.isNativeLibraryLoaded() == false");
+                }
+                StartupRoutine.execPreStartupInit(app, null, false);
             }
 
             @Override
@@ -74,15 +78,7 @@ public class StartupHook {
                 if (sPost2Initialized) {
                     return;
                 }
-                Application app = (Application) param.thisObject;
-                if (app == null) {
-                    throw new AssertionError("app == null");
-                }
-                if (!NativeLoader.isNativeLibraryLoaded()) {
-                    throw new AssertionError("NativeLoader.isNativeLibraryLoaded() == false");
-                }
-                // injectClassLoader(app.getClassLoader());
-                StartupRoutine.execPostStartupInit(app, null, false);
+                StartupRoutine.execPostStartupInit();
                 sPost2Initialized = true;
             }
         });
