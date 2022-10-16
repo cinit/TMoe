@@ -52,4 +52,5 @@
     <string name="DumpGroupMemberDesc">Save group member list to ctx.filesDir/TMoe_channel_dump.db, usually not useful.</string>
     <string name="Ignore">Ignore</string>
     <string name="RestrictContentMitigationDesc">Allow copy, save and screenshot in secret chats</string>
+    <string name="KeepVideoMuted">Keep video muted on volume key press</string>
 </resources>

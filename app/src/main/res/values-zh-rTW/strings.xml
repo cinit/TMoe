@@ -42,4 +42,5 @@
     <string name="LostMsgMitigation">針對訊息遺失的輔助手段</string>
     <string name="AddReloadMsgBtn">新增重新整理訊息按鈕</string>
     <string name="AddReloadMsgBtnDesc">在聊天選單新增重新整理訊息按鈕</string>
+    <string name="KeepVideoMuted">按音量鍵時保持影片靜音</string>
 </resources>

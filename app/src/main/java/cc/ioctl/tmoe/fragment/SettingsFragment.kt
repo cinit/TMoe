@@ -99,7 +99,9 @@ class SettingsFragment : BaseHierarchyFragment() {
             functionSwitch(
                 DisablePremiumStickerAnimation, "DisablePremiumStickerAnimation",  R.string.DisablePremiumStickerAnimation
             )
-
+            functionSwitch(
+                KeepVideoMuted, "KeepVideoMuted", R.string.KeepVideoMuted
+            )
         }
         category("LostMsgMitigation", R.string.LostMsgMitigation) {
             functionSwitch(

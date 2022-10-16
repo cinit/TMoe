@@ -43,4 +43,5 @@
     <string name="RestrictContentMitigationDesc">允许在私密聊天界面复制消息保存文件以及截图</string>
     <string name="ForceBlurChatAvailable">强制显示顶栏模糊选项</string>
     <string name="DisablePremiumStickerAnimation">禁用 Premium 贴纸动画</string>
+    <string name="KeepVideoMuted">按音量键时保持视频静音</string>
 </resources>

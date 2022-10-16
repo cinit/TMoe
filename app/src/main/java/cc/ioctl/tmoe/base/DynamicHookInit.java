@@ -20,6 +20,7 @@ import cc.ioctl.tmoe.hook.func.ForceBlurChatAvailable;
 import cc.ioctl.tmoe.hook.func.HidePhoneNumber;
 import cc.ioctl.tmoe.hook.func.HideUserAvatar;
 import cc.ioctl.tmoe.hook.func.HistoricalNewsOption;
+import cc.ioctl.tmoe.hook.func.KeepVideoMuted;
 import cc.ioctl.tmoe.hook.func.ProhibitChannelSwitching;
 import cc.ioctl.tmoe.hook.func.ProhibitChatGreetings;
 import cc.ioctl.tmoe.hook.func.ProhibitEnableReactions;
@@ -77,6 +78,7 @@ public class DynamicHookInit {
                     AddReloadMsgBtn.INSTANCE,
                     ForceBlurChatAvailable.INSTANCE,
                     DisablePremiumStickerAnimation.INSTANCE,
+                    KeepVideoMuted.INSTANCE,
                     DumpGroupMember.INSTANCE,
                     DatabaseCorruptionWarning.INSTANCE,
             };
