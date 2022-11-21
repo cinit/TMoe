@@ -7,14 +7,17 @@ String BUILD_UUID = UUID.randomUUID().toString()
 println "Current build ID is " + BUILD_UUID
 
 android {
-    compileSdk 31
+    //noinspection GradleCompatible
+    compileSdk 32
     buildToolsVersion "31.0.0"
     ndkVersion "23.1.7779620"
+
+    namespace 'cc.ioctl.tmoe'
 
     defaultConfig {
         applicationId "cc.ioctl.tmoe"
         minSdk 24
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0" + (getGitHeadRefsSuffix.call() as String)
         buildConfigField "String", "BUILD_UUID", '"' + BUILD_UUID + '"'
@@ -76,13 +79,13 @@ android {
 }
 
 dependencies {
-    implementation 'com.tencent:mmkv-static:1.2.12'
+    implementation 'com.tencent:mmkv-static:1.2.14'
     implementation 'io.noties.markwon:core:4.6.2'
     implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
     implementation 'org.smali:dexlib2:2.4.0'
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'com.google.android.material:material:1.5.0'
-    implementation 'com.google.code.gson:gson:2.9.0'
-    implementation 'com.github.kyuubiran:EzXHelper:0.8.8'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'com.google.android.material:material:1.6.1'
+    implementation 'com.google.code.gson:gson:2.9.1'
+    implementation 'com.github.kyuubiran:EzXHelper:1.0.3'
     compileOnly("de.robv.android.xposed:api:82")
 }
