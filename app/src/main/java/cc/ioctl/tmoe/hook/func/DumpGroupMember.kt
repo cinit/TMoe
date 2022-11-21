@@ -1,5 +1,6 @@
 package cc.ioctl.tmoe.hook.func
 
+import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.view.View
@@ -633,6 +634,23 @@ object DumpGroupMember : CommonDynamicHook() {
         database.beginTransaction()
         try {
             for (userInfo in info) {
+                if (userInfo.deleted) {
+                    // we don't want to overwrite the user info
+                    val affected = database.update(
+                        "t_user",
+                        ContentValues().apply {
+                            put("access_hash", userInfo.accessHash)
+                            put("deleted", 1)
+                            put("update_ts", now)
+                        },
+                        "uid = ?",
+                        arrayOf(userInfo.uid.toString())
+                    )
+                    if (affected != 0) {
+                        // done, no need to insert again.
+                        continue
+                    }
+                }
                 database.execSQL(
                     "INSERT OR REPLACE INTO t_user (uid, access_hash, name, flags, username, " +
                             "bot, deleted, inactive, lang_code, update_ts) " +
