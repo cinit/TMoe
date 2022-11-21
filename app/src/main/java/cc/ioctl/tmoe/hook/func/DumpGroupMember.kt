@@ -489,20 +489,23 @@ object DumpGroupMember : CommonDynamicHook() {
         }
         database.execSQL(
             """
-            CREATE TABLE IF NOT EXISTS channel_members
+            CREATE TABLE IF NOT EXISTS t_channel_member
             (
                 gid        INTEGER NOT NULL,
                 uid        INTEGER NOT NULL,
                 flags      INTEGER NOT NULL,
                 join_date  INTEGER,
                 inviter_id INTEGER,
+                ext_status INTEGER NOT NULL,
+                ext_flags  INTEGER NOT NULL,
+                update_ts  INTEGER NOT NULL,
                 PRIMARY KEY (gid, uid)
             )
         """.trimIndent()
         )
         database.execSQL(
             """
-            CREATE TABLE IF NOT EXISTS users
+            CREATE TABLE IF NOT EXISTS t_user
             (
                 uid         INTEGER PRIMARY KEY,
                 access_hash INTEGER NOT NULL,
@@ -512,13 +515,14 @@ object DumpGroupMember : CommonDynamicHook() {
                 bot         INTEGER,
                 deleted     INTEGER,
                 inactive    INTEGER,
-                lang_code   TEXT
+                lang_code   TEXT,
+                update_ts   INTEGER NOT NULL
             )
             """.trimIndent()
         )
         database.execSQL(
             """
-            CREATE TABLE IF NOT EXISTS channels
+            CREATE TABLE IF NOT EXISTS t_channel
             (
                 uid          INTEGER PRIMARY KEY,
                 access_hash  INTEGER NOT NULL,
@@ -531,7 +535,8 @@ object DumpGroupMember : CommonDynamicHook() {
                 has_link     INTEGER NOT NULL,
                 noforwards   INTEGER NOT NULL,
                 join_to_send INTEGER NOT NULL,
-                join_request INTEGER NOT NULL
+                join_request INTEGER NOT NULL,
+                update_ts    INTEGER NOT NULL
             )
             """.trimIndent()
         )
@@ -595,19 +600,24 @@ object DumpGroupMember : CommonDynamicHook() {
     }
 
     private fun updateChannelMemberInfoList(slot: Int, info: List<MemberInfo>) {
+        val now = System.currentTimeMillis() / 1000L
         val database = ensureDatabase(slot)
         database.beginTransaction()
         try {
             for (memberInfo in info) {
                 database.execSQL(
-                    "INSERT OR REPLACE INTO channel_members (gid, uid, flags, join_date, inviter_id) " +
-                            "VALUES (?, ?, ?, ?, ?)",
+                    "INSERT OR REPLACE INTO t_channel_member (gid, uid, flags, join_date, inviter_id," +
+                            " ext_status, ext_flags, update_ts) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                     arrayOf(
                         memberInfo.gid.toString(),
                         memberInfo.uid.toString(),
                         memberInfo.flags.toString(),
                         memberInfo.joinTime.toString(),
-                        memberInfo.inviterId.toString()
+                        memberInfo.inviterId.toString(),
+                        "0",
+                        "0",
+                        now.toString()
                     )
                 )
             }
@@ -618,13 +628,15 @@ object DumpGroupMember : CommonDynamicHook() {
     }
 
     private fun updateUserInfoList(slot: Int, info: List<UserInfo9>) {
+        val now = System.currentTimeMillis() / 1000L
         val database = ensureDatabase(slot)
         database.beginTransaction()
         try {
             for (userInfo in info) {
                 database.execSQL(
-                    "INSERT OR REPLACE INTO users (uid, access_hash, name, flags, username, bot, deleted, inactive, lang_code) " +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    "INSERT OR REPLACE INTO t_user (uid, access_hash, name, flags, username, " +
+                            "bot, deleted, inactive, lang_code, update_ts) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     arrayOf(
                         userInfo.uid.toString(),
                         userInfo.accessHash.toString(),
@@ -634,7 +646,8 @@ object DumpGroupMember : CommonDynamicHook() {
                         if (userInfo.bot) "1" else "0",
                         if (userInfo.deleted) "1" else "0",
                         if (userInfo.inactive) "1" else "0",
-                        userInfo.langCode
+                        userInfo.langCode,
+                        now.toString()
                     )
                 )
             }
@@ -645,15 +658,17 @@ object DumpGroupMember : CommonDynamicHook() {
     }
 
     private fun updateChannelInfoList(slot: Int, info: List<ChannelInfo>) {
+        val now = System.currentTimeMillis() / 1000L
         val database = ensureDatabase(slot)
         database.beginTransaction()
         try {
             for (channelInfo in info) {
                 database.execSQL(
-                    "INSERT OR REPLACE INTO channels " +
-                            "(uid, access_hash, name, flags, username, broadcast, megagroup, gigagroup, has_link, " +
-                            "noforwards, join_to_send, join_request) " +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    "INSERT OR REPLACE INTO t_channel " +
+                            "(uid, access_hash, name, flags, username, " +
+                            "broadcast, megagroup, gigagroup, has_link, noforwards, join_to_send, join_request, " +
+                            "update_ts) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     arrayOf(
                         channelInfo.uid.toString(),
                         channelInfo.accessHash.toString(),
@@ -666,7 +681,8 @@ object DumpGroupMember : CommonDynamicHook() {
                         if (channelInfo.hasLink) "1" else "0",
                         if (channelInfo.noForwards) "1" else "0",
                         if (channelInfo.joinToSend) "1" else "0",
-                        if (channelInfo.joinRequest) "1" else "0"
+                        if (channelInfo.joinRequest) "1" else "0",
+                        now.toString()
                     )
                 )
             }
