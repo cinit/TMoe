@@ -504,6 +504,7 @@ object DumpGroupMember : CommonDynamicHook() {
             )
         """.trimIndent()
         )
+        database.execSQL("CREATE INDEX IF NOT EXISTS idx_t_channel_member_uid ON t_channel_member (uid)")
         database.execSQL(
             """
             CREATE TABLE IF NOT EXISTS t_user
