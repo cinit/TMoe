@@ -118,7 +118,7 @@ class SettingsFragment : BaseHierarchyFragment() {
                 "DatabaseCorruptionWarningDesc", R.string.DatabaseCorruptionWarningDesc
             )
         }
-        category("Export Data", R.string.ExportData) {
+        category("AccessHash", R.string.AccessHash) {
             functionSwitch(
                 DumpGroupMember,
                 "DumpGroupMember", R.string.DumpGroupMember,
