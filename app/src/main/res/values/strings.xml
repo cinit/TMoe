@@ -50,6 +50,8 @@
     <string name="DatabaseCorruptionWarningDesc">Show database corruption warning if detected.</string>
     <string name="DumpGroupMember">Group Member List</string>
     <string name="DumpGroupMemberDesc">Save group member list to ctx.filesDir/TMoe_channel_dump.db, usually not useful.</string>
+    <string name="ExtendedOfflineSearch">Extended Offline Search</string>
+    <string name="ExtendedOfflineSearchDesc">Allow search groups and channels by id in TMoe_channel_dump.db, requiring "Group Member List" enabled.</string>
     <string name="HistoricGroupMemberRecord">Show Historic Groups</string>
     <string name="HistoricGroupMemberRecordDesc">Show historic common groups in a user\'s profile, requiring "Group Member List" enabled.</string>
     <string name="Ignore">Ignore</string>

@@ -261,6 +261,7 @@ object DumpGroupMember : CommonDynamicHook() {
                     updateChannelInfoList(slot, chatSet)
                 }
             }
+
             else -> {
                 Log.w("unhandled response: $klass")
             }
@@ -458,6 +459,7 @@ object DumpGroupMember : CommonDynamicHook() {
         return when (name) {
             "org.telegram.tgnet.TLRPC\$TL_channels_getParticipants",
             "org.telegram.tgnet.TLRPC\$TL_channels_getParticipant" -> true
+
             else -> false
         }
     }
@@ -825,6 +827,135 @@ object DumpGroupMember : CommonDynamicHook() {
         var result = 0
         flags.forEach { result = result or it }
         return result
+    }
+
+    data class UserDescriptor(
+        val uid: Long,
+        val accessHash: Long,
+        val name: String,
+        val username: String?,
+        val flags: Int,
+    ) {
+        override fun toString(): String {
+            return "UserDescriptor(uid=$uid, accessHash=$accessHash, name='$name', username=$username, flags=$flags)"
+        }
+    }
+
+    @JvmStatic
+    fun getUserFormCache(uid: Long): Any? {
+        check(uid > 0) { "uid must be positive" }
+        val currentSlot = AccountController.getCurrentActiveSlot()
+        check(currentSlot >= 0) { "getUserFormCache: no active account" }
+        val accountInstance = Reflex.invokeStatic(
+            Initiator.loadClass("org.telegram.messenger.AccountInstance"),
+            "getInstance", currentSlot, Integer.TYPE
+        )!!
+        val messagesController = Reflex.invokeVirtual(accountInstance, "getMessagesController")!!
+        // MessagesController->getUser(Ljava/lang/Long;)Lorg/telegram/tgnet/TLRPC$User;
+        return Reflex.invokeVirtual(messagesController, "getUser", uid, java.lang.Long::class.java)
+    }
+
+    @JvmStatic
+    fun queryUserDescriptor(uid: Long): UserDescriptor? {
+        val currentSlot = AccountController.getCurrentActiveSlot()
+        if (currentSlot < 0) {
+            Log.w("queryUserDescriptor: no active account")
+            return null
+        }
+        check(uid > 0) { "uid must be positive" }
+        val database = ensureDatabase(currentSlot)
+        var user: UserDescriptor? = null
+        database.rawQuery(
+            "SELECT access_hash, name, username, flags FROM t_user WHERE uid = ?",
+            arrayOf(uid.toString())
+        ).use { cursor ->
+            if (cursor.moveToNext()) {
+                user = UserDescriptor(
+                    uid,
+                    cursor.getLong(0),
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getInt(3)
+                )
+            }
+        }
+        return user
+    }
+
+    @JvmStatic
+    fun createMinimalUser(userInfo: UserDescriptor): Any {
+        check(userInfo.uid > 0) { "uid must be positive" }
+        // create a minimal user object which only contains id, access_hash, name, username and some flags
+        val kTL_user = Initiator.loadClass("org.telegram.tgnet.TLRPC\$TL_user")
+        val user = kTL_user.newInstance()
+        Reflex.setInstanceObject(user, "id", PrimTypes.LONG, userInfo.uid)
+        Reflex.setInstanceObject(user, "first_name", String::class.java, userInfo.name)
+        Reflex.setInstanceObject(user, "last_name", String::class.java, "")
+        Reflex.setInstanceObject(user, "access_hash", PrimTypes.LONG, userInfo.accessHash)
+        Reflex.setInstanceObject(user, "username", String::class.java, userInfo.username)
+        // flag 4: last name, which has been dropped
+        val allowedFlags = bitwiseOr(
+            1, 2, 8,
+            2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144,
+            2097152, 8388608, 67108864
+        )
+        val flags = (userInfo.flags and allowedFlags) or 1048576
+        Reflex.setInstanceObject(user, "flags", PrimTypes.INT, flags)
+        return user
+    }
+
+    @JvmStatic
+    fun queryUserInfoById(uid: Long): UserDescriptor? {
+        val currentSlot = AccountController.getCurrentActiveSlot()
+        if (currentSlot < 0) {
+            Log.w("queryUserInfoById: no active account")
+            return null
+        }
+        check(uid > 0) { "uid must be positive" }
+        val database = ensureDatabase(currentSlot)
+        var user: UserDescriptor? = null
+        database.rawQuery(
+            "SELECT access_hash, name, username, flags FROM t_user WHERE uid = ?",
+            arrayOf(uid.toString())
+        ).use { cursor ->
+            if (cursor.moveToNext()) {
+                user = UserDescriptor(
+                    uid,
+                    cursor.getLong(0),
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getInt(3)
+                )
+            }
+        }
+        return user
+    }
+
+    @JvmStatic
+    fun queryChannelInfoById(uid: Long): GroupDescriptor? {
+        val currentSlot = AccountController.getCurrentActiveSlot()
+        if (currentSlot < 0) {
+            Log.w("queryChannelInfoById: no active account")
+            return null
+        }
+        check(uid > 0) { "uid must be positive" }
+        val database = ensureDatabase(currentSlot)
+        var group: GroupDescriptor? = null
+        database.rawQuery(
+            "SELECT access_hash, name, username, flags FROM t_channel WHERE uid = ?",
+            arrayOf(uid.toString())
+        ).use { cursor ->
+            if (cursor.moveToNext()) {
+                group = GroupDescriptor(
+                    uid,
+                    cursor.getLong(0),
+                    cursor.getString(1),
+                    cursor.getString(2),
+                    cursor.getInt(3)
+                )
+            }
+        }
+        return group
     }
 
 }

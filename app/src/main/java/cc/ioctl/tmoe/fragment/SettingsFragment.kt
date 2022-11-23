@@ -125,6 +125,11 @@ class SettingsFragment : BaseHierarchyFragment() {
                 "DumpGroupMemberDesc", R.string.DumpGroupMemberDesc
             )
             functionSwitch(
+                ExtendedOfflineSearch,
+                "ExtendedOfflineSearch", R.string.ExtendedOfflineSearch,
+                "ExtendedOfflineSearchDesc", R.string.ExtendedOfflineSearchDesc
+            )
+            functionSwitch(
                 HistoricGroupMemberRecord,
                 "HistoricGroupMemberRecord", R.string.HistoricGroupMemberRecord,
                 "HistoricGroupMemberRecordDesc", R.string.HistoricGroupMemberRecordDesc
