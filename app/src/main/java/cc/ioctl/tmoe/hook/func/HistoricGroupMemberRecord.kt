@@ -187,53 +187,14 @@ object HistoricGroupMemberRecord : CommonDynamicHook() {
             return
         }
         extraGroupDescriptors.forEach { desc ->
-            val cachedChat = getChatFormCache(desc.uid)
+            val cachedChat = DumpGroupMember.getChatFormCache(desc.uid)
             // inject
             // Log.d("inject group: $desc, cachedChat = $cachedChat")
-            originalChats.add(cachedChat ?: createMinimalChannelChat(desc))
+            originalChats.add(cachedChat ?: DumpGroupMember.createMinimalChannelChat(desc))
         }
         // update count
         fmessages_Chats_count.set(response, originalChats.size)
         // Log.d("inject extra groups: originCount = $originCount, newCount = ${originalChats.size}")
-    }
-
-    private fun getChatFormCache(uid: Long): Any? {
-        val currentSlot = AccountController.getCurrentActiveSlot()
-        if (currentSlot < 0) {
-            error("queryUserGroupDescriptors: no active account")
-        }
-        val accountInstance = Reflex.invokeStatic(
-            Initiator.loadClass("org.telegram.messenger.AccountInstance"),
-            "getInstance", currentSlot, Integer.TYPE
-        )!!
-        val messagesController = Reflex.invokeVirtual(accountInstance, "getMessagesController")!!
-        // MessagesController->getChat(Ljava/lang/Long;)Lorg/telegram/tgnet/TLRPC$Chat;
-        return Reflex.invokeVirtual(messagesController, "getChat", uid, java.lang.Long::class.java)
-    }
-
-    private fun createMinimalChannelChat(groupInfo: DumpGroupMember.GroupDescriptor): Any {
-        // create a minimal channel chat object which only contains id, access_hash, title, username and some flags
-        val kTL_channel = Initiator.loadClass("org.telegram.tgnet.TLRPC\$TL_channel")
-        val chat = kTL_channel.newInstance()
-        Reflex.setInstanceObject(chat, "id", PrimTypes.LONG, groupInfo.uid)
-        Reflex.setInstanceObject(chat, "title", String::class.java, groupInfo.name)
-        Reflex.setInstanceObject(chat, "access_hash", PrimTypes.LONG, groupInfo.accessHash)
-        Reflex.setInstanceObject(chat, "username", String::class.java, groupInfo.username)
-        val allowedFlags = bitwiseOr(
-            1, 2, 4, 32, 128, 256, 512, 2048,
-            524288, 1048576, 33554432, 67108864,
-            134217728, 268435456, 536870912, 1073741824
-        )
-        val flags = (groupInfo.flags and allowedFlags) or 4096
-        Reflex.setInstanceObject(chat, "flags", PrimTypes.INT, flags)
-        return chat
-    }
-
-    @JvmStatic
-    private fun bitwiseOr(vararg flags: Int): Int {
-        var result = 0
-        flags.forEach { result = result or it }
-        return result
     }
 
 }
