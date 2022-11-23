@@ -16,6 +16,7 @@ import cc.ioctl.tmoe.hook.func.DatabaseCorruptionWarning;
 import cc.ioctl.tmoe.hook.func.DisablePremiumStickerAnimation;
 import cc.ioctl.tmoe.hook.func.DumpGroupMember;
 import cc.ioctl.tmoe.hook.func.EnableDebugMode;
+import cc.ioctl.tmoe.hook.func.HistoricGroupMemberRecord;
 import cc.ioctl.tmoe.hook.func.ForceBlurChatAvailable;
 import cc.ioctl.tmoe.hook.func.HidePhoneNumber;
 import cc.ioctl.tmoe.hook.func.HideUserAvatar;
@@ -81,6 +82,7 @@ public class DynamicHookInit {
                     KeepVideoMuted.INSTANCE,
                     DumpGroupMember.INSTANCE,
                     DatabaseCorruptionWarning.INSTANCE,
+                    HistoricGroupMemberRecord.INSTANCE,
             };
         }
         return sAllFunctionHooks;

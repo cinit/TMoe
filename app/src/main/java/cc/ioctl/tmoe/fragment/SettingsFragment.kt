@@ -124,6 +124,11 @@ class SettingsFragment : BaseHierarchyFragment() {
                 "DumpGroupMember", R.string.DumpGroupMember,
                 "DumpGroupMemberDesc", R.string.DumpGroupMemberDesc
             )
+            functionSwitch(
+                HistoricGroupMemberRecord,
+                "HistoricGroupMemberRecord", R.string.HistoricGroupMemberRecord,
+                "HistoricGroupMemberRecordDesc", R.string.HistoricGroupMemberRecordDesc
+            )
         }
         category("Misc", R.string.Misc) {
             textValue("RestartClient", R.string.RestartClient) {

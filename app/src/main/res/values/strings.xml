@@ -50,6 +50,8 @@
     <string name="DatabaseCorruptionWarningDesc">Show database corruption warning if detected.</string>
     <string name="DumpGroupMember">Group Member List</string>
     <string name="DumpGroupMemberDesc">Save group member list to ctx.filesDir/TMoe_channel_dump.db, usually not useful.</string>
+    <string name="HistoricGroupMemberRecord">Show Historic Groups</string>
+    <string name="HistoricGroupMemberRecordDesc">Show historic common groups in a user\'s profile, requiring "Group Member List" enabled.</string>
     <string name="Ignore">Ignore</string>
     <string name="RestrictContentMitigationDesc">Allow copy, save and screenshot in secret chats</string>
     <string name="KeepVideoMuted">Keep video muted on volume key press</string>

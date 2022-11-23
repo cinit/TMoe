@@ -711,7 +711,8 @@ object DumpGroupMember : CommonDynamicHook() {
         }
     }
 
-    private fun getMessageForTL_error(err: Any): String {
+    @JvmStatic
+    fun getMessageForTL_error(err: Any): String {
         return try {
             val code = Reflex.getInstanceObject(err, "code", Integer.TYPE) as Int
             val text = Reflex.getInstanceObject(err, "text", String::class.java) as String
@@ -719,5 +720,69 @@ object DumpGroupMember : CommonDynamicHook() {
         } catch (e: ReflectiveOperationException) {
             e.toString()
         }
+    }
+
+    data class GroupDescriptor(
+        val uid: Long,
+        val accessHash: Long,
+        val name: String,
+        val username: String?,
+        val flags: Int,
+    ) {
+        override fun toString(): String {
+            return "GroupDescriptor(uid=$uid, accessHash=$accessHash, name='$name', username=$username, flags=$flags)"
+        }
+    }
+
+    fun queryUserGroupDescriptors(uid: Long): List<GroupDescriptor> {
+        val currentSlot = AccountController.getCurrentActiveSlot()
+        if (currentSlot < 0) {
+            Log.w("queryUserGroupDescriptors: no active account")
+            return emptyList()
+        }
+        if (uid <= 0) {
+            return emptyList()
+        }
+        val gids = mutableSetOf<Long>()
+        val database = ensureDatabase(currentSlot)
+        val start = System.nanoTime()
+        database.rawQuery(
+            "SELECT gid FROM t_channel_member WHERE uid = ?",
+            arrayOf(uid.toString())
+        ).use { cursor ->
+            while (cursor.moveToNext()) {
+                gids.add(cursor.getLong(0))
+            }
+        }
+        val results = gids.map { gid ->
+            var group: GroupDescriptor? = null
+            database.rawQuery(
+                "SELECT access_hash, name, username, flags FROM t_channel WHERE uid = ?",
+                arrayOf(gid.toString())
+            ).use { cursor ->
+                if (cursor.moveToNext()) {
+                    group = GroupDescriptor(
+                        gid,
+                        cursor.getLong(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getInt(3)
+                    )
+                }
+            }
+            group ?: GroupDescriptor(
+                gid,
+                0,
+                gid.toString(),
+                null,
+                4096
+            )
+        }.filter {
+            // exclude broadcast channels
+            (it.flags and 32) == 0
+        }
+        val cost = (System.nanoTime() - start) / 1000L
+        // Log.d("queryUserGroupDescriptors: ${results.size} groups, $cost us")
+        return results
     }
 }
