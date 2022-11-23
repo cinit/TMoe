@@ -49,55 +49,55 @@ class SettingsFragment : BaseHierarchyFragment() {
             )
 
             functionSwitch(
-                AntiAntiCopy, "AntiAntiCopy",  R.string.AntiAntiCopy,
-                descProvider ={
+                AntiAntiCopy, "AntiAntiCopy", R.string.AntiAntiCopy,
+                descProvider = {
                     LocaleController.getString("AntiAntiCopyD", R.string.AntiAntiCopyD)
                 }
             )
             functionSwitch(
-                ProhibitSpoilers, "ProhibitSpoilers",  R.string.ProhibitSpoilers
+                ProhibitSpoilers, "ProhibitSpoilers", R.string.ProhibitSpoilers
             )
             functionSwitch(
-                HistoricalNewsOption, "HistoricalNewsOption",  R.string.HistoricalNewsOption
+                HistoricalNewsOption, "HistoricalNewsOption", R.string.HistoricalNewsOption
             )
             functionSwitch(
                 ProhibitChannelSwitching, "ProhibitChannelSwitching", R.string.ProhibitChannelSwitching
             )
             functionSwitch(
-                ProhibitEnableReactions, "ProhibitEnableReactions",  R.string.ProhibitEnableReactions
+                ProhibitEnableReactions, "ProhibitEnableReactions", R.string.ProhibitEnableReactions
             )
             functionSwitch(
-                ProhibitChatGreetings, "ProhibitChatGreetings",  R.string.ProhibitChatGreetings
+                ProhibitChatGreetings, "ProhibitChatGreetings", R.string.ProhibitChatGreetings
             )
             functionSwitch(
-                HidePhoneNumber, "HidePhoneNumber",  R.string.HidePhoneNumber
+                HidePhoneNumber, "HidePhoneNumber", R.string.HidePhoneNumber
             )
             functionSwitch(
-                AddSubItemChannel, "AddSubItemChannel",  R.string.AddSubItemChannel,
-                descProvider ={
+                AddSubItemChannel, "AddSubItemChannel", R.string.AddSubItemChannel,
+                descProvider = {
                     LocaleController.getString("AddSubItemChannelD", R.string.AddSubItemChannelD)
                 }
             )
             functionSwitch(
-                ChannelDetailNumbers, "ChannelDetailNumbers",  R.string.ChannelDetailNumbers,
-                descProvider ={
+                ChannelDetailNumbers, "ChannelDetailNumbers", R.string.ChannelDetailNumbers,
+                descProvider = {
                     LocaleController.getString("ChannelDetailNumbersD", R.string.ChannelDetailNumbersD)
                 }
             )
             functionSwitch(
-                AddInfoContainer, "AddInfoContainer",  R.string.AddInfoContainer,
-                descProvider ={
+                AddInfoContainer, "AddInfoContainer", R.string.AddInfoContainer,
+                descProvider = {
                     LocaleController.getString("AddInfoContainerD", R.string.AddInfoContainerD)
                 }
             )
             functionSwitch(
-                SendCommand, "SendCommand",  R.string.SendCommand
+                SendCommand, "SendCommand", R.string.SendCommand
             )
             functionSwitch(
-                ForceBlurChatAvailable, "ForceBlurChatAvailable",  R.string.ForceBlurChatAvailable
+                ForceBlurChatAvailable, "ForceBlurChatAvailable", R.string.ForceBlurChatAvailable
             )
             functionSwitch(
-                DisablePremiumStickerAnimation, "DisablePremiumStickerAnimation",  R.string.DisablePremiumStickerAnimation
+                DisablePremiumStickerAnimation, "DisablePremiumStickerAnimation", R.string.DisablePremiumStickerAnimation
             )
             functionSwitch(
                 KeepVideoMuted, "KeepVideoMuted", R.string.KeepVideoMuted
