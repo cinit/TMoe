@@ -9,6 +9,8 @@ import androidx.appcompat.app.AlertDialog
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import cc.ioctl.tmoe.lifecycle.Parasitics
 import cc.ioctl.tmoe.td.AccountController
+import cc.ioctl.tmoe.td.binding.Chat
+import cc.ioctl.tmoe.td.binding.User
 import cc.ioctl.tmoe.ui.util.FaultyDialog
 import cc.ioctl.tmoe.util.*
 import de.robv.android.xposed.XposedBridge
@@ -114,6 +116,8 @@ object DumpGroupMember : CommonDynamicHook() {
         fChat_flags = Reflex.findField(kChat, Integer.TYPE, "flags")
         fChat_access_hash = Reflex.findField(kChat, java.lang.Long.TYPE, "access_hash")
         fChat_username = Reflex.findField(kChat, String::class.java, "username")
+        User.initialize()
+        Chat.initialize()
 
         // test linkage
         val currentSlot = AccountController.getCurrentActiveSlot()
@@ -807,19 +811,35 @@ object DumpGroupMember : CommonDynamicHook() {
     fun createMinimalChannelChat(groupInfo: GroupDescriptor): Any {
         // create a minimal channel chat object which only contains id, access_hash, title, username and some flags
         val kTL_channel = Initiator.loadClass("org.telegram.tgnet.TLRPC\$TL_channel")
-        val chat = kTL_channel.newInstance()
-        Reflex.setInstanceObject(chat, "id", PrimTypes.LONG, groupInfo.uid)
-        Reflex.setInstanceObject(chat, "title", String::class.java, groupInfo.name)
-        Reflex.setInstanceObject(chat, "access_hash", PrimTypes.LONG, groupInfo.accessHash)
-        Reflex.setInstanceObject(chat, "username", String::class.java, groupInfo.username)
-        val allowedFlags = bitwiseOr(
-            1, 2, 4, 32, 128, 256, 512, 2048,
-            524288, 1048576, 33554432, 67108864,
-            134217728, 268435456, 536870912, 1073741824
-        )
-        val flags = (groupInfo.flags and allowedFlags) or 4096
-        Reflex.setInstanceObject(chat, "flags", PrimTypes.INT, flags)
-        return chat
+        val kTL_chat = Initiator.loadClass("org.telegram.tgnet.TLRPC\$TL_chat")
+        val isBasicGroup = groupInfo.flags.let {
+            (it and 32 == 0) and (it and 256 == 0) and (it and 67108864 == 0)
+        }
+        return (if (isBasicGroup) kTL_chat else kTL_channel).newInstance().also { obj ->
+            val chat = Chat(obj)
+            chat.id = groupInfo.uid
+            chat.title = groupInfo.name
+            chat.access_hash = groupInfo.accessHash
+            chat.username = groupInfo.username
+            val allowedFlags = bitwiseOr(
+                1, 2, 4, 32, 128, 256, 512, 2048,
+                524288, 1048576, 33554432, 67108864,
+                134217728, 268435456, 536870912, 1073741824
+            )
+            val flags = (groupInfo.flags and allowedFlags) or 4096
+            chat.flags = flags
+            // update flag attributes
+            chat.creator = flags and 1 != 0
+            chat.left = flags and 4 != 0
+            chat.broadcast = flags and 32 != 0
+            chat.megagroup = flags and 256 != 0
+            chat.has_link = flags and 1048576 != 0
+            chat.gigagroup = flags and 67108864 != 0
+            chat.noforwards = flags and 134217728 != 0
+            chat.join_to_send = flags and 268435456 != 0
+            chat.join_request = flags and 536870912 != 0
+            chat.forum = flags and 1073741824 != 0
+        }
     }
 
     @JvmStatic
@@ -887,21 +907,27 @@ object DumpGroupMember : CommonDynamicHook() {
         check(userInfo.uid > 0) { "uid must be positive" }
         // create a minimal user object which only contains id, access_hash, name, username and some flags
         val kTL_user = Initiator.loadClass("org.telegram.tgnet.TLRPC\$TL_user")
-        val user = kTL_user.newInstance()
-        Reflex.setInstanceObject(user, "id", PrimTypes.LONG, userInfo.uid)
-        Reflex.setInstanceObject(user, "first_name", String::class.java, userInfo.name)
-        Reflex.setInstanceObject(user, "last_name", String::class.java, "")
-        Reflex.setInstanceObject(user, "access_hash", PrimTypes.LONG, userInfo.accessHash)
-        Reflex.setInstanceObject(user, "username", String::class.java, userInfo.username)
-        // flag 4: last name, which has been dropped
-        val allowedFlags = bitwiseOr(
-            1, 2, 8,
-            2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144,
-            2097152, 8388608, 67108864
-        )
-        val flags = (userInfo.flags and allowedFlags) or 1048576
-        Reflex.setInstanceObject(user, "flags", PrimTypes.INT, flags)
-        return user
+        return kTL_user.newInstance().also { obj ->
+            val user = User(obj)
+            user.id = userInfo.uid
+            user.first_name = userInfo.name
+            user.last_name = ""
+            user.access_hash = userInfo.accessHash
+            user.username = userInfo.username
+            // flag 4: last name, which has been dropped
+            val allowedFlags = bitwiseOr(
+                1, 2, 8,
+                2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144,
+                2097152, 8388608, 67108864
+            )
+            val flags = (userInfo.flags and allowedFlags) or 1048576
+            user.flags = flags
+            // update flag attributes
+            user.contact = flags and 2048 != 0
+            user.mutual_contact = flags and 4096 != 0
+            user.deleted = flags and 8192 != 0
+            user.bot = flags and 16384 != 0
+        }
     }
 
     @JvmStatic
