@@ -146,8 +146,8 @@ class Chat(val `this$0`: Any) {
         set(value) = _moderator.setBoolean(`this$0`, value)
 
     var username: String?
-        get() = _moderator.get(`this$0`) as String?
-        set(value) = _moderator.set(`this$0`, value)
+        get() = _username.get(`this$0`) as String?
+        set(value) = _username.set(`this$0`, value)
 
     var min: Boolean
         get() = _min.getBoolean(`this$0`)
