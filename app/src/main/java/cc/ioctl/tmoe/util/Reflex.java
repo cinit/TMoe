@@ -2,6 +2,8 @@ package cc.ioctl.tmoe.util;
 
 import static cc.ioctl.tmoe.util.Utils.loge;
 
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -1206,4 +1208,23 @@ public class Reflex {
         int p = name.lastIndexOf('.');
         return name.substring(p + 1);
     }
+
+    public static boolean isCallingFromMethod(@NonNull String methodName, int maxDepth) {
+        if (TextUtils.isEmpty(methodName)) {
+            throw new IllegalArgumentException("methodName is empty");
+        }
+        if (maxDepth < 0) {
+            throw new IllegalArgumentException("maxDepth must >= 0");
+        }
+        StackTraceElement[] ste = new Throwable().getStackTrace();
+        int i = 1;
+        while (i < ste.length && (i <= maxDepth || maxDepth == 0)) {
+            if (ste[i].getMethodName().equals(methodName)) {
+                return true;
+            }
+            i++;
+        }
+        return false;
+    }
+
 }

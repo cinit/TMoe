@@ -91,6 +91,34 @@ object HistoricGroupMemberRecord : CommonDynamicHook() {
             }
         }
 
+        // handle cases that common_chats_count is 0 but local database is not empty
+        val kSharedMediaLayout = Initiator.loadClass("org.telegram.ui.Components.SharedMediaLayout");
+        val fSharedMediaLayout_dialog_id = Reflex.findField(kSharedMediaLayout, PrimTypes.LONG, "dialog_id").apply {
+            isAccessible = true
+        }
+        val updateTabs = kSharedMediaLayout.getDeclaredMethod("updateTabs", PrimTypes.BOOLEAN)
+        val hasMediaField = kSharedMediaLayout.getDeclaredField("hasMedia").apply {
+            isAccessible = true
+        }
+        HookUtils.hookBeforeIfEnabled(this, updateTabs) { param ->
+            val dialogId = fSharedMediaLayout_dialog_id.getLong(param.thisObject)
+            if (dialogId <= 0) {
+                return@hookBeforeIfEnabled
+            }
+            if (!Reflex.isCallingFromMethod("setCommonGroupsCount", 10)) {
+                return@hookBeforeIfEnabled
+            }
+            val hasMedia = hasMediaField.get(param.thisObject) as IntArray
+            val currentCount = hasMedia[6]
+            if (currentCount == 0) {
+                // query local database
+                val groupInfoList = DumpGroupMember.queryUserGroupDescriptors(dialogId)
+                if (groupInfoList.isNotEmpty()) {
+                    // 1 is enough for a TLRPC.TL_messages_getCommonChats request
+                    hasMedia[6] = 1
+                }
+            }
+        }
         return true
     }
 
