@@ -57,4 +57,13 @@
     <string name="Ignore">Ignore</string>
     <string name="RestrictContentMitigationDesc">Allow copy, save and screenshot in secret chats</string>
     <string name="KeepVideoMuted">Keep video muted on volume key press</string>
+    <string name="DebugAndLogsForClient">Debug &amp; Logs</string>
+    <string name="DisableLogConfigOnStartup">Disable Debug Logs on Startup</string>
+    <string name="DisableLogConfigOnStartupDesc">Set LOGS_ENABLED in BuildVars.java and FileLog.cpp to false on startup, for debug variant clients only, not useful for release builds.</string>
+    <string name="TgnetLogsEnabled">LOGS_ENABLED: tgnet (FileLog.cpp) </string>
+    <string name="TgnetLogsEnabledDesc">See LOGS_ENABLED in FileLog.cpp (instant, non-persistent)</string>
+    <string name="TgnetLogsEnabledDescSymbolNotFound">### Symbol not found. See LOGS_ENABLED in FileLog.cpp</string>
+    <string name="BuildVarsLogsEnabled">LOGS_ENABLED (BuildVars.java)</string>
+    <string name="BuildVarsLogsEnabledDesc">See LOGS_ENABLED in BuildVars.java (instant, non-persistent)</string>
+    <string name="BuildVarsLogsEnabledDescSymbolNotFound">### Field not found. See LOGS_ENABLED in BuildVars.java</string>
 </resources>

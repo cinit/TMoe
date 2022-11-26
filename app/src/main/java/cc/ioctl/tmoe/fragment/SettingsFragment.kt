@@ -6,6 +6,7 @@ import cc.ioctl.tmoe.hook.func.*
 import cc.ioctl.tmoe.ui.LocaleController
 import cc.ioctl.tmoe.ui.dsl.BaseHierarchyFragment
 import cc.ioctl.tmoe.ui.dsl.HierarchyDescription
+import cc.ioctl.tmoe.ui.dsl.item.AbstractSwitch
 import kotlin.system.exitProcess
 
 class SettingsFragment : BaseHierarchyFragment() {
@@ -135,6 +136,15 @@ class SettingsFragment : BaseHierarchyFragment() {
                 "HistoricGroupMemberRecordDesc", R.string.HistoricGroupMemberRecordDesc
             )
         }
+        category("DebugAndLogsForClient", R.string.DebugAndLogsForClient) {
+            add(mBuildVarsLogSwitch)
+            add(mTgnetNativeLogSwitch)
+            functionSwitch(
+                TgnetLogControlStartupApplyHelper,
+                "DisableLogConfigOnStartup", R.string.DisableLogConfigOnStartup,
+                "DisableLogConfigOnStartupDesc", R.string.DisableLogConfigOnStartupDesc
+            )
+        }
         category("Misc", R.string.Misc) {
             textValue("RestartClient", R.string.RestartClient) {
                 // calling System.exit(0) will work, because AM will automatically restart the app
@@ -148,4 +158,59 @@ class SettingsFragment : BaseHierarchyFragment() {
             })
         }
     }
+
+    private val mTgnetNativeLogSwitch = AbstractSwitch(
+        "TgnetLogsEnabled", R.string.TgnetLogsEnabled,
+        isCheckedLambda = {
+            TgnetLogController.getCurrentTgnetLogStatus() > 0
+        },
+        onCheckedChanged = {
+            TgnetLogController.setCurrentTgnetLogStatus(if (it) 1 else 0)
+        },
+        enabledLambda = {
+            TgnetLogController.getCurrentTgnetLogStatus() >= 0
+        },
+        descProvider = {
+            val symNotFound = TgnetLogController.getCurrentTgnetLogStatus() < 0
+            if (symNotFound) {
+                LocaleController.getString(
+                    "TgnetLogsEnabledDescSymbolNotFound",
+                    R.string.TgnetLogsEnabledDescSymbolNotFound
+                )
+            } else {
+                LocaleController.getString(
+                    "TgnetLogsEnabledDesc",
+                    R.string.TgnetLogsEnabledDesc
+                )
+            }
+        }
+    )
+
+    private val mBuildVarsLogSwitch = AbstractSwitch(
+        "BuildVarsLogsEnabled", R.string.BuildVarsLogsEnabled,
+        isCheckedLambda = {
+            TgnetLogController.getCurrentBuildVarsLogStatus() > 0
+        },
+        onCheckedChanged = {
+            TgnetLogController.setCurrentBuildVarsLogStatus(if (it) 1 else 0)
+        },
+        enabledLambda = {
+            TgnetLogController.getCurrentBuildVarsLogStatus() >= 0
+        },
+        descProvider = {
+            val notFound = TgnetLogController.getCurrentBuildVarsLogStatus() < 0
+            if (notFound) {
+                LocaleController.getString(
+                    "BuildVarsLogsEnabledDescSymbolNotFound",
+                    R.string.BuildVarsLogsEnabledDescSymbolNotFound
+                )
+            } else {
+                LocaleController.getString(
+                    "BuildVarsLogsEnabledDesc",
+                    R.string.BuildVarsLogsEnabledDesc
+                )
+            }
+        }
+    )
+
 }

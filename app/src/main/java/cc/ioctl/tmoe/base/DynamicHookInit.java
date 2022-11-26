@@ -29,6 +29,7 @@ import cc.ioctl.tmoe.hook.func.ProhibitEnableReactions;
 import cc.ioctl.tmoe.hook.func.ProhibitSpoilers;
 import cc.ioctl.tmoe.hook.func.SendCommand;
 import cc.ioctl.tmoe.hook.func.ShowMsgId;
+import cc.ioctl.tmoe.hook.func.TgnetLogControlStartupApplyHelper;
 import cc.ioctl.tmoe.util.Utils;
 
 /**
@@ -85,6 +86,7 @@ public class DynamicHookInit {
                     DatabaseCorruptionWarning.INSTANCE,
                     HistoricGroupMemberRecord.INSTANCE,
                     ExtendedOfflineSearch.INSTANCE,
+                    TgnetLogControlStartupApplyHelper.INSTANCE,
             };
         }
         return sAllFunctionHooks;
