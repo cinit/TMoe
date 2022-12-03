@@ -66,4 +66,6 @@
     <string name="BuildVarsLogsEnabled">LOGS_ENABLED (BuildVars.java)</string>
     <string name="BuildVarsLogsEnabledDesc">See LOGS_ENABLED in BuildVars.java (instant, non-persistent)</string>
     <string name="BuildVarsLogsEnabledDescSymbolNotFound">### Field not found. See LOGS_ENABLED in BuildVars.java</string>
+    <string name="ViewTopicAsMsgByDefault">View as Messages by default</string>
+    <string name="ViewTopicAsMsgByDefaultDesc">\"View as Messages\" by default in topic chats</string>
 </resources>

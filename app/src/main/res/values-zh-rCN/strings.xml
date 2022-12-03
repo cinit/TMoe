@@ -44,4 +44,6 @@
     <string name="ForceBlurChatAvailable">强制显示顶栏模糊选项</string>
     <string name="DisablePremiumStickerAnimation">禁用 Premium 贴纸动画</string>
     <string name="KeepVideoMuted">按音量键时保持视频静音</string>
+    <string name="ViewTopicAsMsgByDefault">以消息模式查看话题群组</string>
+    <string name="ViewTopicAsMsgByDefaultDesc">默认以消息模式浏览开启了话题的群组</string>
 </resources>

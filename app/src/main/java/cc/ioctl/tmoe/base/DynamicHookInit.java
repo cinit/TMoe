@@ -30,6 +30,7 @@ import cc.ioctl.tmoe.hook.func.ProhibitSpoilers;
 import cc.ioctl.tmoe.hook.func.SendCommand;
 import cc.ioctl.tmoe.hook.func.ShowMsgId;
 import cc.ioctl.tmoe.hook.func.TgnetLogControlStartupApplyHelper;
+import cc.ioctl.tmoe.hook.func.ViewTopicAsMsgByDefault;
 import cc.ioctl.tmoe.util.Utils;
 
 /**
@@ -87,6 +88,7 @@ public class DynamicHookInit {
                     HistoricGroupMemberRecord.INSTANCE,
                     ExtendedOfflineSearch.INSTANCE,
                     TgnetLogControlStartupApplyHelper.INSTANCE,
+                    ViewTopicAsMsgByDefault.INSTANCE,
             };
         }
         return sAllFunctionHooks;

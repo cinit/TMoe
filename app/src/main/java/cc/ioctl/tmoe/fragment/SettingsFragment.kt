@@ -103,6 +103,10 @@ class SettingsFragment : BaseHierarchyFragment() {
             functionSwitch(
                 KeepVideoMuted, "KeepVideoMuted", R.string.KeepVideoMuted
             )
+            functionSwitch(
+                ViewTopicAsMsgByDefault, "ViewTopicAsMsgByDefault", R.string.ViewTopicAsMsgByDefault,
+                "ViewTopicAsMsgByDefaultDesc", R.string.ViewTopicAsMsgByDefaultDesc
+            )
         }
         category("LostMsgMitigation", R.string.LostMsgMitigation) {
             functionSwitch(
