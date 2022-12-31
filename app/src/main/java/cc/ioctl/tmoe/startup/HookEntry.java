@@ -39,7 +39,6 @@ public class HookEntry implements IXposedHookLoadPackage, IXposedHookZygoteInit 
             "com.blxueya.gugugram",
             "com.blxueya.gugugramx",
             "com.evildayz.code.telegraher",
-            "com.exteragram.messenger.beta",
             "com.exteragram.messenger"
     );
 
