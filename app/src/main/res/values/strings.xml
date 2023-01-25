@@ -68,4 +68,6 @@
     <string name="BuildVarsLogsEnabledDescSymbolNotFound">### Field not found. See LOGS_ENABLED in BuildVars.java</string>
     <string name="ViewTopicAsMsgByDefault">View as Messages by default</string>
     <string name="ViewTopicAsMsgByDefaultDesc">\"View as Messages\" by default in topic chats</string>
+    <string name="HidePremiumStickerSetTab">Hide Premium Sticker Set Tab</string>
+    <string name="HidePremiumStickerSetTabDesc">For premium users only. Remove the premium sticker set tab from the sticker panel.</string>
 </resources>

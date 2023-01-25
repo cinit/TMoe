@@ -46,4 +46,6 @@
     <string name="KeepVideoMuted">按音量键时保持视频静音</string>
     <string name="ViewTopicAsMsgByDefault">以消息模式查看话题群组</string>
     <string name="ViewTopicAsMsgByDefaultDesc">默认以消息模式浏览开启了话题的群组</string>
+    <string name="HidePremiumStickerSetTab">隐藏 Premium 贴纸包</string>
+    <string name="HidePremiumStickerSetTabDesc">(仅限 Premium 用户) 在表情面板中隐藏 Premium 贴纸包</string>
 </resources>

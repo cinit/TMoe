@@ -107,6 +107,10 @@ class SettingsFragment : BaseHierarchyFragment() {
                 ViewTopicAsMsgByDefault, "ViewTopicAsMsgByDefault", R.string.ViewTopicAsMsgByDefault,
                 "ViewTopicAsMsgByDefaultDesc", R.string.ViewTopicAsMsgByDefaultDesc
             )
+            functionSwitch(
+                HidePremiumStickerSetTab, "HidePremiumStickerSetTab", R.string.HidePremiumStickerSetTab,
+                "HidePremiumStickerSetTabDesc", R.string.HidePremiumStickerSetTabDesc
+            )
         }
         category("LostMsgMitigation", R.string.LostMsgMitigation) {
             functionSwitch(

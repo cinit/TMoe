@@ -17,6 +17,7 @@ import cc.ioctl.tmoe.hook.func.DisablePremiumStickerAnimation;
 import cc.ioctl.tmoe.hook.func.DumpGroupMember;
 import cc.ioctl.tmoe.hook.func.EnableDebugMode;
 import cc.ioctl.tmoe.hook.func.ExtendedOfflineSearch;
+import cc.ioctl.tmoe.hook.func.HidePremiumStickerSetTab;
 import cc.ioctl.tmoe.hook.func.HistoricGroupMemberRecord;
 import cc.ioctl.tmoe.hook.func.ForceBlurChatAvailable;
 import cc.ioctl.tmoe.hook.func.HidePhoneNumber;
@@ -89,6 +90,7 @@ public class DynamicHookInit {
                     ExtendedOfflineSearch.INSTANCE,
                     TgnetLogControlStartupApplyHelper.INSTANCE,
                     ViewTopicAsMsgByDefault.INSTANCE,
+                    HidePremiumStickerSetTab.INSTANCE,
             };
         }
         return sAllFunctionHooks;
