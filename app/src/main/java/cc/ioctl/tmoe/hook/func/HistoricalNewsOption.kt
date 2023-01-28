@@ -17,140 +17,161 @@ import java.util.concurrent.ConcurrentHashMap
 
 //TODO 分离 复读
 object HistoricalNewsOption : CommonDynamicHook() {
-    var chatActivity: Any? =null
+    var chatActivity: Any? = null
     override fun initOnce(): Boolean = tryOrFalse {
 
         try {
 
 
-        var isCreateMenu=false
-            findMethod("org.telegram.ui.ChatActivity"){ name=="createMenu" }.hookMethod {
-            before {
-                chatActivity=it.thisObject
-                isCreateMenu=true
+            var isCreateMenu = false
+            findMethod("org.telegram.ui.ChatActivity") { name == "createMenu" }.hookMethod {
+                before {
+                    chatActivity = it.thisObject
+                    isCreateMenu = true
+                }
+                after { isCreateMenu = false }
             }
-            after { isCreateMenu=false }
-            }
 
-        //LocaleController.getString("ReportChat", R.string.ReportChat);
-        val reportChat = findField("org.telegram.messenger.R\$string"){ name=="ReportChat" }.get(null) as Int
-        val reportChatText= findMethod("org.telegram.messenger.LocaleController"){
-            name=="getString"&&parameterTypes.size==2
-        }.invoke(null,"ReportChat", reportChat) as String
+            //LocaleController.getString("ReportChat", R.string.ReportChat);
+            val reportChat =
+                findField("org.telegram.messenger.R\$string") { name == "ReportChat" }.get(null) as Int
+            val reportChatText = findMethod("org.telegram.messenger.LocaleController") {
+                name == "getString" && parameterTypes.size == 2
+            }.invoke(null, "ReportChat", reportChat) as String
 
-        val callC =  findConstructor("org.telegram.ui.ActionBar.ActionBarMenuSubItem"){ parameterTypes.size==4 }
+            val callC =
+                findConstructor("org.telegram.ui.ActionBar.ActionBarMenuSubItem") { parameterTypes.size == 4 }
 
-        findMethod("org.telegram.ui.ActionBar.ActionBarPopupWindow\$ActionBarPopupWindowLayout"){
-            name=="addView"&&parameterTypes.size==1
-        }.hookBefore {
-            if (!isEnabled) return@hookBefore
-
-
-            if (it.args[0]::class.java.canonicalName=="org.telegram.ui.ActionBar.ActionBarMenuSubItem"){
-
-                if (!isCreateMenu) return@hookBefore
-
-                val texts= getField("textView",it.args[0]) as TextView
+            findMethod("org.telegram.ui.ActionBar.ActionBarPopupWindow\$ActionBarPopupWindowLayout") {
+                name == "addView" && parameterTypes.size == 1
+            }.hookBefore {
+                if (!isEnabled) return@hookBefore
 
 
-                val thisObject=it.thisObject
+                if (it.args[0]::class.java.canonicalName == "org.telegram.ui.ActionBar.ActionBarMenuSubItem") {
 
-                if (texts.text==reportChatText){
-                    it.result=null
+                    if (!isCreateMenu) return@hookBefore
 
-                    // ActionBarMenuSubItem cell = new ActionBarMenuSubItem(getParentActivity(), true, true, themeDelegate);
-                    val cnt= getField("mContext",thisObject,true)
-                    val themeDelegate=getField("resourcesProvider",thisObject)
+                    val texts = getField("textView", it.args[0]) as TextView
 
 
-                   val call = callC.newInstance(cnt,true,true,themeDelegate)
-                    getMethod("setTextAndIcon",call,false,2,"历史", R.drawable.ic_setting_hex_outline_24)
-                    XposedBridge.invokeOriginalMethod(it.method,thisObject,arrayOf(call))
-                    (call as FrameLayout).setOnClickListener {
-                        findUserHistory()
-                    }
+                    val thisObject = it.thisObject
 
-                    call.setOnLongClickListener{
+                    if (texts.text == reportChatText) {
+                        it.result = null
 
-                        var id=-1L
-                        val selectedObject=getField("selectedObject",chatActivity)
-                        val messageOwner=getField("messageOwner",selectedObject)
-                        val from_id=getField("from_id",messageOwner,true)
+                        // ActionBarMenuSubItem cell = new ActionBarMenuSubItem(getParentActivity(), true, true, themeDelegate);
+                        val cnt = getField("mContext", thisObject, true)
+                        val themeDelegate = getField("resourcesProvider", thisObject)
 
-                        val user_id=getField("user_id",from_id,true) as Long
-                        val channel_id=getField("channel_id",from_id,true) as Long
 
-                        if (user_id.toInt()!=0){
-                            id=user_id
-                        }else if(channel_id.toInt()!=0){
-                            id=channel_id
+                        val call = callC.newInstance(cnt, true, true, themeDelegate)
+                        getMethod(
+                            "setTextAndIcon",
+                            call,
+                            false,
+                            2,
+                            "历史",
+                            R.drawable.ic_setting_hex_outline_24
+                        )
+                        XposedBridge.invokeOriginalMethod(it.method, thisObject, arrayOf(call))
+                        (call as FrameLayout).setOnClickListener {
+                            findUserHistory()
                         }
 
-                       val BulletinFactory= findMethod("org.telegram.ui.Components.BulletinFactory"){
-                            name=="of"&&parameterTypes.size==1
-                        }.invoke(null,chatActivity)
+                        call.setOnLongClickListener {
 
-                        val createCopyBulletin= findMethod(BulletinFactory::class.java){
-                            name=="createCopyBulletin"&&parameterTypes.size==1
-                        }.invoke(BulletinFactory,"已复制用户ID: $id")
+                            var id = -1L
+                            val selectedObject = getField("selectedObject", chatActivity)
+                            val messageOwner = getField("messageOwner", selectedObject)
+                            val from_id = getField("from_id", messageOwner, true)
 
-                        findMethod(createCopyBulletin::class.java){
-                            name=="show"&&parameterTypes.size==0
-                        }.invoke(createCopyBulletin)
+                            val user_id = getField("user_id", from_id, true) as Long
+                            val channel_id = getField("channel_id", from_id, true) as Long
+
+                            if (user_id.toInt() != 0) {
+                                id = user_id
+                            } else if (channel_id.toInt() != 0) {
+                                id = channel_id
+                            }
+
+                            val BulletinFactory =
+                                findMethod("org.telegram.ui.Components.BulletinFactory") {
+                                    name == "of" && parameterTypes.size == 1
+                                }.invoke(null, chatActivity)
+
+                            val createCopyBulletin = findMethod(BulletinFactory::class.java) {
+                                name == "createCopyBulletin" && parameterTypes.size == 1
+                            }.invoke(BulletinFactory, "已复制用户ID: $id")
+
+                            findMethod(createCopyBulletin::class.java) {
+                                name == "show" && parameterTypes.size == 0
+                            }.invoke(createCopyBulletin)
 
 
-                        findMethod("org.telegram.messenger.AndroidUtilities"){
-                            name=="addToClipboard"&&parameterTypes.size==1
-                        }.invoke(null,id.toString())
+                            findMethod("org.telegram.messenger.AndroidUtilities") {
+                                name == "addToClipboard" && parameterTypes.size == 1
+                            }.invoke(null, id.toString())
 
 //                        Toast.makeText(AndroidAppHelper.currentApplication().applicationContext,"查看用户历史消息 $channel_id $post_author  $chat_id $user_id", Toast.LENGTH_SHORT).show()
-                        getMethod("processSelectedOption",chatActivity, args= arrayOf(999))
-                        true
-                    }
-
-                    val plus = callC.newInstance(cnt,true,true,themeDelegate)
-                    getMethod("setTextAndIcon",plus,false,2,"复写", R.drawable.ic_setting_hex_outline_24)
-                    XposedBridge.invokeOriginalMethod(it.method,it.thisObject,arrayOf(plus))
-                    (plus as FrameLayout).setOnClickListener {
-
-                        try {
-                            plusOne()
-                        }catch (e:Throwable){
-                            XposedBridge.log(e)
+                            getMethod("processSelectedOption", chatActivity, args = arrayOf(999))
+                            true
                         }
 
-                    }
+                        val plus = callC.newInstance(cnt, true, true, themeDelegate)
+                        getMethod(
+                            "setTextAndIcon",
+                            plus,
+                            false,
+                            2,
+                            "复写",
+                            R.drawable.ic_setting_hex_outline_24
+                        )
+                        XposedBridge.invokeOriginalMethod(it.method, it.thisObject, arrayOf(plus))
+                        (plus as FrameLayout).setOnClickListener {
 
+                            try {
+                                plusOne()
+                            } catch (e: Throwable) {
+                                XposedBridge.log(e)
+                            }
+
+                        }
+
+
+                    }
 
                 }
 
             }
 
-        }
-
-        }catch (e:Throwable){
+        } catch (e: Throwable) {
             XposedBridge.log(e)
         }
     }
 
 
     private fun plusOne() {
-        val currentChat=getField("currentChat",chatActivity)
-        val selectedObject=getField("selectedObject",chatActivity)
-        val selectedObjectGroup=getField("selectedObjectGroup",chatActivity)
-        val messageOwner= getField("messageOwner", selectedObject)
-        val getMessagesController= getMethod("getMessagesController",chatActivity,true)!!
+        val currentChat = getField("currentChat", chatActivity)
+        val selectedObject = getField("selectedObject", chatActivity)
+        val selectedObjectGroup = getField("selectedObjectGroup", chatActivity)
+        val messageOwner = getField("messageOwner", selectedObject)
+        val getMessagesController = getMethod("getMessagesController", chatActivity, true)!!
 
 //        val isChatNoForwards= getMethod("isChatNoForwards",getMessagesController,false,1,currentChat) as Boolean
-        val isChatNoForwards=  findMethod(getMessagesController::class.java){
-            name=="isChatNoForwards"&&parameterTypes.size==1 && parameterTypes[0] != Long::class.javaPrimitiveType
-        }.invoke(getMessagesController,currentChat)  as Boolean
+        val isChatNoForwards = findMethod(getMessagesController::class.java) {
+            name == "isChatNoForwards" && parameterTypes.size == 1 && parameterTypes[0] != Long::class.javaPrimitiveType
+        }.invoke(getMessagesController, currentChat) as Boolean
 
 
-        val isThreadChat= getMethod("isThreadChat",chatActivity,false)!! as Boolean
+        val isThreadChat = getMethod("isThreadChat", chatActivity, false)!! as Boolean
 
-        if ( isThreadChat || isChatNoForwards|| AntiAntiCopy.isNoForw ) {
-            Toast.makeText(AndroidAppHelper.currentApplication().applicationContext,"不支持。", Toast.LENGTH_SHORT).show()
+        if (isThreadChat || isChatNoForwards || AntiAntiCopy.isNoForw) {
+            Toast.makeText(
+                AndroidAppHelper.currentApplication().applicationContext,
+                "不支持。",
+                Toast.LENGTH_SHORT
+            ).show()
 
             if (selectedObject != null) {
                 val isAnyKindOfSticker =
@@ -166,7 +187,7 @@ object HistoricalNewsOption : CommonDynamicHook() {
 
                 if (isAnyKindOfSticker && !isAnimatedEmoji && !isDice) {
 
-                getMethod(
+                    getMethod(
                         "sendSticker", getSendMessagesHelper, true, 9,
                         getDocument,
                         null,
@@ -183,45 +204,49 @@ object HistoricalNewsOption : CommonDynamicHook() {
                     chatActivity = null
                 } else {
 //                    messageOwner = getField("messageOwner", selectedObject)
-                    val message = getField("message", messageOwner,true) as String?
+                    val message = getField("message", messageOwner, true) as String?
 //                    var message: String = messageObject.messageOwner.message
 
                     if (!TextUtils.isEmpty(message)) {
 //                        val entities: ArrayList<TLRPC.MessageEntity>?
                         val entities: ArrayList<Any?>?
-                       val entities1 = getField("entities", messageOwner,true) as Collection<Any?>?
+                        val entities1 =
+                            getField("entities", messageOwner, true) as Collection<Any?>?
                         if (entities1 != null && !entities1.isEmpty()) {
                             entities = ArrayList()
                             for (entity in entities1) {
 
 
-                                val TLEM=loadClass("org.telegram.tgnet.TLRPC\$TL_messageEntityMentionName")//TL_inputMessageEntityMentionName
-                                if (TLEM.isInstance(entity) ) {
+                                val TLEM =
+                                    loadClass("org.telegram.tgnet.TLRPC\$TL_messageEntityMentionName")//TL_inputMessageEntityMentionName
+                                if (TLEM.isInstance(entity)) {
 
-                                    val TMEM=loadClass("org.telegram.tgnet.TLRPC\$TL_inputMessageEntityMentionName")//TL_inputMessageEntityMentionName
+                                    val TMEM =
+                                        loadClass("org.telegram.tgnet.TLRPC\$TL_inputMessageEntityMentionName")//TL_inputMessageEntityMentionName
                                     val mention = TMEM.newInstance()
 
 
-                                  val oldLength=  getField("length",entity,true)
-                                    val oldOffset=  getField("offset",entity,true)
+                                    val oldLength = getField("length", entity, true)
+                                    val oldOffset = getField("offset", entity, true)
 
-                                    findField(mention::class.java,true){
-                                        name=="length"
-                                    }.set(mention,oldLength)
+                                    findField(mention::class.java, true) {
+                                        name == "length"
+                                    }.set(mention, oldLength)
 
-                                    findField(mention::class.java,true){
-                                        name=="offset"
-                                    }.set(mention,oldOffset)
+                                    findField(mention::class.java, true) {
+                                        name == "offset"
+                                    }.set(mention, oldOffset)
 
-                                    val olduser_id=  getField("user_id",entity,true)
-                                    val getInputUser=  findMethod(getMessagesController::class.java){
-                                        name=="getInputUser"&& parameterTypes.size==1 && parameterTypes[0]== Long::class.javaPrimitiveType
-                                    }.invoke(getMessagesController,olduser_id)
+                                    val olduser_id = getField("user_id", entity, true)
+                                    val getInputUser =
+                                        findMethod(getMessagesController::class.java) {
+                                            name == "getInputUser" && parameterTypes.size == 1 && parameterTypes[0] == Long::class.javaPrimitiveType
+                                        }.invoke(getMessagesController, olduser_id)
 
-                                    findField(mention::class.java,true){
-                                        name=="user_id"
-                                    }.set(mention,getInputUser)
-                                       entities.add(mention)
+                                    findField(mention::class.java, true) {
+                                        name == "user_id"
+                                    }.set(mention, getInputUser)
+                                    entities.add(mention)
                                 } else {
                                     entities.add(entity)
                                 }
@@ -230,7 +255,8 @@ object HistoricalNewsOption : CommonDynamicHook() {
                             entities = null
                         }
 
-                        getMethod("sendMessage", getSendMessagesHelper, false,12,
+                        getMethod(
+                            "sendMessage", getSendMessagesHelper, false, 12,
                             message,
                             dialog_id,
                             threadMessageObject,
@@ -242,10 +268,11 @@ object HistoricalNewsOption : CommonDynamicHook() {
                             null,
                             true,
                             0,
-                            null)
+                            null
+                        )
 
 
-                        if (chatActivity!=null){
+                        if (chatActivity != null) {
                             getMethod("processSelectedOption", chatActivity, args = arrayOf(999))
                             chatActivity = null
                         }
@@ -255,96 +282,97 @@ object HistoricalNewsOption : CommonDynamicHook() {
             }
 
         } else {
-            val messages1=getField("messages",selectedObjectGroup)
+            val messages1 = getField("messages", selectedObjectGroup)
 //            val messages: ArrayList<MessageObject> = ArrayList()
             val messages: ArrayList<Any?> = ArrayList()
             if (selectedObjectGroup != null) {
-                messages.addAll(messages1 as Collection<Any?> )
+                messages.addAll(messages1 as Collection<Any?>)
             } else {
                 messages.add(selectedObject!!)
             }
 
             //            forwardMessages(messages, false, false, true, 0)
-            getMethod("forwardMessages",chatActivity,false,5,messages, false, false, true, 0)
+            getMethod("forwardMessages", chatActivity, false, 5, messages, false, false, true, 0)
 
         }
 
-        if (chatActivity!=null){
-            getMethod("processSelectedOption",chatActivity, args= arrayOf(999))
-            chatActivity=null
+        if (chatActivity != null) {
+            getMethod("processSelectedOption", chatActivity, args = arrayOf(999))
+            chatActivity = null
         }
 
     }
 
 
-    private fun findUserHistory(/*p: XC_MethodHook*/){
+    private fun findUserHistory(/*p: XC_MethodHook*/) {
         try {
             // TLRPC.Peer peer = selectedObject.messageOwner.from_id;
-            val selectedObject=getField("selectedObject",chatActivity)
-            val messageOwner=getField("messageOwner",selectedObject)
-            val from_id=getField("from_id",messageOwner,true)
+            val selectedObject = getField("selectedObject", chatActivity)
+            val messageOwner = getField("messageOwner", selectedObject)
+            val from_id = getField("from_id", messageOwner, true)
 
 
-            getMethod("openSearchWithText",chatActivity, args = arrayOf(""))
+            getMethod("openSearchWithText", chatActivity, args = arrayOf(""))
 
-            val getMessagesController= getMethod("getMessagesController",chatActivity,true)!!
-            val user_id=getField("user_id",from_id,true) as Long
-            val chat_id=getField("chat_id",from_id,true) as Long
-            val channel_id=getField("channel_id",from_id,true) as Long
-            when{
-                user_id.toInt() != 0->{
+            val getMessagesController = getMethod("getMessagesController", chatActivity, true)!!
+            val user_id = getField("user_id", from_id, true) as Long
+            val chat_id = getField("chat_id", from_id, true) as Long
+            val channel_id = getField("channel_id", from_id, true) as Long
+            when {
+                user_id.toInt() != 0 -> {
                     //                    TLRPC.User user = getMessagesController().getUser(peer.user_id);
                     //                    searchUserMessages(user, null);
-                    val user= getMethod("getUser",getMessagesController,true,1,user_id)!!
-                    getMethod("searchUserMessages",chatActivity, args= arrayOf(user, null))
+                    val user = getMethod("getUser", getMessagesController, true, 1, user_id)!!
+                    getMethod("searchUserMessages", chatActivity, args = arrayOf(user, null))
 
                 }
-                chat_id.toInt() != 0->{
-                    val chat= getMethod("getChat",getMessagesController,true,1,chat_id)!!
-                    getMethod("searchUserMessages",chatActivity, args= arrayOf(null, chat))
+                chat_id.toInt() != 0 -> {
+                    val chat = getMethod("getChat", getMessagesController, true, 1, chat_id)!!
+                    getMethod("searchUserMessages", chatActivity, args = arrayOf(null, chat))
                 }
-                channel_id.toInt() != 0->{
-                    val chat= getMethod("getChat",getMessagesController,true,1,channel_id)!!
-                    getMethod("searchUserMessages",chatActivity, args= arrayOf(null, chat))
+                channel_id.toInt() != 0 -> {
+                    val chat = getMethod("getChat", getMessagesController, true, 1, channel_id)!!
+                    getMethod("searchUserMessages", chatActivity, args = arrayOf(null, chat))
                 }
             }
 
-            getMethod("showMessagesSearchListView",chatActivity, args= arrayOf(true))
-            getMethod("processSelectedOption",chatActivity, args= arrayOf(999))
+            getMethod("showMessagesSearchListView", chatActivity, args = arrayOf(true))
+            getMethod("processSelectedOption", chatActivity, args = arrayOf(999))
 
-            chatActivity=null
-        }catch (e:Throwable){
+            chatActivity = null
+        } catch (e: Throwable) {
             XposedBridge.log(e)
         }
     }
 
     private val mField: MutableMap<String, Field> = ConcurrentHashMap()//HashMap()
-     fun getField(n:String,
-                         o:Any?,
-                         findSuper: Boolean = false,
-                         clzName: String=""
-    ):Any?{
-         var name1=""
-         if (o!=null){
-             name1=o::class.java.canonicalName!!
-         }
-         if (clzName!=""){
-             name1=clzName
-         }
-
-        if (mField.containsKey(n+name1)){
-            return mField[n+name1]?.get(o)
+    fun getField(
+        n: String,
+        o: Any?,
+        findSuper: Boolean = false,
+        clzName: String = ""
+    ): Any? {
+        var name1 = ""
+        if (o != null) {
+            name1 = o::class.java.canonicalName!!
+        }
+        if (clzName != "") {
+            name1 = clzName
         }
 
-        if (o!=null){
-            val mF= findField(o::class.java,findSuper){ name==n }
-            mField[n+name1] = mF
+        if (mField.containsKey(n + name1)) {
+            return mField[n + name1]?.get(o)
+        }
+
+        if (o != null) {
+            val mF = findField(o::class.java, findSuper) { name == n }
+            mField[n + name1] = mF
             return mF.get(o)
         }
 
-        if (clzName!=""){
-            val mF= findField(clzName, InitFields.ezXClassLoader,findSuper){ name==n }
-            mField[n+name1] = mF
+        if (clzName != "") {
+            val mF = findField(clzName, InitFields.ezXClassLoader, findSuper) { name == n }
+            mField[n + name1] = mF
             return mF.get(o)
         }
 
@@ -352,37 +380,39 @@ object HistoricalNewsOption : CommonDynamicHook() {
     }
 
     private val mMethod: MutableMap<Any, Method> = ConcurrentHashMap()
-     fun getMethod(
-        n:String,
+    fun getMethod(
+        n: String,
         obj: Any?,
         findSuper: Boolean = false,
-        parameterSize:Int=-1,
+        parameterSize: Int = -1,
         vararg args: Any?
-    ):Any?{
+    ): Any? {
 
-         var name1=""
-         if (obj!=null){
-             val na=obj::class.java.canonicalName
-             if (na!=null){ name1=na }
-         }
-
-
-        if (mMethod.containsKey(n+name1)){
-            return mMethod[n+name1]!!.invoke(obj,*args)
+        var name1 = ""
+        if (obj != null) {
+            val na = obj::class.java.canonicalName
+            if (na != null) {
+                name1 = na
+            }
         }
 
 
-        if (obj!=null){
-          val mM =  findMethod(obj::class.java,findSuper){
-                if (name==n){
-                    if (parameterSize!=-1) return@findMethod parameterTypes.size==parameterSize
+        if (mMethod.containsKey(n + name1)) {
+            return mMethod[n + name1]!!.invoke(obj, *args)
+        }
+
+
+        if (obj != null) {
+            val mM = findMethod(obj::class.java, findSuper) {
+                if (name == n) {
+                    if (parameterSize != -1) return@findMethod parameterTypes.size == parameterSize
 
                     return@findMethod true
                 }
-               false
+                false
             }
-            mMethod[n+name1] = mM
-            return mM.invoke(obj,*args)
+            mMethod[n + name1] = mM
+            return mM.invoke(obj, *args)
         }
 
 
