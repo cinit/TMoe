@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap
 //TODO 分离 复读
 object HistoricalNewsOption : CommonDynamicHook() {
     var chatActivity: Any? = null
-    override fun initOnce(): Boolean = tryOrFalse {
+    override fun initOnce(): Boolean = tryOrLogFalse {
 
         try {
 

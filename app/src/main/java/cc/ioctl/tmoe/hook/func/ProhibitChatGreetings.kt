@@ -1,29 +1,30 @@
 package cc.ioctl.tmoe.hook.func
 
-import android.app.AndroidAppHelper
 import android.view.View
 import android.widget.LinearLayout
-import android.widget.Toast
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import cc.ioctl.tmoe.hook.func.HistoricalNewsOption.getField
-import com.github.kyuubiran.ezxhelper.utils.*
+import com.github.kyuubiran.ezxhelper.utils.hookAfter
+import com.github.kyuubiran.ezxhelper.utils.hookBefore
+import com.github.kyuubiran.ezxhelper.utils.loadClass
+import com.github.kyuubiran.ezxhelper.utils.tryOrLogFalse
 import java.lang.reflect.Method
 
 //https://github.com/DrKLO/Telegram/blob/master/TMessagesProj/src/main/java/org/telegram/ui/Components/ChatGreetingsView.java
 object ProhibitChatGreetings : CommonDynamicHook() {
 
-    override fun initOnce(): Boolean = tryOrFalse {
+    override fun initOnce(): Boolean = tryOrLogFalse {
 
-        val cgv= loadClass("org.telegram.ui.Components.ChatGreetingsView")
+        val cgv = loadClass("org.telegram.ui.Components.ChatGreetingsView")
         for (method in cgv.declaredMethods) {
             when (method.name) {
-                "onMeasure"-> onMeasure(method)
+                "onMeasure" -> onMeasure(method)
                 "setListener",
                 "setSticker",
-                "fetchSticker"->{
+                "fetchSticker" -> {
                     method.hookBefore {
                         if (!isEnabled) return@hookBefore
-                        it.result=null
+                        it.result = null
                     }
                 }
 
@@ -41,8 +42,8 @@ object ProhibitChatGreetings : CommonDynamicHook() {
             stickerToSendView.visibility = View.GONE
             descriptionView.visibility = View.GONE
 
-            val chatGreetingsView=it.thisObject as LinearLayout
-            chatGreetingsView.background=null
+            val chatGreetingsView = it.thisObject as LinearLayout
+            chatGreetingsView.background = null
 
 //            findMethod(it.thisObject::class.java,true){
 //                name=="setBackground"&&parameterTypes.size==1

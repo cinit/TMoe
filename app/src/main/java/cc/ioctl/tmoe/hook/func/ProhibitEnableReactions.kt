@@ -6,7 +6,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 object ProhibitEnableReactions : CommonDynamicHook() {
-    override fun initOnce(): Boolean = tryOrFalse {
+    override fun initOnce(): Boolean = tryOrLogFalse {
         val enabledReactionsList: List<Objects> = ArrayList()
         findMethod("org.telegram.messenger.MediaDataController") { name == "getEnabledReactionsList" }.hookBefore {
             if (isEnabled) it.result = enabledReactionsList

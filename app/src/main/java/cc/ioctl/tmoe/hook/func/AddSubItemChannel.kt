@@ -6,7 +6,7 @@ import cc.ioctl.tmoe.hook.func.HistoricalNewsOption.getMethod
 import com.github.kyuubiran.ezxhelper.utils.*
 
 object AddSubItemChannel : CommonDynamicHook() {
-    override fun initOnce(): Boolean = tryOrFalse {
+    override fun initOnce(): Boolean = tryOrLogFalse {
         //打开频道
         val msg_channel = findField("org.telegram.messenger.R\$drawable") { name == "msg_channel" }.get(null) as Int
         val view_discussion = 22

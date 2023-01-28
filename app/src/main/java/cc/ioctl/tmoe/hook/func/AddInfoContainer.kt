@@ -12,7 +12,7 @@ import de.robv.android.xposed.XposedBridge
 object AddInfoContainer : CommonDynamicHook() {
 
     //非管理员也可查看一些信息。。。
-    override fun initOnce(): Boolean = tryOrFalse {
+    override fun initOnce(): Boolean = tryOrLogFalse {
         val ProfileActivity = loadClass("org.telegram.ui.ProfileActivity")
         findMethod(ProfileActivity) {
             name == "createActionBarMenu" && parameterTypes.size == 1
@@ -64,8 +64,8 @@ object AddInfoContainer : CommonDynamicHook() {
         }
 
 
-        val actions_addadmin =
-            findField("org.telegram.messenger.R\$drawable") { name == "actions_addadmin" }.get(null) as Int
+        val actions_addadmin = android.R.drawable.ic_lock_idle_alarm
+
         findAllMethods(loadClass("org.telegram.ui.ChatEditActivity"), true) {
             when (name) {
                 "createView" -> {
@@ -96,7 +96,10 @@ object AddInfoContainer : CommonDynamicHook() {
                                 findField(it.thisObject::class.java) {
                                     name == "logCell"
                                 }.set(it.thisObject, null)
+                            } else {
+                                Log.e("logCell==null")
                             }
+
                         }
 
                     }
@@ -127,8 +130,9 @@ object AddInfoContainer : CommonDynamicHook() {
                             val adminCell = getField("adminCell", it.thisObject)
                             getMethod(
                                 "setTextAndValueAndIcon", adminCell, false, -1,
-                                ChannelAdministratorsText, "???", actions_addadmin, true
+                                ChannelAdministratorsText, "**", actions_addadmin, true
                             )
+
 
                         }
 

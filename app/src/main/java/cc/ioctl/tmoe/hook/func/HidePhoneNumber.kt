@@ -10,7 +10,7 @@ import com.github.kyuubiran.ezxhelper.utils.*
 object HidePhoneNumber : CommonDynamicHook() {
 
     //ProfileActivity.java hidePhone = true;          updateListAnimated(false);
-    override fun initOnce(): Boolean = tryOrFalse {
+    override fun initOnce(): Boolean = tryOrLogFalse {
         findMethod(loadClass("org.telegram.ui.Cells.DrawerProfileCell"),false){
             name=="setUser"&& parameterTypes.size==2
         }.hookAfter {

@@ -4,7 +4,7 @@ import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import com.github.kyuubiran.ezxhelper.utils.*
 
 object ChannelDetailNumbers : CommonDynamicHook() {
-    override fun initOnce(): Boolean = tryOrFalse {
+    override fun initOnce(): Boolean = tryOrLogFalse {
         //频道关注者显示详细人数 3k → 3000
         findMethod(loadClass("org.telegram.messenger.LocaleController")) {
             name == "formatShortNumber" && parameterTypes.size == 2

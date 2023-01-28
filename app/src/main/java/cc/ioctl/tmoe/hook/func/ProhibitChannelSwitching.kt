@@ -4,7 +4,7 @@ import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import com.github.kyuubiran.ezxhelper.utils.*
 
 object ProhibitChannelSwitching : CommonDynamicHook() {
-    override fun initOnce(): Boolean = tryOrFalse {
+    override fun initOnce(): Boolean = tryOrLogFalse {
         val cpd= loadClass("org.telegram.ui.ChatPullingDownDrawable")
         for (method in cpd.declaredMethods) {
             when (method.name) {

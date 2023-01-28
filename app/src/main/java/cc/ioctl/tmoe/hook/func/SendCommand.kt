@@ -16,7 +16,7 @@ import de.robv.android.xposed.XposedBridge
 
 object SendCommand : CommonDynamicHook() {
 
-    override fun initOnce(): Boolean = tryOrFalse {
+    override fun initOnce(): Boolean = tryOrLogFalse {
         findMethod(loadClass("org.telegram.ui.Components.ChatActivityEnterView")) {
             //public void setCommand(MessageObject messageObject, String command, boolean longPress, boolean username)
             name=="setCommand"&&parameterTypes.size==4

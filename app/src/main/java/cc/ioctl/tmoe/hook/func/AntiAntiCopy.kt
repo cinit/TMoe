@@ -9,7 +9,7 @@ object AntiAntiCopy : CommonDynamicHook() {
     private var isOF=true
     var isNoForw=false
 
-    override fun initOnce(): Boolean = tryOrFalse {
+    override fun initOnce(): Boolean = tryOrLogFalse {
         findAllMethods("org.telegram.messenger.MessagesController") { name == "isChatNoForwards" }.hookAfter {
             if (isEnabled) {
                 isNoForw=it.result as Boolean
