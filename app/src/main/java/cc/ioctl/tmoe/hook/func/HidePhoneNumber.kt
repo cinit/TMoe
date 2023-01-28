@@ -11,13 +11,14 @@ object HidePhoneNumber : CommonDynamicHook() {
 
     //ProfileActivity.java hidePhone = true;          updateListAnimated(false);
     override fun initOnce(): Boolean = tryOrFalse {
-        findMethod(loadClass("org.telegram.ui.Cells.DrawerProfileCell"),true){
+        findMethod(loadClass("org.telegram.ui.Cells.DrawerProfileCell"),false){
             name=="setUser"&& parameterTypes.size==2
         }.hookAfter {
 
             if (!isEnabled)return@hookAfter
 
-            val vvv=  findField(it.thisObject::class.java){
+//            Log.d("class name:  "+it.thisObject::class.java.name)
+            val vvv=  findField(it.thisObject::class.java,true){
                 name=="phoneTextView"
             }.get(it.thisObject)
 
