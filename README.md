@@ -35,17 +35,20 @@ After activating this module, click "TMoe Settings" in the Telegram client setti
 ## 支持的客户端 / Supported clients
 
 - 任何基于 Telegram Android 官方 [TMessagesProj](https://github.com/DrKLO/Telegram) 的无混淆客户端。
+
   Any official Telegram Android [TMessagesProj](https://github.com/DrKLO/Telegram) based client without obfuscation.
 
 - 完整的列表请参考 [HookEntry.java](app/src/main/java/cc/ioctl/tmoe/startup/HookEntry.java)
   以及 [模块作用域](app/src/main/res/values/arrays.xml).
+
   Please refer to [HookEntry.java](app/src/main/java/cc/ioctl/tmoe/startup/HookEntry.java)
-  and [module scope](app/src/main/res/values/arrays.xml) for the complete list.
+  and [Xposed scope](app/src/main/res/values/arrays.xml) for the complete list.
 
 - 如果您的客户端满足兼容性要求但不在列表中，请在 [HookEntry.java](app/src/main/java/cc/ioctl/tmoe/startup/HookEntry.java)
   和 [模块作用域](app/src/main/res/values/arrays.xml) 中添加对应的值。
+
   If your client meets the compatibility requirements but is not in the list, please add the corresponding value
-  in [HookEntry.java](app/src/main/java/cc/ioctl/tmoe/startup/HookEntry.java)
+  in [HookEntry.java](app/src/main/java/cc/ioctl/tmoe/startup/HookEntry.java) and [Xposed scope](app/src/main/res/values/arrays.xml).
 
 ## License
 
