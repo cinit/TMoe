@@ -32,6 +32,7 @@
     <string name="AccessHash">Access Hash</string>
     <string name="GitHub" translatable="false">GitHub</string>
     <string name="SourceCode">Source code</string>
+    <string name="DiscussionGroup">Discussion group</string>
     <string name="LicenseNotices">License notices</string>
     <string name="HideUserAvatar">Hide specific user avatars</string>
     <string name="NotEnabled">Not enabled</string>

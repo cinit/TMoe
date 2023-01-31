@@ -2,9 +2,11 @@ package cc.ioctl.tmoe.fragment
 
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Base64
 import android.widget.Toast
 import androidx.annotation.UiThread
 import androidx.core.content.ContextCompat.startActivity
@@ -37,6 +39,11 @@ class AboutFragment : BaseHierarchyFragment() {
                 openUrl("https://github.com/cinit/TMoe")
             }
         }
+        category("About", R.string.About) {
+            textValue("DiscussionGroup", R.string.DiscussionGroup, valueConstant = "@TMoe0") {
+                openDiscussionGroup()
+            }
+        }
         category("LicenseNotices", R.string.LicenseNotices) {
             notices.forEach { this@category.add(noticeToUiItem(it)) }
         }
@@ -46,6 +53,23 @@ class AboutFragment : BaseHierarchyFragment() {
         val intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse(url)
         startActivity(parentActivity, intent, null)
+    }
+
+    private fun openDiscussionGroup() {
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            component = ComponentName(context, "org.telegram.ui.LaunchActivity")
+            action = Intent.ACTION_VIEW
+            // use t.me/+ instead of t.me/@username
+            // to avoid the unavailability when the username got revoked by Telegram
+            // which happens much frequently when the username is too short
+            // I'm not sure whether this will happen, but it's better to be safe
+            // encode with base64 to avoid the web scraper
+            data = Uri.parse(
+                Base64.decode("aHR0cHM6Ly90Lm1lLytBZlhyZEtMMDVHOHdaVGsx", Base64.DEFAULT)
+                    .toString(Charsets.UTF_8).replace("\n", "")
+            )
+        }
+        startActivity(context, intent, null)
     }
 
     private val notices: Array<LicenseNotice> by lazy {
