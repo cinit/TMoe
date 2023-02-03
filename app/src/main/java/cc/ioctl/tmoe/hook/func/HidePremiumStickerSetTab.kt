@@ -11,11 +11,12 @@ object HidePremiumStickerSetTab : CommonDynamicHook() {
 
     override fun initOnce(): Boolean {
         val kMediaDataController = Initiator.loadClass("org.telegram.messenger.MediaDataController")
-        val getRecentStickers = kMediaDataController.getDeclaredMethod(
-            "getRecentStickers",
-            Int::class.javaPrimitiveType,
-            Int::class.javaPrimitiveType
-        )
+        val getRecentStickers = try {
+            kMediaDataController.getDeclaredMethod("getRecentStickers",Int::class.javaPrimitiveType,Int::class.javaPrimitiveType)
+        } catch (ignored: NoSuchMethodException) {
+            kMediaDataController.getDeclaredMethod("getRecentStickers",Int::class.javaPrimitiveType)
+        }
+
         HookUtils.hookBeforeIfEnabled(this, getRecentStickers) {
             val args = it.args
             if (args[0] == TYPE_PREMIUM_STICKERS) {
