@@ -2,11 +2,14 @@ package cc.ioctl.tmoe.hook.func
 
 import android.app.AndroidAppHelper
 import android.text.TextUtils
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
 import cc.ioctl.tmoe.R
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
+import cc.ioctl.tmoe.lifecycle.Parasitics
+import cc.ioctl.tmoe.ui.LocaleController
 import com.github.kyuubiran.ezxhelper.init.InitFields
 import com.github.kyuubiran.ezxhelper.utils.*
 import de.robv.android.xposed.XposedBridge
@@ -61,17 +64,17 @@ object HistoricalNewsOption : CommonDynamicHook() {
                         it.result = null
 
                         // ActionBarMenuSubItem cell = new ActionBarMenuSubItem(getParentActivity(), true, true, themeDelegate);
-                        val cnt = getField("mContext", thisObject, true)
+                        val ctx = (thisObject as ViewGroup).context
                         val themeDelegate = getField("resourcesProvider", thisObject)
 
-
-                        val call = callC.newInstance(cnt, true, true, themeDelegate)
-                        getMethod(
+                        Parasitics.injectModuleResources(ctx.resources)
+                        val call = callC.newInstance(ctx, true, true, themeDelegate)
+                        getMethodAndInvoke(
                             "setTextAndIcon",
                             call,
                             false,
                             2,
-                            "历史",
+                            LocaleController.getString("MenuItem_HistoryMessage", R.string.MenuItem_HistoryMessage),
                             R.drawable.ic_setting_hex_outline_24
                         )
                         XposedBridge.invokeOriginalMethod(it.method, thisObject, arrayOf(call))
@@ -79,7 +82,7 @@ object HistoricalNewsOption : CommonDynamicHook() {
                             findUserHistory()
                         }
 
-                        call.setOnLongClickListener {
+                        call.setOnLongClickListener { view ->
 
                             var id = -1L
                             val selectedObject = getField("selectedObject", chatActivity)
@@ -114,17 +117,17 @@ object HistoricalNewsOption : CommonDynamicHook() {
                             }.invoke(null, id.toString())
 
 //                        Toast.makeText(AndroidAppHelper.currentApplication().applicationContext,"查看用户历史消息 $channel_id $post_author  $chat_id $user_id", Toast.LENGTH_SHORT).show()
-                            getMethod("processSelectedOption", chatActivity, args = arrayOf(999))
+                            getMethodAndInvoke("processSelectedOption", chatActivity, args = arrayOf(999))
                             true
                         }
 
-                        val plus = callC.newInstance(cnt, true, true, themeDelegate)
-                        getMethod(
+                        val plus = callC.newInstance(ctx, true, true, themeDelegate)
+                        getMethodAndInvoke(
                             "setTextAndIcon",
                             plus,
                             false,
                             2,
-                            "复写",
+                            LocaleController.getString("MenuItem_RepeatMessage", R.string.MenuItem_RepeatMessage),
                             R.drawable.ic_setting_hex_outline_24
                         )
                         XposedBridge.invokeOriginalMethod(it.method, it.thisObject, arrayOf(plus))
@@ -156,38 +159,38 @@ object HistoricalNewsOption : CommonDynamicHook() {
         val selectedObject = getField("selectedObject", chatActivity)
         val selectedObjectGroup = getField("selectedObjectGroup", chatActivity)
         val messageOwner = getField("messageOwner", selectedObject)
-        val getMessagesController = getMethod("getMessagesController", chatActivity, true)!!
+        val getMessagesController = getMethodAndInvoke("getMessagesController", chatActivity, true)!!
 
-//        val isChatNoForwards= getMethod("isChatNoForwards",getMessagesController,false,1,currentChat) as Boolean
+//        val isChatNoForwards= getMethodAndInvoke("isChatNoForwards",getMessagesController,false,1,currentChat) as Boolean
         val isChatNoForwards = findMethod(getMessagesController::class.java) {
             name == "isChatNoForwards" && parameterTypes.size == 1 && parameterTypes[0] != Long::class.javaPrimitiveType
         }.invoke(getMessagesController, currentChat) as Boolean
 
 
-        val isThreadChat = getMethod("isThreadChat", chatActivity, false)!! as Boolean
+        val isThreadChat = getMethodAndInvoke("isThreadChat", chatActivity, false)!! as Boolean
 
         if (isThreadChat || isChatNoForwards || AntiAntiCopy.isNoForw) {
             Toast.makeText(
                 AndroidAppHelper.currentApplication().applicationContext,
-                "不支持。",
+                LocaleController.getString("UnsupportedOperation", R.string.UnsupportedOperation),
                 Toast.LENGTH_SHORT
             ).show()
 
             if (selectedObject != null) {
                 val isAnyKindOfSticker =
-                    getMethod("isAnyKindOfSticker", selectedObject, true) as Boolean
-                val isAnimatedEmoji = getMethod("isAnimatedEmoji", selectedObject, true) as Boolean
-                val isDice = getMethod("isDice", selectedObject, true) as Boolean
+                    getMethodAndInvoke("isAnyKindOfSticker", selectedObject, true) as Boolean
+                val isAnimatedEmoji = getMethodAndInvoke("isAnimatedEmoji", selectedObject, true) as Boolean
+                val isDice = getMethodAndInvoke("isDice", selectedObject, true) as Boolean
 
                 val dialog_id = getField("dialog_id", chatActivity)!!
                 val threadMessageObject = getField("threadMessageObject", chatActivity)
-                val getDocument = getMethod("getDocument", selectedObject, false, 0)
+                val getDocument = getMethodAndInvoke("getDocument", selectedObject, false, 0)
                 val getSendMessagesHelper =
-                    getMethod("getSendMessagesHelper", chatActivity, true)!!
+                    getMethodAndInvoke("getSendMessagesHelper", chatActivity, true)!!
 
                 if (isAnyKindOfSticker && !isAnimatedEmoji && !isDice) {
 
-                    getMethod(
+                    getMethodAndInvoke(
                         "sendSticker", getSendMessagesHelper, true, 9,
                         getDocument,
                         null,
@@ -200,7 +203,7 @@ object HistoricalNewsOption : CommonDynamicHook() {
                         0
                     )
 
-                    getMethod("processSelectedOption", chatActivity, args = arrayOf(999))
+                    getMethodAndInvoke("processSelectedOption", chatActivity, args = arrayOf(999))
                     chatActivity = null
                 } else {
 //                    messageOwner = getField("messageOwner", selectedObject)
@@ -255,7 +258,7 @@ object HistoricalNewsOption : CommonDynamicHook() {
                             entities = null
                         }
 
-                        getMethod(
+                        getMethodAndInvoke(
                             "sendMessage", getSendMessagesHelper, false, 12,
                             message,
                             dialog_id,
@@ -273,7 +276,7 @@ object HistoricalNewsOption : CommonDynamicHook() {
 
 
                         if (chatActivity != null) {
-                            getMethod("processSelectedOption", chatActivity, args = arrayOf(999))
+                            getMethodAndInvoke("processSelectedOption", chatActivity, args = arrayOf(999))
                             chatActivity = null
                         }
 
@@ -292,12 +295,12 @@ object HistoricalNewsOption : CommonDynamicHook() {
             }
 
             //            forwardMessages(messages, false, false, true, 0)
-            getMethod("forwardMessages", chatActivity, false, 5, messages, false, false, true, 0)
+            getMethodAndInvoke("forwardMessages", chatActivity, false, 5, messages, false, false, true, 0)
 
         }
 
         if (chatActivity != null) {
-            getMethod("processSelectedOption", chatActivity, args = arrayOf(999))
+            getMethodAndInvoke("processSelectedOption", chatActivity, args = arrayOf(999))
             chatActivity = null
         }
 
@@ -312,9 +315,9 @@ object HistoricalNewsOption : CommonDynamicHook() {
             val from_id = getField("from_id", messageOwner, true)
 
 
-            getMethod("openSearchWithText", chatActivity, args = arrayOf(""))
+            getMethodAndInvoke("openSearchWithText", chatActivity, args = arrayOf(""))
 
-            val getMessagesController = getMethod("getMessagesController", chatActivity, true)!!
+            val getMessagesController = getMethodAndInvoke("getMessagesController", chatActivity, true)!!
             val user_id = getField("user_id", from_id, true) as Long
             val chat_id = getField("chat_id", from_id, true) as Long
             val channel_id = getField("channel_id", from_id, true) as Long
@@ -322,22 +325,22 @@ object HistoricalNewsOption : CommonDynamicHook() {
                 user_id.toInt() != 0 -> {
                     //                    TLRPC.User user = getMessagesController().getUser(peer.user_id);
                     //                    searchUserMessages(user, null);
-                    val user = getMethod("getUser", getMessagesController, true, 1, user_id)!!
-                    getMethod("searchUserMessages", chatActivity, args = arrayOf(user, null))
+                    val user = getMethodAndInvoke("getUser", getMessagesController, true, 1, user_id)!!
+                    getMethodAndInvoke("searchUserMessages", chatActivity, args = arrayOf(user, null))
 
                 }
                 chat_id.toInt() != 0 -> {
-                    val chat = getMethod("getChat", getMessagesController, true, 1, chat_id)!!
-                    getMethod("searchUserMessages", chatActivity, args = arrayOf(null, chat))
+                    val chat = getMethodAndInvoke("getChat", getMessagesController, true, 1, chat_id)!!
+                    getMethodAndInvoke("searchUserMessages", chatActivity, args = arrayOf(null, chat))
                 }
                 channel_id.toInt() != 0 -> {
-                    val chat = getMethod("getChat", getMessagesController, true, 1, channel_id)!!
-                    getMethod("searchUserMessages", chatActivity, args = arrayOf(null, chat))
+                    val chat = getMethodAndInvoke("getChat", getMessagesController, true, 1, channel_id)!!
+                    getMethodAndInvoke("searchUserMessages", chatActivity, args = arrayOf(null, chat))
                 }
             }
 
-            getMethod("showMessagesSearchListView", chatActivity, args = arrayOf(true))
-            getMethod("processSelectedOption", chatActivity, args = arrayOf(999))
+            getMethodAndInvoke("showMessagesSearchListView", chatActivity, args = arrayOf(true))
+            getMethodAndInvoke("processSelectedOption", chatActivity, args = arrayOf(999))
 
             chatActivity = null
         } catch (e: Throwable) {
@@ -380,7 +383,7 @@ object HistoricalNewsOption : CommonDynamicHook() {
     }
 
     private val mMethod: MutableMap<Any, Method> = ConcurrentHashMap()
-    fun getMethod(
+    fun getMethodAndInvoke(
         n: String,
         obj: Any?,
         findSuper: Boolean = false,

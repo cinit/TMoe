@@ -49,4 +49,14 @@
     <string name="ViewTopicAsMsgByDefaultDesc">默认以消息模式浏览开启了话题的群组</string>
     <string name="HidePremiumStickerSetTab">隐藏 Premium 贴纸包</string>
     <string name="HidePremiumStickerSetTabDesc">(仅限 Premium 用户) 在表情面板中隐藏 Premium 贴纸包</string>
+    <string name="ViewChannel">打开频道</string>
+    <string name="ForwardsRestrictedInfoGroup">禁止复制和转发此群组的消息。</string>
+    <string name="UnsupportedOperation">不支持此操作。</string>
+    <string name="Dialog_Message_ConfirmClickToSendBotCommand">是否允许点按命令?</string>
+    <string name="MenuItem_HistoryMessage">历史</string>
+    <string name="MenuItem_RepeatMessage">复读</string>
+    <string name="DebugVerbose_DoubleTapDetected">双击 666</string>
+    <string name="DialogTitle_OperationCompleted">操作完成</string>
+    <string name="DialogTitle_OperationConfirmation">确认操作</string>
+    <string name="DialogButton_Confirm">确认</string>
 </resources>

@@ -2,7 +2,9 @@ package cc.ioctl.tmoe.hook.func
 
 import android.app.AndroidAppHelper
 import android.widget.Toast
+import cc.ioctl.tmoe.R
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
+import cc.ioctl.tmoe.ui.LocaleController
 import com.github.kyuubiran.ezxhelper.utils.*
 
 object AntiAntiCopy : CommonDynamicHook() {
@@ -17,15 +19,19 @@ object AntiAntiCopy : CommonDynamicHook() {
             }
         }
 
-        findMethod("org.telegram.ui.ChatActivity"){ name=="processSelectedOption" }.hookBefore {
-                if (!isEnabled) return@hookBefore
+        findMethod("org.telegram.ui.ChatActivity") { name == "processSelectedOption" }.hookBefore {
+            if (!isEnabled) return@hookBefore
 
-                if (it.args[0]==2){
-                    if (isNoForw){
-                        it.result=null
-                        Toast.makeText(AndroidAppHelper.currentApplication().applicationContext,"禁止复制和转发此群组的消息。", Toast.LENGTH_SHORT).show()
-                    }
+            if (it.args[0] == 2) {
+                if (isNoForw) {
+                    it.result = null
+                    Toast.makeText(
+                        AndroidAppHelper.currentApplication().applicationContext,
+                        LocaleController.getString("ForwardsRestrictedInfoGroup", R.string.ForwardsRestrictedInfoGroup),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
+            }
 
         }
 

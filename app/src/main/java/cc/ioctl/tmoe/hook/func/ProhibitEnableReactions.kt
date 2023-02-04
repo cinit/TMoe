@@ -1,18 +1,18 @@
 package cc.ioctl.tmoe.hook.func
 
-import android.content.Context
 import android.widget.Toast
+import cc.ioctl.tmoe.R
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
-import com.github.kyuubiran.ezxhelper.utils.findField
+import cc.ioctl.tmoe.lifecycle.Parasitics
+import cc.ioctl.tmoe.util.HostInfo
 import com.github.kyuubiran.ezxhelper.utils.findMethod
 import com.github.kyuubiran.ezxhelper.utils.hookBefore
 import com.github.kyuubiran.ezxhelper.utils.tryOrLogFalse
-import java.util.*
+import java.util.Objects
 
 object ProhibitEnableReactions : CommonDynamicHook() {
 
     private val enabledReactionsList: List<Objects> = ArrayList()
-    private var applicationContext: Context? = null
     override fun initOnce(): Boolean = tryOrLogFalse {
 
 
@@ -46,14 +46,10 @@ object ProhibitEnableReactions : CommonDynamicHook() {
 //                }.invoke(createCopyBulletin)
 
                 //org.telegram.messenger.ApplicationLoader applicationContext
-                if (applicationContext == null) {
-                    applicationContext =
-                        findField("org.telegram.messenger.ApplicationLoader") { name == "applicationContext" }.get(
-                            null
-                        ) as Context?
-                }
 
-                Toast.makeText(applicationContext, "双击 666", Toast.LENGTH_SHORT).show()
+                val ctx = HostInfo.getApplication()
+                Parasitics.injectModuleResources(ctx.resources)
+                Toast.makeText(ctx, R.string.DebugVerbose_DoubleTapDetected, Toast.LENGTH_SHORT).show()
 
             }
         }

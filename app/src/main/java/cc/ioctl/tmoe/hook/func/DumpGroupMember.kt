@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.view.View
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AlertDialog
+import cc.ioctl.tmoe.R
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import cc.ioctl.tmoe.lifecycle.Parasitics
 import cc.ioctl.tmoe.td.AccountController
@@ -394,8 +395,9 @@ object DumpGroupMember : CommonDynamicHook() {
                                 SyncUtils.runOnUiThread {
                                     val elapsed = System.currentTimeMillis() - startTime
                                     val totalCount = currentOffset.get()
+                                    Parasitics.injectModuleResources(ctx.resources)
                                     AlertDialog.Builder(ctx).apply {
-                                        setTitle("Finished")
+                                        setTitle(R.string.DialogTitle_OperationCompleted)
                                         setMessage(
                                             "TL_channelParticipantsRecent\n" +
                                                     "user = $slot, chat = $chatId, " +
@@ -444,8 +446,8 @@ object DumpGroupMember : CommonDynamicHook() {
             Parasitics.injectModuleResources(ctx.resources)
             // confirm action
             AlertDialog.Builder(ctx).apply {
-                setTitle("Confirm")
-                setMessage("Fetch group members?")
+                setTitle(R.string.DialogTitle_OperationConfirmation)
+                setMessage(R.string.DialogMsg_ConfirmDumpChannelMembers)
                 setCancelable(true)
                 setNegativeButton(android.R.string.cancel, null)
                 setPositiveButton(android.R.string.ok) { _, _ ->

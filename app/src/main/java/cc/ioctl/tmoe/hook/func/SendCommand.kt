@@ -1,17 +1,16 @@
 package cc.ioctl.tmoe.hook.func
 
 import android.app.AlertDialog
-import android.app.AndroidAppHelper
 import android.content.Context
 import android.content.DialogInterface
-import android.view.View
-import android.widget.LinearLayout
-import android.widget.Toast
 import cc.ioctl.tmoe.R
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
-import cc.ioctl.tmoe.hook.func.HistoricalNewsOption.getField
-import cc.ioctl.tmoe.hook.func.HistoricalNewsOption.getMethod
-import com.github.kyuubiran.ezxhelper.utils.*
+import cc.ioctl.tmoe.hook.func.HistoricalNewsOption.getMethodAndInvoke
+import cc.ioctl.tmoe.lifecycle.Parasitics
+import com.github.kyuubiran.ezxhelper.utils.findMethod
+import com.github.kyuubiran.ezxhelper.utils.hookBefore
+import com.github.kyuubiran.ezxhelper.utils.loadClass
+import com.github.kyuubiran.ezxhelper.utils.tryOrLogFalse
 import de.robv.android.xposed.XposedBridge
 
 object SendCommand : CommonDynamicHook() {
@@ -33,11 +32,11 @@ object SendCommand : CommonDynamicHook() {
             if (longPress)return@hookBefore
 
 
-            val context=getMethod("getContext",it.thisObject,true,0)
+            val context = getMethodAndInvoke("getContext", it.thisObject, true, 0) as Context
             if (command.startsWith("/")){
-
-                AlertDialog.Builder(context as Context)
-                    .setMessage("是否允许点按命令?")
+                Parasitics.injectModuleResources(context.resources)
+                AlertDialog.Builder(context)
+                    .setMessage(R.string.Dialog_Message_ConfirmClickToSendBotCommand)
                     .setPositiveButton(android.R.string.ok) { _: DialogInterface?, _: Int ->
                       XposedBridge.invokeOriginalMethod(it.method,it.thisObject,it.args)
                     }

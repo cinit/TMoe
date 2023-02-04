@@ -71,4 +71,15 @@
     <string name="ViewTopicAsMsgByDefaultDesc">\"View as Messages\" by default in topic chats</string>
     <string name="HidePremiumStickerSetTab">Hide Premium Sticker Set Tab</string>
     <string name="HidePremiumStickerSetTabDesc">For premium users only. Remove the premium sticker set tab from the sticker panel.</string>
+    <string name="ViewChannel">View Channel</string>
+    <string name="ForwardsRestrictedInfoGroup">Сopying and forwarding is not allowed in this group.</string>
+    <string name="UnsupportedOperation">Unsupported operation.</string>
+    <string name="Dialog_Message_ConfirmClickToSendBotCommand">Are you sure you want to send this command?</string>
+    <string name="MenuItem_HistoryMessage">History</string>
+    <string name="MenuItem_RepeatMessage">Repeat</string>
+    <string name="DebugVerbose_DoubleTapDetected">Double tap detected</string>
+    <string name="DialogTitle_OperationCompleted">Completed</string>
+    <string name="DialogTitle_OperationConfirmation">Confirmation</string>
+    <string name="DialogButton_Confirm">Confirm</string>
+    <string name="DialogMsg_ConfirmDumpChannelMembers">Fetch group members?</string>
 </resources>

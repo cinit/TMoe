@@ -5,7 +5,7 @@ import android.widget.LinearLayout
 import cc.ioctl.tmoe.R
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import cc.ioctl.tmoe.hook.func.HistoricalNewsOption.getField
-import cc.ioctl.tmoe.hook.func.HistoricalNewsOption.getMethod
+import cc.ioctl.tmoe.hook.func.HistoricalNewsOption.getMethodAndInvoke
 import com.github.kyuubiran.ezxhelper.utils.*
 import de.robv.android.xposed.XposedBridge
 
@@ -20,9 +20,9 @@ object AddInfoContainer : CommonDynamicHook() {
             try {
 
                 val getMessagesController =
-                    getMethod("getMessagesController", it.thisObject, true)!!
+                    getMethodAndInvoke("getMessagesController", it.thisObject, true)!!
                 val chatId = getField("chatId", it.thisObject) as Long
-                val chat = getMethod("getChat", getMessagesController, true, 1, chatId)
+                val chat = getMethodAndInvoke("getChat", getMessagesController, true, 1, chatId)
 
                 val hasAdminRights = findMethod("org.telegram.messenger.ChatObject") {
                     name == "hasAdminRights" && parameterTypes.size == 1
@@ -54,7 +54,7 @@ object AddInfoContainer : CommonDynamicHook() {
                     }.get(it.thisObject) as View
                     editItem.visibility = View.VISIBLE
 
-                    getMethod("setIcon", editItem, false, 1, R.drawable.ic_setting_hex_outline_24)
+                    getMethodAndInvoke("setIcon", editItem, false, 1, R.drawable.ic_setting_hex_outline_24)
                 }
 
             } catch (e: Throwable) {
@@ -128,7 +128,7 @@ object AddInfoContainer : CommonDynamicHook() {
                                 ) as String
 
                             val adminCell = getField("adminCell", it.thisObject)
-                            getMethod(
+                            getMethodAndInvoke(
                                 "setTextAndValueAndIcon", adminCell, false, -1,
                                 ChannelAdministratorsText, "**", actions_addadmin, true
                             )

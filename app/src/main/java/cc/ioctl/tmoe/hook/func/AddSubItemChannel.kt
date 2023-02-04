@@ -1,8 +1,10 @@
 package cc.ioctl.tmoe.hook.func
 
+import cc.ioctl.tmoe.R
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import cc.ioctl.tmoe.hook.func.HistoricalNewsOption.getField
-import cc.ioctl.tmoe.hook.func.HistoricalNewsOption.getMethod
+import cc.ioctl.tmoe.hook.func.HistoricalNewsOption.getMethodAndInvoke
+import cc.ioctl.tmoe.ui.LocaleController
 import com.github.kyuubiran.ezxhelper.utils.*
 
 object AddSubItemChannel : CommonDynamicHook() {
@@ -20,8 +22,8 @@ object AddSubItemChannel : CommonDynamicHook() {
             val chatId = getField("chatId", it.thisObject) as Long
             if (chatId.toInt() != 0) {
                 val getMessagesController =
-                    getMethod("getMessagesController", it.thisObject, true)!!
-                val chat = getMethod("getChat", getMessagesController, true, 1, chatId)
+                    getMethodAndInvoke("getMessagesController", it.thisObject, true)!!
+                val chat = getMethodAndInvoke("getChat", getMessagesController, true, 1, chatId)
                 val megagroup = getField("megagroup", chat, true) as Boolean
 
 
@@ -37,9 +39,10 @@ object AddSubItemChannel : CommonDynamicHook() {
                             val linked_chat_id = getField("linked_chat_id", chatInfo, true) as Long
                             if (linked_chat_id.toInt() != 0) {
                                 val otherItem = getField("otherItem", it.thisObject)
-                                getMethod(
+                                getMethodAndInvoke(
                                     "addSubItem", otherItem, false, 3, view_discussion, msg_channel
-                                    /*R.drawable.ic_setting_hex_outline_24*/, "打开频道"
+                                    /*R.drawable.ic_setting_hex_outline_24*/,
+                                    LocaleController.getString("ViewChannel", R.string.ViewChannel)
                                 )
                             }
                         }
