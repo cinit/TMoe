@@ -31,7 +31,7 @@
     <string name="LicenseNotices">開放原始碼許可</string>
     <string name="HideUserAvatar">隱藏指定使用者頭像</string>
     <string name="NotEnabled">未啟用</string>
-    <string name="HideUserAvatarEnabledTargetCount" formatted="false">%d user(s), %d channel(s), %d group(s)</string>
+    <string name="HideUserAvatarEnabledTargetCount">%1$d user(s), %2$d channel(s), %3$d group(s)</string>
     <string name="NotImplemented">咕咕咕</string>
     <string name="VersionInfo">版本</string>
     <string name="TextCopied">已複製文字</string>

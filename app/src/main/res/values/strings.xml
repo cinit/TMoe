@@ -36,7 +36,7 @@
     <string name="LicenseNotices">License notices</string>
     <string name="HideUserAvatar">Hide specific user avatars</string>
     <string name="NotEnabled">Not enabled</string>
-    <string name="HideUserAvatarEnabledTargetCount" formatted="false">%d user(s), %d channel(s), %d group(s)</string>
+    <string name="HideUserAvatarEnabledTargetCount">%1$d user(s), %2$d channel(s), %3$d group(s)</string>
     <string name="NotImplemented">Not implemented yet</string>
     <string name="VersionInfo">Version</string>
     <string name="TextCopied">Text copied to clipboard.</string>

@@ -31,7 +31,7 @@
     <string name="LicenseNotices">Avisos de licencia</string>
     <string name="HideUserAvatar">Ocultar avatares de usuarios específicos</string>
     <string name="NotEnabled">No habilitado</string>
-    <string name="HideUserAvatarEnabledTargetCount" formatted="false">%d usuario(s), %d canal(es), %d grupo(s)</string>
+    <string name="HideUserAvatarEnabledTargetCount">%1$d usuario(s), %2$d canal(es), %3$d grupo(s)</string>
     <string name="NotImplemented">No se ha implementado todavía</string>
     <string name="VersionInfo">Versión</string>
     <string name="TextCopied">Texto copiado en el portapapeles.</string>

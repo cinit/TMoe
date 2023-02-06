@@ -46,7 +46,7 @@
     <string name="HidePremiumStickerSetTabDesc">Только для премиум-пользователей. Снимите вкладку набора наклеек премиум-класса с панели наклеек.</string>
     <string name="HideSponsoredMsg">Скрыть спонсорские сообщения</string>
     <string name="HideUserAvatar">Скрыть аватары конкретных пользователей</string>
-    <string name="HideUserAvatarEnabledTargetCount">%d пользователь(ы), %d канал(ы), %d группа(ы)</string>
+    <string name="HideUserAvatarEnabledTargetCount">%1$d пользователь(ы), %2$d канал(ы), %3$d группа(ы)</string>
     <string name="HistoricGroupMemberRecord">Показать исторические группы</string>
     <string name="HistoricGroupMemberRecordDesc">Показывать исторические общие группы в профиле пользователя, для которых требуется включить "Постоянный хэш доступа".</string>
     <string name="HistoricalNewsOption">Вариант исторических новостей</string>
