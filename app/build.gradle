@@ -26,7 +26,7 @@ android {
             abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
         }
 
-        resConfigs 'en', 'zh-rCN', 'zh-rTW'
+        resConfigs 'en', 'zh-rCN', 'zh-rTW', 'ru', 'es'
 
         externalNativeBuild {
             cmake {
