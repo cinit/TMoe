@@ -3,6 +3,7 @@ package cc.ioctl.tmoe.base;
 import android.app.Application;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import cc.ioctl.tmoe.hook.func.DatabaseCorruptionWarning;
 import cc.ioctl.tmoe.lifecycle.Parasitics;
@@ -54,16 +55,29 @@ public class MainStartInit {
         // find host base fragment
         Class<?> kBaseFragment = Initiator.load("org.telegram.ui.ActionBar.BaseFragment");
         if (kBaseFragment == null) {
+            StringBuilder triedWays = new StringBuilder();
             // maybe obfuscated
             Class<?> kAppBarLayout = Initiator.load("org.telegram.ui.ActionBar.ActionBarLayout");
             if (kAppBarLayout == null) {
-                throw new RuntimeException("can not find class ActionBarLayout");
+                triedWays.append("can not find class ActionBarLayout");
+            } else {
+                try {
+                    Field newFragment = kAppBarLayout.getDeclaredField("newFragment");
+                    kBaseFragment = newFragment.getType();
+                } catch (NoSuchFieldException e) {
+                    triedWays.append("can not find field ActionBarLayout.newFragment; ");
+                }
+                if (kBaseFragment == null) {
+                    try {
+                        Method getLastFragment = kAppBarLayout.getDeclaredMethod("getLastFragment");
+                        kBaseFragment = getLastFragment.getReturnType();
+                    } catch (NoSuchMethodException e) {
+                        triedWays.append("can not find method ActionBarLayout.getLastFragment.");
+                    }
+                }
             }
-            try {
-                Field newFragment = kAppBarLayout.getDeclaredField("newFragment");
-                kBaseFragment = newFragment.getType();
-            } catch (NoSuchFieldException e) {
-                throw new RuntimeException("can not find field ActionBarLayout.newFragment");
+            if (kBaseFragment == null) {
+                throw new RuntimeException("kBaseFragment is null, tried: " + triedWays);
             }
         }
         // init for proxy
