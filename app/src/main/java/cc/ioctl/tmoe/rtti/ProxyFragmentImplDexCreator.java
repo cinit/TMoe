@@ -155,6 +155,7 @@ public class ProxyFragmentImplDexCreator {
         // create proxy class file
         dexFile.createNewFile();
         DexFileFactory.writeDexFile(dexFile.getAbsolutePath(), proxyDex);
+        dexFile.setReadOnly();
         return dexFile;
     }
 
