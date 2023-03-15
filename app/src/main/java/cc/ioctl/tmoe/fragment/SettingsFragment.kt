@@ -56,7 +56,7 @@ class SettingsFragment : BaseHierarchyFragment() {
                 }
             )
             functionSwitch(
-                ProhibitSpoilers, "ProhibitSpoilers", R.string.ProhibitSpoilers
+                ProhibitSpoilers, "ProhibitSpoilers", R.string.ProhibitSpoilers,
                 descProvider = {
                     LocaleController.getString("ProhibitSpoilersD", R.string.ProhibitSpoilersD)
                 }
