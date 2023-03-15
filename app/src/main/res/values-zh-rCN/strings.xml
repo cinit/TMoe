@@ -22,9 +22,10 @@
     <string name="HideSponsoredMsg">隐藏赞助消息</string>
     <string name="AntiAntiCopy">反反复制</string>
     <string name="ProhibitEnableReactions">禁止表情回应</string>
-    <string name="ProhibitChannelSwitching">禁止频道切换</string>
+    <string name="ProhibitChannelSwitching">禁止频道滑动切换</string>
     <string name="AntiAntiCopyD">与反反转发冲突</string>
     <string name="ProhibitSpoilers">禁用剧透</string>
+    <string name="ProhibitSpoilersD">剧透内容将默认显示</string>
     <string name="HistoricalNewsOption">历史消息</string>
     <string name="ProhibitChatGreetings">禁用问候贴纸</string>
     <string name="HidePhoneNumber">隐藏电话号码</string>
