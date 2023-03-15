@@ -30,7 +30,24 @@ After activating this module, click "TMoe Settings" in the Telegram client setti
 
 1. 调试模式 / Debug mode
 2. 去除复制保存消息限制 / Remove the limit on copying and saving messages
-3. TODO 咕咕咕
+3. 隐藏赞助消息 / Hide sponsored message
+4. 隐藏指定用户头像 / Hide specific user avatars
+5. 禁用剧透 / Prohibit Spoilers
+6. 禁止频道滑动切换 / Prohibit Channel Switching
+7. 禁止表情回应 / Prohibit Enable Reactions
+8. 禁用问候贴纸 / Prohibit Chat Greetings
+9. 隐藏电话号码 / Hide Phone Number
+10. 拒绝人数舍入 / Show Channel Detail Numbers
+11. 允许非管理员查询部分群组信息 / Allow non-admin to query some group information
+12. 询问是否发出指令 / Ask for tap command
+13. 强制显示顶栏模糊选项 / Force chat blur option available
+14. 禁用会员贴纸动画 / Disable Premium Sticker Animation
+15. 按音量键时保持视频静音 / Keep video muted when pressing the volume button
+16. 以消息模式查看话题群组 / View as Group by default in Topic
+17. 隐藏标签面板的会员贴纸包 / Hide Premium Sticker Tab
+18. 显示消息ID / Show message ID
+19. 为聊天菜单添加刷新消息按钮 / Add Reload Message Button in chat menu
+20. TODO 咕咕咕
 
 ## 支持的客户端 / Supported clients
 

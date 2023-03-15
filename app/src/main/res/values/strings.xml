@@ -19,6 +19,7 @@
     <string name="AddInfoContainer">AddInfoContainer</string>
     <string name="AddInfoContainerD">AddInfoContainer</string>
     <string name="ProhibitSpoilers">Prohibit Spoilers</string>
+    <string name="ProhibitSpoilersD">Spoiler content will be displayed as normal</string>
     <string name="SendCommand">Ask for tap command</string>
     <string name="ForceBlurChatAvailable">Force Chat Blur Option Available</string>
     <string name="DisablePremiumStickerAnimation">Disable Premium Sticker Animation</string>
@@ -57,7 +58,7 @@
     <string name="HistoricGroupMemberRecordDesc">Show historic common groups in a user\'s profile, requiring \"Persist Access Hash\" enabled.</string>
     <string name="Ignore">Ignore</string>
     <string name="RestrictContentMitigationDesc">Allow copy, save and screenshot in secret chats</string>
-    <string name="KeepVideoMuted">Keep video muted on volume key press</string>
+    <string name="KeepVideoMuted">Keep video muted when pressing the volume button</string>
     <string name="DebugAndLogsForClient">Debug &amp; Logs</string>
     <string name="DisableLogConfigOnStartup">Disable Debug Logs on Startup</string>
     <string name="DisableLogConfigOnStartupDesc">Set LOGS_ENABLED in BuildVars.java and FileLog.cpp to false on startup, for debug variant clients only, not useful for release builds.</string>
@@ -67,9 +68,9 @@
     <string name="BuildVarsLogsEnabled">LOGS_ENABLED (BuildVars.java)</string>
     <string name="BuildVarsLogsEnabledDesc">See LOGS_ENABLED in BuildVars.java (instant, non-persistent)</string>
     <string name="BuildVarsLogsEnabledDescSymbolNotFound">### Field not found. See LOGS_ENABLED in BuildVars.java</string>
-    <string name="ViewTopicAsMsgByDefault">View as Messages by default</string>
-    <string name="ViewTopicAsMsgByDefaultDesc">\"View as Messages\" by default in topic chats</string>
-    <string name="HidePremiumStickerSetTab">Hide Premium Sticker Set Tab</string>
+    <string name="ViewTopicAsMsgByDefault">View as Group by default</string>
+    <string name="ViewTopicAsMsgByDefaultDesc">\"View as Group\" by default in topic chats</string>
+    <string name="HidePremiumStickerSetTab">Hide Premium Sticker Tab</string>
     <string name="HidePremiumStickerSetTabDesc">For premium users only. Remove the premium sticker set tab from the sticker panel.</string>
     <string name="ViewChannel">View Channel</string>
     <string name="ForwardsRestrictedInfoGroup">Сopying and forwarding is not allowed in this group.</string>
