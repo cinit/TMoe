@@ -158,8 +158,13 @@ public class SettingEntryHook implements Initializable {
             Parasitics.injectModuleResources(HostInfo.getApplication().getResources());
             String text = LocaleController.getString("TMoeSettings", R.string.TMoeSettings);
             int iconResId = R.drawable.ic_setting_hex_outline_24;
-            Reflex.invokeVirtual(textCell, "setTextAndIcon", text, iconResId, true,
-                    String.class, int.class, boolean.class, void.class);
+            try {
+                Reflex.invokeVirtual(textCell, "setTextAndIcon", text, iconResId, true,
+                        CharSequence.class, int.class, boolean.class, void.class);
+            } catch (NoSuchMethodException e) {
+                Reflex.invokeVirtual(textCell, "setTextAndIcon", text, iconResId, true,
+                        String.class, int.class, boolean.class, void.class);
+            }
         } else {
             Utils.loge(new IllegalStateException("textCell is null"));
         }
