@@ -22,6 +22,7 @@ import android.util.StateSet;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Random;
 
 import cc.ioctl.tmoe.rtti.deobf.ClassLocator;
@@ -197,24 +198,35 @@ public class Theme {
 
     static Random random = new Random();
     private static Method sThemeGetColor3 = null;
+    private static Method sThemeGetColorI3 = null;
+
+    private static final HashMap<String, Integer> sCachedColorKeyIndex = new HashMap<>();
 
     public static int getColor(String key, boolean[] isDefault, boolean ignoreAnimation) {
-        if (sThemeGetColor3 == null) {
-            Class<?> kTheme = ClassLocator.getThemeClass();
-            if (kTheme != null) {
-                // find method public static int *(String, boolean[], boolean)
+        final Class<?> kTheme = ClassLocator.getThemeClass();
+        if (sThemeGetColor3 == null && kTheme != null) {
+            // find method public static int *(String, boolean[], boolean)
+            for (Method method : kTheme.getDeclaredMethods()) {
+                if (method.getReturnType() == Integer.TYPE) {
+                    Class<?>[] params = method.getParameterTypes();
+                    if (params.length == 3 && params[0] == String.class
+                            && params[1] == boolean[].class && params[2] == boolean.class) {
+                        sThemeGetColor3 = method;
+                        break;
+                    }
+                }
+            }
+            if (sThemeGetColor3 == null) {
+                // find method public static int *(int, boolean[], boolean)
                 for (Method method : kTheme.getDeclaredMethods()) {
                     if (method.getReturnType() == Integer.TYPE) {
                         Class<?>[] params = method.getParameterTypes();
-                        if (params.length == 3 && params[0] == String.class
+                        if (params.length == 3 && params[0] == int.class
                                 && params[1] == boolean[].class && params[2] == boolean.class) {
-                            sThemeGetColor3 = method;
+                            sThemeGetColorI3 = method;
                             break;
                         }
                     }
-                }
-                if (sThemeGetColor3 == null) {
-                    Utils.loge("Failed to find method Theme.getColor(String, boolean[], boolean), class: " + kTheme);
                 }
             }
         }
@@ -224,6 +236,32 @@ public class Theme {
             } catch (ReflectiveOperationException e) {
                 Utils.loge("Failed to invoke Theme.getColor(String, boolean[], boolean): " + sThemeGetColor3);
                 Utils.loge(e);
+            }
+        }
+        if (sThemeGetColorI3 != null && kTheme != null) {
+            // last try
+            int index = -1;
+            if (sCachedColorKeyIndex.containsKey(key)) {
+                Integer cachedIndex = sCachedColorKeyIndex.get(key);
+                if (cachedIndex != null) {
+                    index = cachedIndex;
+                }
+            } else {
+                try {
+                    Field field = kTheme.getDeclaredField("key_" + key);
+                    index = field.getInt(null);
+                    sCachedColorKeyIndex.put(key, index);
+                } catch (ReflectiveOperationException e) {
+                    // [[fallthrough]]
+                }
+            }
+            if (index != -1) {
+                try {
+                    return (Integer) sThemeGetColorI3.invoke(null, index, isDefault, ignoreAnimation);
+                } catch (ReflectiveOperationException e) {
+                    Utils.loge("Failed to invoke Theme.getColor(int, boolean[], boolean): " + sThemeGetColorI3);
+                    Utils.loge(e);
+                }
             }
         }
         // error occurs, use random color to avoid crash and alert user
