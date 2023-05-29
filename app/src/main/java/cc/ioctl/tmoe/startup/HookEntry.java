@@ -31,7 +31,6 @@ public class HookEntry implements IXposedHookLoadPackage, IXposedHookZygoteInit 
             "ellipi.messenger",
             "me.luvletter.nekox",
             "org.nift4.catox",
-            "ua.itaysonlab.messenger",
             "icu.ketal.yunigram",
             "icu.ketal.yunigram.lspatch",
             "icu.ketal.yunigram.beta",
