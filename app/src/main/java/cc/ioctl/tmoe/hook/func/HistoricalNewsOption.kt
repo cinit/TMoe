@@ -1,6 +1,9 @@
 package cc.ioctl.tmoe.hook.func
 
 import android.app.AndroidAppHelper
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.text.TextUtils
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -102,12 +105,14 @@ object HistoricalNewsOption : CommonDynamicHook() {
                             }
 
 
-                            Toast.makeText(ctx, "ID: $id", Toast.LENGTH_SHORT).show()
+                          Toast.makeText(ctx, "ID: $id", Toast.LENGTH_SHORT).show()
 
+                          val context =  AndroidAppHelper.currentApplication().applicationContext
 
-                            findMethod("org.telegram.messenger.AndroidUtilities") {
-                                name == "addToClipboard" && parameterTypes.size == 1
-                            }.invoke(null, id.toString())
+                            val item = ClipData.Item(id.toString())
+                            val clipData = ClipData("", arrayOf("text/plain"), item)
+                            val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+                            clipboardManager!!.setPrimaryClip(clipData)
 
 //                        Toast.makeText(AndroidAppHelper.currentApplication().applicationContext,"查看用户历史消息 $channel_id $post_author  $chat_id $user_id", Toast.LENGTH_SHORT).show()
                             getMethodAndInvoke(
@@ -115,6 +120,7 @@ object HistoricalNewsOption : CommonDynamicHook() {
                                 chatActivity,
                                 args = arrayOf(999)
                             )
+
                             true
                         }
 
