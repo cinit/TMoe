@@ -25,6 +25,7 @@ class SettingsFragment : BaseHierarchyFragment() {
             functionSwitch(
                 HideSponsoredMsg, "HideSponsoredMsg", R.string.HideSponsoredMsg
             )
+            functionSwitch(FuckTrackingHook, "FuckTrackingHook", R.string.FuckTrackingHook, "FuckTrackingHookDesc", R.string.FuckTrackingHookDesc)
             functionSwitch(
                 HideUserAvatar.INSTANCE, "HideUserAvatar", R.string.HideUserAvatar,
                 descProvider = {

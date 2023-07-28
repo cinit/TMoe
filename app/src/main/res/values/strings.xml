@@ -84,4 +84,6 @@
     <string name="DialogTitle_OperationConfirmation">Confirmation</string>
     <string name="DialogButton_Confirm">Confirm</string>
     <string name="DialogMsg_ConfirmDumpChannelMembers">Fetch group members?</string>
+    <string name="FuckTrackingHook">Remove tracking</string>
+    <string name="FuckTrackingHookDesc">If you click on an ad provided by Telegram, they will track it and might use it as the basis for personalizing the ad.This function is to disable it</string>
 </resources>

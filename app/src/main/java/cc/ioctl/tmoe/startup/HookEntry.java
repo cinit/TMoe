@@ -40,6 +40,7 @@ public class HookEntry implements IXposedHookLoadPackage, IXposedHookZygoteInit 
             "com.blxueya.gugugramx",
             "com.evildayz.code.telegraher",
             "com.exteragram.messenger"
+//            "top.qwq2333.nullgram" test only remove it before commit
     );
 
 

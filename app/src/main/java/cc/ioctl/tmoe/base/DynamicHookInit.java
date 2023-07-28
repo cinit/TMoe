@@ -17,6 +17,7 @@ import cc.ioctl.tmoe.hook.func.DisablePremiumStickerAnimation;
 import cc.ioctl.tmoe.hook.func.DumpGroupMember;
 import cc.ioctl.tmoe.hook.func.EnableDebugMode;
 import cc.ioctl.tmoe.hook.func.ExtendedOfflineSearch;
+import cc.ioctl.tmoe.hook.func.FuckTrackingHook;
 import cc.ioctl.tmoe.hook.func.HidePremiumStickerSetTab;
 import cc.ioctl.tmoe.hook.func.HistoricGroupMemberRecord;
 import cc.ioctl.tmoe.hook.func.ForceBlurChatAvailable;
@@ -93,6 +94,7 @@ public class DynamicHookInit {
                     ViewTopicAsMsgByDefault.INSTANCE,
                     HidePremiumStickerSetTab.INSTANCE,
                     UseSystemEmoji.INSTANCE,
+                    FuckTrackingHook.INSTANCE,
             };
         }
         return sAllFunctionHooks;
