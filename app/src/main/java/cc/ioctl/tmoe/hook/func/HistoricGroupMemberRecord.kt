@@ -2,17 +2,13 @@ package cc.ioctl.tmoe.hook.func
 
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import cc.ioctl.tmoe.td.AccountController
+import cc.ioctl.tmoe.td.RequestInterceptor
 import cc.ioctl.tmoe.util.HookUtils
 import cc.ioctl.tmoe.util.Initiator
 import cc.ioctl.tmoe.util.Log
 import cc.ioctl.tmoe.util.PrimTypes
 import cc.ioctl.tmoe.util.Reflex
-import de.robv.android.xposed.XposedBridge
-import java.lang.ref.WeakReference
 import java.lang.reflect.Field
-import java.lang.reflect.InvocationHandler
-import java.lang.reflect.Method
-import java.lang.reflect.Proxy
 import kotlin.math.abs
 
 object HistoricGroupMemberRecord : CommonDynamicHook() {
@@ -34,11 +30,6 @@ object HistoricGroupMemberRecord : CommonDynamicHook() {
     private lateinit var fmessages_Chats_count: Field
     private lateinit var kTL_messages_getCommonChats: Class<*>
     private lateinit var fTL_messages_getCommonChats_user_id: Field
-
-    private val mRuntimeHookLock = Any()
-    private val mHookedClasses = HashSet<Class<*>>()
-    private val mCallbackSetLock = Any()
-    private val mRequestCallbacks = HashSet<Pair<WeakReference<*>, WeakReference<*>>>(4)
 
     override fun initOnce(): Boolean {
         kRequestDelegate = Initiator.loadClass("org.telegram.tgnet.RequestDelegate")
@@ -62,33 +53,15 @@ object HistoricGroupMemberRecord : CommonDynamicHook() {
         // test linkage
         val currentSlot = AccountController.getCurrentActiveSlot()
         check(currentSlot >= 0) { "AccountController.getCurrentActiveSlot fail" }
-        val sendRequest9 = Initiator.loadClass("org.telegram.tgnet.ConnectionsManager").declaredMethods.single {
-            it.name == "sendRequest" && it.parameterTypes.size == 9
-        }
-        HookUtils.hookBeforeIfEnabled(this, sendRequest9) { params ->
-            val request = kTLObject.cast(params.args[0] ?: return@hookBeforeIfEnabled)
-            val onComplete = params.args[1] ?: return@hookBeforeIfEnabled
-            kRequestDelegate.cast(onComplete)
-            val klass = onComplete.javaClass
-            if (klass.name.startsWith("\$Proxy")) {
-                // don't hook proxy
-                return@hookBeforeIfEnabled
+
+        RequestInterceptor.registerTlrpcSuccessfulResultInterceptor(
+            Initiator.loadClass("org.telegram.tgnet.TLRPC\$TL_messages_getCommonChats")
+        ) { req, resp ->
+            if (!isEnabled) {
+                return@registerTlrpcSuccessfulResultInterceptor null
             }
-            if (isInterestedRequest(request.javaClass)) {
-                if (!mHookedClasses.contains(klass)) {
-                    val run = klass.getDeclaredMethod("run", kTLObject, kTL_error)
-                    synchronized(mRuntimeHookLock) {
-                        if (!mHookedClasses.contains(klass)) {
-                            XposedBridge.hookMethod(run, mHookedOnCompleteInterceptor)
-                            mHookedClasses.add(klass)
-                        }
-                    }
-                }
-                val pair = Pair(WeakReference(request), WeakReference(onComplete))
-                synchronized(mCallbackSetLock) {
-                    mRequestCallbacks.add(pair)
-                }
-            }
+            handleRequestComplete(req, resp)
+            null
         }
 
         // handle cases that common_chats_count is 0 but local database is not empty
@@ -120,67 +93,6 @@ object HistoricGroupMemberRecord : CommonDynamicHook() {
             }
         }
         return true
-    }
-
-    private fun isInterestedRequest(requestClass: Class<*>): Boolean {
-        val name = requestClass.name
-        // Log.d("requestClass: $name")
-        return when (name) {
-            "org.telegram.tgnet.TLRPC\$TL_messages_getCommonChats" -> true
-
-            else -> false
-        }
-    }
-
-    private val mHookedOnCompleteInterceptor = HookUtils.beforeIfEnabled(this) { params ->
-        val resp = params.args[0] ?: return@beforeIfEnabled // error
-        val klass = resp.javaClass
-        var originalRequest: Any? = null
-        synchronized(mCallbackSetLock) {
-            val it = mRequestCallbacks.iterator()
-            while (it.hasNext()) {
-                val pair = it.next()
-                val r = pair.first.get()
-                val c = pair.second.get()
-                if (r == null || c == null) {
-                    it.remove()
-                } else {
-                    if (c == params.thisObject) {
-                        originalRequest = r
-                        it.remove()
-                        break
-                    }
-                }
-            }
-        }
-        if (originalRequest == null) {
-            Log.w("original request lost, resp = " + klass.name + ", this = " + params.thisObject.javaClass.name)
-            return@beforeIfEnabled
-        }
-        handleRequestComplete(originalRequest!!, resp)
-    }
-
-    private class RequestDelegateInvocationHandler(private val fp: (Any?, Any?) -> Unit) : InvocationHandler {
-        override fun invoke(proxy: Any, method: Method, args: Array<out Any?>?): Any? {
-            return if (method.name == "run") {
-                fp(args!![0], args[1])
-                null
-            } else {
-                // Object.class
-                method.invoke(this, args)
-            }
-        }
-    }
-
-    @Throws(ReflectiveOperationException::class)
-    private fun createRequestDelegate(fp: (Any?, Any?) -> Unit): Any {
-        // ensure method name and signature is correct
-        kRequestDelegate.getDeclaredMethod("run", kTLObject, kTL_error)
-        return Proxy.newProxyInstance(
-            Initiator.getHostClassLoader(),
-            arrayOf(kRequestDelegate),
-            RequestDelegateInvocationHandler(fp)
-        )
     }
 
     private fun handleRequestComplete(request: Any, response: Any) {

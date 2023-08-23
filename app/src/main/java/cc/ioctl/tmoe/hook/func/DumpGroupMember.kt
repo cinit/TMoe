@@ -10,6 +10,7 @@ import cc.ioctl.tmoe.R
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import cc.ioctl.tmoe.lifecycle.Parasitics
 import cc.ioctl.tmoe.td.AccountController
+import cc.ioctl.tmoe.td.RequestInterceptor
 import cc.ioctl.tmoe.td.binding.Chat
 import cc.ioctl.tmoe.td.binding.User
 import cc.ioctl.tmoe.ui.util.FaultyDialog
@@ -18,9 +19,7 @@ import de.robv.android.xposed.XposedBridge
 import java.io.File
 import java.lang.ref.WeakReference
 import java.lang.reflect.Field
-import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
-import java.lang.reflect.Proxy
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -66,11 +65,6 @@ object DumpGroupMember : CommonDynamicHook() {
     private lateinit var fChat_flags: Field
     private lateinit var fChat_access_hash: Field
     private lateinit var fChat_username: Field
-
-    private val mRuntimeHookLock = Any()
-    private val mHookedClasses = HashSet<Class<*>>()
-    private val mCallbackSetLock = Any()
-    private val mRequestCallbacks = HashSet<Pair<WeakReference<*>, WeakReference<*>>>(4)
 
     override fun initOnce(): Boolean {
         kRequestDelegate = Initiator.loadClass("org.telegram.tgnet.RequestDelegate")
@@ -125,34 +119,18 @@ object DumpGroupMember : CommonDynamicHook() {
         if (currentSlot < 0) {
             throw RuntimeException("AccountController.getCurrentActiveSlot fail")
         }
-        val sendRequest9 = Initiator.loadClass("org.telegram.tgnet.ConnectionsManager").declaredMethods.single {
-            it.name == "sendRequest" && it.parameterTypes.size == 9
-        }
-        HookUtils.hookBeforeIfEnabled(this, sendRequest9) { params ->
-            val request = kTLObject.cast(params.args[0] ?: return@hookBeforeIfEnabled)
-            val onComplete = params.args[1] ?: return@hookBeforeIfEnabled
-            kRequestDelegate.cast(onComplete)
-            val klass = onComplete.javaClass
-            if (klass.name.startsWith("\$Proxy")) {
-                // don't hook proxy
-                return@hookBeforeIfEnabled
+
+        RequestInterceptor.registerTlrpcSuccessfulResultInterceptor(
+            Initiator.loadClass("org.telegram.tgnet.TLRPC\$TL_channels_getParticipants"),
+            Initiator.loadClass("org.telegram.tgnet.TLRPC\$TL_channels_getParticipant")
+        ) { req, resp ->
+            if (!isEnabled) {
+                return@registerTlrpcSuccessfulResultInterceptor null
             }
-            if (isInterestedRequest(request.javaClass)) {
-                if (!mHookedClasses.contains(klass)) {
-                    val run = klass.getDeclaredMethod("run", kTLObject, kTL_error)
-                    synchronized(mRuntimeHookLock) {
-                        if (!mHookedClasses.contains(klass)) {
-                            XposedBridge.hookMethod(run, mHookedOnCompleteHandler)
-                            mHookedClasses.add(klass)
-                        }
-                    }
-                }
-                val pair = Pair(WeakReference(request), WeakReference(onComplete))
-                synchronized(mCallbackSetLock) {
-                    mRequestCallbacks.add(pair)
-                }
-            }
+            handleRequestComplete(req, resp)
+            null
         }
+
         val kMessagesStorage = Initiator.loadClass("org.telegram.messenger.MessagesStorage")
         val putChatsInternal: Method = try {
             kMessagesStorage.getDeclaredMethod("putChatsInternal", java.util.List::class.java)
@@ -179,28 +157,6 @@ object DumpGroupMember : CommonDynamicHook() {
         return true
     }
 
-    private class RequestDelegateInvocationHandler(private val fp: (Any?, Any?) -> Unit) : InvocationHandler {
-        override fun invoke(proxy: Any, method: Method, args: Array<out Any?>?): Any? {
-            return if (method.name == "run") {
-                fp(args!![0], args[1])
-                null
-            } else {
-                // Object.class
-                method.invoke(this, args)
-            }
-        }
-    }
-
-    @Throws(ReflectiveOperationException::class)
-    private fun createRequestDelegate(fp: (Any?, Any?) -> Unit): Any {
-        // ensure method name and signature is correct
-        kRequestDelegate.getDeclaredMethod("run", kTLObject, kTL_error)
-        return Proxy.newProxyInstance(
-            Initiator.getHostClassLoader(),
-            arrayOf(kRequestDelegate),
-            RequestDelegateInvocationHandler(fp)
-        )
-    }
 
     private fun handleRequestComplete(originalRequest: Any, response: Any) {
         val klass = response.javaClass
@@ -299,34 +255,6 @@ object DumpGroupMember : CommonDynamicHook() {
         return ChannelInfo(chatId, accessHash, title, flags, username)
     }
 
-    private val mHookedOnCompleteHandler = HookUtils.afterIfEnabled(this) { params ->
-        val resp = params.args[0] ?: return@afterIfEnabled // error
-        val klass = resp.javaClass
-        var originalRequest: Any? = null
-        synchronized(mCallbackSetLock) {
-            val it = mRequestCallbacks.iterator()
-            while (it.hasNext()) {
-                val pair = it.next()
-                val r = pair.first.get()
-                val c = pair.second.get()
-                if (r == null || c == null) {
-                    it.remove()
-                } else {
-                    if (c == params.thisObject) {
-                        originalRequest = r
-                        it.remove()
-                        break
-                    }
-                }
-            }
-        }
-        if (originalRequest == null) {
-            Log.w("original request lost, resp = " + klass.name + ", this = " + params.thisObject.javaClass.name)
-            return@afterIfEnabled
-        }
-        handleRequestComplete(originalRequest!!, resp)
-    }
-
     @Throws(ReflectiveOperationException::class)
     private fun createTL_channels_getParticipants(acctSlot: Int, chatId: Long, offset: Int, filter: Any? = null): Any {
         check(acctSlot >= 0)
@@ -381,7 +309,7 @@ object DumpGroupMember : CommonDynamicHook() {
                         }
                         val startOffset = currentOffset.get()
                         val request = createTL_channels_getParticipants(slot, chatId, startOffset, null)
-                        val resp = createRequestDelegate { result, error ->
+                        val resp = RequestInterceptor.createRequestDelegate { result, error ->
                             if (error != null) {
                                 isCancelled.set(true)
                                 dialog.dismiss()
@@ -460,17 +388,6 @@ object DumpGroupMember : CommonDynamicHook() {
                 show()
             }
             return true
-        }
-    }
-
-    private fun isInterestedRequest(requestClass: Class<*>): Boolean {
-        val name = requestClass.name
-        // Log.d("requestClass: $name")
-        return when (name) {
-            "org.telegram.tgnet.TLRPC\$TL_channels_getParticipants",
-            "org.telegram.tgnet.TLRPC\$TL_channels_getParticipant" -> true
-
-            else -> false
         }
     }
 
