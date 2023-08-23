@@ -1,0 +1,31 @@
+[versions]
+agp = "8.1.1"
+appcompat = "1.6.1"
+core = "4.6.2"
+dexlib2 = "2.4.0"
+kotlin = "1.9.0"
+ksp = "1.9.0-1.0.13"
+mmkv = "1.3.1"
+
+[libraries]
+android-tools = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+androidx-annotation = { module = "androidx.annotation:annotation", version = "1.6.0" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+androidx-core-ktx = { module = "androidx.core:core-ktx", version = "1.10.1" }
+core = { module = "io.noties.markwon:core", version.ref = "core" }
+dexlib2 = { module = "org.smali:dexlib2", version.ref = "dexlib2" }
+eclipse-jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version = "6.6.0.202305301015-r" }
+hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version = "4.3" }
+kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version = "1.14.2" }
+ksp = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
+material = { module = "com.google.android.material:material", version = "1.9.0" }
+mmkv-static = { module = "com.tencent:mmkv-static", version.ref = "mmkv" }
+xposed = { module = "de.robv.android.xposed:api", version = "82" }
+ezxhelper = { module = "com.github.kyuubiran:EzXHelper", version = "1.0.3" }
+
+[plugins]
+agp-application = { id = "com.android.application", version.ref = "agp" }
+agp-library = { id = "com.android.library", version.ref = "agp" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

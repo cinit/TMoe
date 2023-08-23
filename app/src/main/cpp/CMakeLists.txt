@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(tmoe)
 
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
     find_library( # Defines the name of the path variable that stores the
