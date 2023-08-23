@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <dlfcn.h>
 #include <jni.h>
 
 #include <optional>
@@ -7,6 +8,7 @@
 #include "utils/FileMemMap.h"
 #include "utils/elfsym/ProcessView.h"
 #include "utils/elfsym/ElfView.h"
+#include "NativeInit.h"
 
 static constexpr auto LOG_TAG = "TMoeJNI";
 
@@ -37,6 +39,15 @@ static void *lookupFileLogLogsEnabled() {
     void *p = pFileLogLogsEnabled;
     if (p != nullptr) {
         return p;
+    }
+    // prefer dlfcn if available
+    if (auto* handle = GetLoadedTMessageLibHandle()) {
+        p = dlsym(handle, "LOGS_ENABLED");
+        if (p != nullptr) {
+            LOGD("LOGS_ENABLED: %p", p);
+            pFileLogLogsEnabled = p;
+            return p;
+        }
     }
     // lookup
     elfsym::ProcessView self;

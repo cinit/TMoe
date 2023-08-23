@@ -22,13 +22,18 @@ struct NativeHookHandle {
 
 static NativeHookHandle nativeHookHandle = {};
 
-void handleLoadLibrary(const char *name, void *handle) {
+static void* gLoadedTMessageLibHandle = nullptr;
+
+void handleLoadLibrary(const char* name, void* handle) {
     if (name == nullptr || handle == nullptr) {
         return;
     }
     std::string tmpName(name);
     std::string soname = tmpName.substr(tmpName.find_last_of('/') == std::string::npos ?
                                         0 : tmpName.find_last_of('/') + 1);
+    if (soname.find("libtmessages.") != std::string::npos) {
+        gLoadedTMessageLibHandle = handle;
+    }
 }
 
 NativeOnModuleLoaded initNativeHook(const NativeAPIEntries *entries) {
@@ -41,4 +46,8 @@ extern "C" void *tmoe_core_NativeInit(const void *entries) {
     logging::android::init();
     LOGD("NativeInit, entries: %p", entries);
     return reinterpret_cast<void *>(tmoe::core::initNativeHook(static_cast<const NativeAPIEntries *>(entries)));
+}
+
+extern "C" void* GetLoadedTMessageLibHandle() {
+    return ::tmoe::core::gLoadedTMessageLibHandle;
 }
