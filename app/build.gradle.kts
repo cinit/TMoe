@@ -102,7 +102,14 @@ tasks.withType<KotlinCompile>().configureEach {
     }
 }
 
+kotlin {
+    sourceSets.configureEach {
+        kotlin.srcDir("$buildDir/generated/ksp/$name/kotlin/")
+    }
+}
+
 dependencies {
+    ksp(projects.libs.ksp)
     implementation(libs.mmkv.static)
     implementation(libs.core)
     implementation(libs.hiddenapibypass)

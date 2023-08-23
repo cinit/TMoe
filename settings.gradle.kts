@@ -31,4 +31,4 @@ includeBuild("build-logic")
 
 rootProject.name = "TMoe"
 
-include(":app")
+include(":app", ":libs:ksp")
