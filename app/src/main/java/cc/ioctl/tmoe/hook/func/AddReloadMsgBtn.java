@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 
 import cc.ioctl.tmoe.R;
+import cc.ioctl.tmoe.base.annotation.FunctionHookEntry;
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook;
 import cc.ioctl.tmoe.lifecycle.Parasitics;
 import cc.ioctl.tmoe.ui.LocaleController;
@@ -19,6 +20,7 @@ import cc.ioctl.tmoe.util.Reflex;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 
+@FunctionHookEntry
 public class AddReloadMsgBtn extends CommonDynamicHook {
 
     public static final AddReloadMsgBtn INSTANCE = new AddReloadMsgBtn();

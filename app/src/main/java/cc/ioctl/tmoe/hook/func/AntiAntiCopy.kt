@@ -3,10 +3,12 @@ package cc.ioctl.tmoe.hook.func
 import android.app.AndroidAppHelper
 import android.widget.Toast
 import cc.ioctl.tmoe.R
+import cc.ioctl.tmoe.base.annotation.FunctionHookEntry
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import cc.ioctl.tmoe.ui.LocaleController
 import com.github.kyuubiran.ezxhelper.utils.*
 
+@FunctionHookEntry
 object AntiAntiCopy : CommonDynamicHook() {
     private var isOF=true
     var isNoForw=false

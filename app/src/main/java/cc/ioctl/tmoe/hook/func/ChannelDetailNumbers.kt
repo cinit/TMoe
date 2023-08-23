@@ -1,8 +1,10 @@
 package cc.ioctl.tmoe.hook.func
 
+import cc.ioctl.tmoe.base.annotation.FunctionHookEntry
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import com.github.kyuubiran.ezxhelper.utils.*
 
+@FunctionHookEntry
 object ChannelDetailNumbers : CommonDynamicHook() {
     override fun initOnce(): Boolean = tryOrLogFalse {
         //频道关注者显示详细人数 3k → 3000

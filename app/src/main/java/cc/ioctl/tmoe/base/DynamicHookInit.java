@@ -6,34 +6,7 @@ import cc.ioctl.tmoe.hook.base.DynamicHook;
 import cc.ioctl.tmoe.hook.core.Initializable;
 import cc.ioctl.tmoe.hook.core.InvalidationHook;
 import cc.ioctl.tmoe.hook.core.SettingEntryHook;
-import cc.ioctl.tmoe.hook.func.AddInfoContainer;
-import cc.ioctl.tmoe.hook.func.AddReloadMsgBtn;
-import cc.ioctl.tmoe.hook.func.AddSubItemChannel;
-import cc.ioctl.tmoe.hook.func.AntiAntiCopy;
-import cc.ioctl.tmoe.hook.func.AntiAntiForward;
-import cc.ioctl.tmoe.hook.func.ChannelDetailNumbers;
-import cc.ioctl.tmoe.hook.func.DatabaseCorruptionWarning;
-import cc.ioctl.tmoe.hook.func.DisablePremiumStickerAnimation;
-import cc.ioctl.tmoe.hook.func.DumpGroupMember;
-import cc.ioctl.tmoe.hook.func.EnableDebugMode;
-import cc.ioctl.tmoe.hook.func.ExtendedOfflineSearch;
-import cc.ioctl.tmoe.hook.func.FuckTrackingHook;
-import cc.ioctl.tmoe.hook.func.HidePremiumStickerSetTab;
-import cc.ioctl.tmoe.hook.func.HistoricGroupMemberRecord;
-import cc.ioctl.tmoe.hook.func.ForceBlurChatAvailable;
-import cc.ioctl.tmoe.hook.func.HidePhoneNumber;
 import cc.ioctl.tmoe.hook.func.HideUserAvatar;
-import cc.ioctl.tmoe.hook.func.HistoricalNewsOption;
-import cc.ioctl.tmoe.hook.func.KeepVideoMuted;
-import cc.ioctl.tmoe.hook.func.ProhibitChannelSwitching;
-import cc.ioctl.tmoe.hook.func.ProhibitChatGreetings;
-import cc.ioctl.tmoe.hook.func.ProhibitEnableReactions;
-import cc.ioctl.tmoe.hook.func.ProhibitSpoilers;
-import cc.ioctl.tmoe.hook.func.SendCommand;
-import cc.ioctl.tmoe.hook.func.ShowMsgId;
-import cc.ioctl.tmoe.hook.func.TgnetLogControlStartupApplyHelper;
-import cc.ioctl.tmoe.hook.func.UseSystemEmoji;
-import cc.ioctl.tmoe.hook.func.ViewTopicAsMsgByDefault;
 import cc.ioctl.tmoe.util.Utils;
 
 /**
@@ -67,35 +40,7 @@ public class DynamicHookInit {
 
     public static DynamicHook[] queryAllFunctionHooks() {
         if (sAllFunctionHooks == null) {
-            sAllFunctionHooks = new DynamicHook[]{
-                    EnableDebugMode.INSTANCE,
-                    AntiAntiForward.INSTANCE,
-                    ProhibitChannelSwitching.INSTANCE,
-                    ProhibitEnableReactions.INSTANCE,
-                    AntiAntiCopy.INSTANCE,
-                    ProhibitSpoilers.INSTANCE,
-                    HistoricalNewsOption.INSTANCE,
-                    ProhibitChatGreetings.INSTANCE,
-                    HidePhoneNumber.INSTANCE,
-                    AddSubItemChannel.INSTANCE,
-                    ChannelDetailNumbers.INSTANCE,
-                    AddInfoContainer.INSTANCE,
-                    SendCommand.INSTANCE,
-                    ShowMsgId.INSTANCE,
-                    AddReloadMsgBtn.INSTANCE,
-                    ForceBlurChatAvailable.INSTANCE,
-                    DisablePremiumStickerAnimation.INSTANCE,
-                    KeepVideoMuted.INSTANCE,
-                    DumpGroupMember.INSTANCE,
-                    DatabaseCorruptionWarning.INSTANCE,
-                    HistoricGroupMemberRecord.INSTANCE,
-                    ExtendedOfflineSearch.INSTANCE,
-                    TgnetLogControlStartupApplyHelper.INSTANCE,
-                    ViewTopicAsMsgByDefault.INSTANCE,
-                    HidePremiumStickerSetTab.INSTANCE,
-                    UseSystemEmoji.INSTANCE,
-                    FuckTrackingHook.INSTANCE,
-            };
+            sAllFunctionHooks = cc.ioctl.tmoe.gen.AnnotatedFunctionHookEntryList.getAnnotatedFunctionHookEntryList();
         }
         return sAllFunctionHooks;
     }

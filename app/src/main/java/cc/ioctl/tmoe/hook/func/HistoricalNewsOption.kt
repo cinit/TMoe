@@ -10,6 +10,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
 import cc.ioctl.tmoe.R
+import cc.ioctl.tmoe.base.annotation.FunctionHookEntry
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import cc.ioctl.tmoe.lifecycle.Parasitics
 import cc.ioctl.tmoe.ui.LocaleController
@@ -22,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 
 //TODO 分离 复读
+@FunctionHookEntry
 object HistoricalNewsOption : CommonDynamicHook() {
     var chatActivity: Any? = null
     override fun initOnce(): Boolean = tryOrLogFalse {

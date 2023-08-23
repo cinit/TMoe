@@ -1,12 +1,14 @@
 package cc.ioctl.tmoe.hook.func
 
 import cc.ioctl.tmoe.R
+import cc.ioctl.tmoe.base.annotation.FunctionHookEntry
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import cc.ioctl.tmoe.hook.func.HistoricalNewsOption.getField
 import cc.ioctl.tmoe.hook.func.HistoricalNewsOption.getMethodAndInvoke
 import cc.ioctl.tmoe.ui.LocaleController
 import com.github.kyuubiran.ezxhelper.utils.*
 
+@FunctionHookEntry
 object AddSubItemChannel : CommonDynamicHook() {
     override fun initOnce(): Boolean = tryOrLogFalse {
         //打开频道

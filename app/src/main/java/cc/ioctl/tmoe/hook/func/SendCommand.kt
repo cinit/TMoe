@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import cc.ioctl.tmoe.R
+import cc.ioctl.tmoe.base.annotation.FunctionHookEntry
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import cc.ioctl.tmoe.hook.func.HistoricalNewsOption.getMethodAndInvoke
 import cc.ioctl.tmoe.lifecycle.Parasitics
@@ -13,6 +14,7 @@ import com.github.kyuubiran.ezxhelper.utils.loadClass
 import com.github.kyuubiran.ezxhelper.utils.tryOrLogFalse
 import de.robv.android.xposed.XposedBridge
 
+@FunctionHookEntry
 object SendCommand : CommonDynamicHook() {
 
     override fun initOnce(): Boolean = tryOrLogFalse {

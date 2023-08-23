@@ -3,6 +3,7 @@ package cc.ioctl.tmoe.hook.func
 import android.content.Context
 import androidx.appcompat.app.AlertDialog
 import cc.ioctl.tmoe.R
+import cc.ioctl.tmoe.base.annotation.FunctionHookEntry
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import cc.ioctl.tmoe.ui.LocaleController
 import cc.ioctl.tmoe.util.CommonContextWrapper
@@ -13,6 +14,7 @@ import de.robv.android.xposed.XposedBridge
 import java.lang.reflect.Field
 import java.util.*
 
+@FunctionHookEntry
 object DatabaseCorruptionWarning : CommonDynamicHook() {
 
     private lateinit var kSQLiteException: Class<out Exception>

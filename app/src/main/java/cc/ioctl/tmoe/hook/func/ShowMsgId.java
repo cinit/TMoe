@@ -5,10 +5,12 @@ import android.text.TextPaint;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import cc.ioctl.tmoe.base.annotation.FunctionHookEntry;
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook;
 import cc.ioctl.tmoe.util.HookUtils;
 import cc.ioctl.tmoe.util.Initiator;
 
+@FunctionHookEntry
 public class ShowMsgId extends CommonDynamicHook {
 
     public static final ShowMsgId INSTANCE = new ShowMsgId();

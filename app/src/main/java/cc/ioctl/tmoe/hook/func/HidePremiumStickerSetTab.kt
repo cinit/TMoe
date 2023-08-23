@@ -1,10 +1,12 @@
 package cc.ioctl.tmoe.hook.func
 
+import cc.ioctl.tmoe.base.annotation.FunctionHookEntry
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import cc.ioctl.tmoe.util.HookUtils
 import cc.ioctl.tmoe.util.Initiator
 import java.util.ArrayList
 
+@FunctionHookEntry
 object HidePremiumStickerSetTab : CommonDynamicHook() {
 
     private const val TYPE_PREMIUM_STICKERS: Int = 7

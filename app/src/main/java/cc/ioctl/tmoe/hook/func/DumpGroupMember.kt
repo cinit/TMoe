@@ -7,6 +7,7 @@ import android.view.View
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AlertDialog
 import cc.ioctl.tmoe.R
+import cc.ioctl.tmoe.base.annotation.FunctionHookEntry
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import cc.ioctl.tmoe.lifecycle.Parasitics
 import cc.ioctl.tmoe.td.AccountController
@@ -23,6 +24,7 @@ import java.lang.reflect.Method
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
+@FunctionHookEntry
 object DumpGroupMember : CommonDynamicHook() {
 
     private val mDatabase = HashMap<Int, SQLiteDatabase>(1)

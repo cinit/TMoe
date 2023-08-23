@@ -3,12 +3,14 @@ package cc.ioctl.tmoe.hook.func
 import android.view.View
 import android.widget.LinearLayout
 import cc.ioctl.tmoe.R
+import cc.ioctl.tmoe.base.annotation.FunctionHookEntry
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import cc.ioctl.tmoe.hook.func.HistoricalNewsOption.getField
 import cc.ioctl.tmoe.hook.func.HistoricalNewsOption.getMethodAndInvoke
 import com.github.kyuubiran.ezxhelper.utils.*
 import de.robv.android.xposed.XposedBridge
 
+@FunctionHookEntry
 object AddInfoContainer : CommonDynamicHook() {
 
     //非管理员也可查看一些信息。。。

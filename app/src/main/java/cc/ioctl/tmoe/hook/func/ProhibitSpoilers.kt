@@ -1,9 +1,10 @@
 package cc.ioctl.tmoe.hook.func
 
+import cc.ioctl.tmoe.base.annotation.FunctionHookEntry
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import com.github.kyuubiran.ezxhelper.utils.*
 
-
+@FunctionHookEntry
 object ProhibitSpoilers : CommonDynamicHook() {
     override fun initOnce(): Boolean = tryOrLogFalse {
 

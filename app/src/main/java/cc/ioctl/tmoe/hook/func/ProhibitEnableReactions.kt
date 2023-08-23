@@ -2,6 +2,7 @@ package cc.ioctl.tmoe.hook.func
 
 import android.widget.Toast
 import cc.ioctl.tmoe.R
+import cc.ioctl.tmoe.base.annotation.FunctionHookEntry
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import cc.ioctl.tmoe.lifecycle.Parasitics
 import cc.ioctl.tmoe.util.HostInfo
@@ -10,6 +11,7 @@ import com.github.kyuubiran.ezxhelper.utils.hookBefore
 import com.github.kyuubiran.ezxhelper.utils.tryOrLogFalse
 import java.util.Objects
 
+@FunctionHookEntry
 object ProhibitEnableReactions : CommonDynamicHook() {
 
     private val enabledReactionsList: List<Objects> = ArrayList()

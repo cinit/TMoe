@@ -1,9 +1,11 @@
 package cc.ioctl.tmoe.hook.func;
 
+import cc.ioctl.tmoe.base.annotation.FunctionHookEntry;
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook;
 import cc.ioctl.tmoe.util.Initiator;
 import cc.ioctl.tmoe.util.Reflex;
 
+@FunctionHookEntry
 public class EnableDebugMode extends CommonDynamicHook {
     public static final EnableDebugMode INSTANCE = new EnableDebugMode();
 

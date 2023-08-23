@@ -2,6 +2,7 @@ package cc.ioctl.tmoe.hook.func
 
 import android.view.View
 import android.widget.LinearLayout
+import cc.ioctl.tmoe.base.annotation.FunctionHookEntry
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import cc.ioctl.tmoe.hook.func.HistoricalNewsOption.getField
 import com.github.kyuubiran.ezxhelper.utils.hookAfter
@@ -11,6 +12,7 @@ import com.github.kyuubiran.ezxhelper.utils.tryOrLogFalse
 import java.lang.reflect.Method
 
 //https://github.com/DrKLO/Telegram/blob/master/TMessagesProj/src/main/java/org/telegram/ui/Components/ChatGreetingsView.java
+@FunctionHookEntry
 object ProhibitChatGreetings : CommonDynamicHook() {
 
     override fun initOnce(): Boolean = tryOrLogFalse {

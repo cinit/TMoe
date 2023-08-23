@@ -1,9 +1,11 @@
 package cc.ioctl.tmoe.hook.func
 
+import cc.ioctl.tmoe.base.annotation.FunctionHookEntry
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import cc.ioctl.tmoe.util.HookUtils
 import cc.ioctl.tmoe.util.Initiator
 
+@FunctionHookEntry
 object TgnetLogControlStartupApplyHelper : CommonDynamicHook() {
 
     override fun initOnce(): Boolean {

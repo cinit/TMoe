@@ -2,9 +2,11 @@ package cc.ioctl.tmoe.hook.func
 
 import android.text.TextUtils
 import android.widget.TextView
+import cc.ioctl.tmoe.base.annotation.FunctionHookEntry
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import com.github.kyuubiran.ezxhelper.utils.*
 
+@FunctionHookEntry
 object HidePhoneNumber : CommonDynamicHook() {
 
     //ProfileActivity.java hidePhone = true;          updateListAnimated(false);

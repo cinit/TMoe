@@ -1,5 +1,6 @@
 package cc.ioctl.tmoe.hook.func
 
+import cc.ioctl.tmoe.base.annotation.FunctionHookEntry
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import cc.ioctl.tmoe.td.AccountController
 import cc.ioctl.tmoe.td.RequestInterceptor
@@ -13,6 +14,7 @@ import java.lang.ref.WeakReference
 import java.lang.reflect.Field
 import kotlin.math.abs
 
+@FunctionHookEntry
 object ExtendedOfflineSearch : CommonDynamicHook() {
 
     private lateinit var kRequestDelegate: Class<*>

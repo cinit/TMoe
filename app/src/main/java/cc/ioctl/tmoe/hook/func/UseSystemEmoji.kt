@@ -6,6 +6,7 @@ import android.graphics.Rect
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.text.TextPaint
+import cc.ioctl.tmoe.base.annotation.FunctionHookEntry
 import cc.ioctl.tmoe.hook.base.CommonDynamicHook
 import com.github.kyuubiran.ezxhelper.utils.*
 import java.io.BufferedReader
@@ -13,6 +14,7 @@ import java.io.File
 import java.io.FileReader
 import java.util.*
 
+@FunctionHookEntry
 object UseSystemEmoji : CommonDynamicHook() {
 
     private val textPaint: TextPaint = TextPaint(Paint.ANTI_ALIAS_FLAG)
