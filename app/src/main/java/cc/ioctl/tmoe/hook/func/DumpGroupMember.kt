@@ -153,8 +153,12 @@ object DumpGroupMember : CommonDynamicHook() {
                 }
             }
         }
-        val putChatsInternal = Initiator.loadClass("org.telegram.messenger.MessagesStorage")
-            .getDeclaredMethod("putChatsInternal", java.util.ArrayList::class.java)
+        val kMessagesStorage = Initiator.loadClass("org.telegram.messenger.MessagesStorage")
+        val putChatsInternal: Method = try {
+            kMessagesStorage.getDeclaredMethod("putChatsInternal", java.util.List::class.java)
+        } catch (e: NoSuchMethodException) {
+            kMessagesStorage.getDeclaredMethod("putChatsInternal", java.util.ArrayList::class.java)
+        }
         XposedBridge.hookMethod(putChatsInternal, mPutChatsInternalHook)
         // add btn long click listener
         val kProfileActivity = Initiator.loadClass("org.telegram.ui.ProfileActivity")
