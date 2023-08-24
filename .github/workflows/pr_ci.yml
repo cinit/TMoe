@@ -34,7 +34,7 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
             !~/.gradle/caches/build-cache-*
-          key: gradle-deps-core-${{ hashFiles('**/build.gradle') }}
+          key: gradle-deps-core-${{ hashFiles('**/build.gradle.kts', '**/build.gradle', '**/libs.versions.toml') }}
           restore-keys: |
             gradle-deps
 
