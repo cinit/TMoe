@@ -52,11 +52,13 @@
     <string name="DatabaseCorruptionWarning">Database Corruption Warning</string>
     <string name="DatabaseCorruptionWarningDesc">Show database corruption warning if detected.</string>
     <string name="DumpGroupMember">Persist Access Hash</string>
-    <string name="DumpGroupMemberDesc">Save known channels\' and users\' access hashes to ctx.filesDir/TMoe_channel_dump.db, so that you will be able to access them with a id when you need.</string>
+    <string name="DumpGroupMemberDesc">Save known channels\' and users\' access hashes to ctx.filesDir/TMoe_channel_dump.db, so that you will be able to access them with a id when you need. This feature may consume a lot of battery so only enable it when you really need it.</string>
     <string name="ExtendedOfflineSearch">Extended Offline Search</string>
     <string name="ExtendedOfflineSearchDesc">Allow search users, groups and channels by id in TMoe_channel_dump.db, requiring \"Persist Access Hash\" enabled.</string>
     <string name="HistoricGroupMemberRecord">Show Historic Groups</string>
     <string name="HistoricGroupMemberRecordDesc">Show historic common groups in a user\'s profile, requiring \"Persist Access Hash\" enabled.</string>
+    <string name="LocalGroupMemberList">Local Group Member List</string>
+    <string name="LocalGroupMemberListDesc">TMoe will try to show inferred, inaccurate group member list based on group messages, if the group has \"Hide Members\" enabled and you are not an admin. Requires \"Persist Access Hash\" enabled.</string>
     <string name="Ignore">Ignore</string>
     <string name="RestrictContentMitigationDesc">Allow copy, save and screenshot in secret chats</string>
     <string name="KeepVideoMuted">Keep video muted when pressing the volume button</string>

@@ -151,7 +151,7 @@ object ExtendedOfflineSearch : CommonDynamicHook() {
         // users in database
         val userInfo = DumpGroupMember.queryUserInfoById(id)
         if (userInfo != null) {
-            val user = DumpGroupMember.createMinimalUser(userInfo)
+            val user = DumpGroupMember.getOrCreateUserObject(userInfo)
             // Log.d("found user info: $userInfo")
             users.add(user)
             myResults.add(Peer.forUser(userInfo.uid))

@@ -67,6 +67,23 @@ object DumpGroupMember : CommonDynamicHook() {
     private lateinit var fChat_flags: Field
     private lateinit var fChat_access_hash: Field
     private lateinit var fChat_username: Field
+    private lateinit var kTL_updates_getChannelDifference: Class<*>
+    private lateinit var fTL_updates_getChannelDifference_channel: Field
+    private lateinit var kupdates_channelDifference: Class<*>
+    private lateinit var kTL_updates_channelDifference: Class<*>
+    private lateinit var kTL_updates_channelDifferenceTooLong: Class<*>
+    private lateinit var fupdates_channelDifference_new_messages: Field
+    private lateinit var fupdates_channelDifference_users: Field
+    private lateinit var fupdates_channelDifference_messages: Field
+    private lateinit var kTL_channels_getMessages: Class<*>
+    private lateinit var fTL_channels_getMessage_channel: Field
+    private lateinit var kmessages_Messages: Class<*>
+    private lateinit var fmessages_Messages_messages: Field
+    private lateinit var fmessages_Messages_users: Field
+    private lateinit var kMessage: Class<*>
+    private lateinit var fMessage_from_id: Field
+    private lateinit var fMessage_peer_id: Field
+    private lateinit var fMessage_date: Field
 
     override fun initOnce(): Boolean {
         kRequestDelegate = Initiator.loadClass("org.telegram.tgnet.RequestDelegate")
@@ -113,6 +130,24 @@ object DumpGroupMember : CommonDynamicHook() {
         fChat_flags = Reflex.findField(kChat, Integer.TYPE, "flags")
         fChat_access_hash = Reflex.findField(kChat, java.lang.Long.TYPE, "access_hash")
         fChat_username = Reflex.findField(kChat, String::class.java, "username")
+        kTL_updates_getChannelDifference = Initiator.loadClass("org.telegram.tgnet.TLRPC\$TL_updates_getChannelDifference")
+        fTL_updates_getChannelDifference_channel = Reflex.findField(kTL_updates_getChannelDifference, kInputChannel, "channel")
+        kupdates_channelDifference = Initiator.loadClass("org.telegram.tgnet.TLRPC\$updates_ChannelDifference")
+        kTL_updates_channelDifference = Initiator.loadClass("org.telegram.tgnet.TLRPC\$TL_updates_channelDifference")
+        kTL_updates_channelDifferenceTooLong = Initiator.loadClass("org.telegram.tgnet.TLRPC\$TL_updates_channelDifferenceTooLong")
+        fupdates_channelDifference_new_messages = Reflex.findField(kupdates_channelDifference, java.util.ArrayList::class.java, "new_messages")
+        fupdates_channelDifference_users = Reflex.findField(kupdates_channelDifference, java.util.ArrayList::class.java, "users")
+        fupdates_channelDifference_messages = Reflex.findField(kupdates_channelDifference, java.util.ArrayList::class.java, "messages")
+        kTL_channels_getMessages = Initiator.loadClass("org.telegram.tgnet.TLRPC\$TL_channels_getMessages")
+        fTL_channels_getMessage_channel = Reflex.findField(kTL_channels_getMessages, kInputChannel, "channel")
+        kmessages_Messages = Initiator.loadClass("org.telegram.tgnet.TLRPC\$messages_Messages")
+        fmessages_Messages_messages = Reflex.findField(kmessages_Messages, java.util.ArrayList::class.java, "messages")
+        fmessages_Messages_users = Reflex.findField(kmessages_Messages, java.util.ArrayList::class.java, "users")
+        kMessage = Initiator.loadClass("org.telegram.tgnet.TLRPC\$Message")
+        fMessage_from_id = Reflex.findField(kMessage, kPeer, "from_id")
+        fMessage_peer_id = Reflex.findField(kMessage, kPeer, "peer_id")
+        fMessage_date = Reflex.findField(kMessage, Integer.TYPE, "date")
+
         User.initialize()
         Chat.initialize()
 
@@ -124,7 +159,9 @@ object DumpGroupMember : CommonDynamicHook() {
 
         RequestInterceptor.registerTlrpcSuccessfulResultInterceptor(
             Initiator.loadClass("org.telegram.tgnet.TLRPC\$TL_channels_getParticipants"),
-            Initiator.loadClass("org.telegram.tgnet.TLRPC\$TL_channels_getParticipant")
+            Initiator.loadClass("org.telegram.tgnet.TLRPC\$TL_channels_getParticipant"),
+            kTL_channels_getMessages,
+            kTL_updates_getChannelDifference
         ) { req, resp ->
             if (!isEnabled) {
                 return@registerTlrpcSuccessfulResultInterceptor null
@@ -162,8 +199,8 @@ object DumpGroupMember : CommonDynamicHook() {
 
     private fun handleRequestComplete(originalRequest: Any, response: Any) {
         val klass = response.javaClass
-        when (klass) {
-            kTL_channels_channelParticipants -> {
+        when {
+            kTL_channels_channelParticipants.isAssignableFrom(klass) -> {
                 val inputChannel = fTL_channels_getParticipants_channel.get(originalRequest)
                 val channelId = fInputChannel_channel_id.getLong(inputChannel)
                 check(channelId > 0) { "invalid channel_id: $channelId" }
@@ -197,22 +234,7 @@ object DumpGroupMember : CommonDynamicHook() {
                     // Log.d("users.size = $userCount")
                     val userSet = ArrayList<UserInfo9>(userCount)
                     users.forEach {
-                        val uid = fUser_id.getLong(it)
-                        check(uid > 0) { "invalid user_id: $uid" }
-                        val firstName = (fUser_first_name.get(it) as String?) ?: ""
-                        val lastName = (fUser_last_name.get(it) as String?)?.ifEmpty { null }
-                        val username = (fUser_username.get(it) as String?)?.ifEmpty { null }
-                        val accessHash = fUser_access_hash.getLong(it)
-                        val flags = fUser_flags.getInt(it)
-                        val languageCode = (fUser_lang_code.get(it) as String?)?.ifEmpty { null }
-                        val isBot = fUser_bot.getBoolean(it)
-                        val isDeleted = fUser_deleted.getBoolean(it)
-                        val isInactive = fUser_inactive.getBoolean(it)
-                        check(uid > 0) { "invalid user_id: $uid" }
-                        val name = if (lastName.isNullOrEmpty()) firstName else "$firstName $lastName"
-                        val user = UserInfo9(
-                            uid, accessHash, name, flags, username, isBot, isDeleted, isInactive, languageCode,
-                        )
+                        val user = convertTLUserToUserInfo9(it)
                         userSet.add(user)
                     }
                     updateUserInfoList(slot, userSet)
@@ -229,9 +251,97 @@ object DumpGroupMember : CommonDynamicHook() {
                 }
             }
 
+            kupdates_channelDifference.isAssignableFrom(klass) -> {
+                val inputChannel = fTL_updates_getChannelDifference_channel.get(originalRequest)
+                val channelId = fInputChannel_channel_id.getLong(inputChannel)
+                check(channelId > 0) { "invalid channel_id: $channelId" }
+                val slot = AccountController.getCurrentActiveSlot()
+                check(slot >= 0) { "invalid slot: $slot" }
+                val newMessages = fupdates_channelDifference_new_messages.get(response) as ArrayList<Any>
+                val users = fupdates_channelDifference_users.get(response) as ArrayList<Any>
+                val messages = fupdates_channelDifference_messages.get(response) as ArrayList<Any>
+                val combined = ArrayList<Any>(newMessages.size + messages.size)
+                combined.addAll(newMessages)
+                combined.addAll(messages)
+                handleReceivedMessages(slot, combined, users)
+            }
+
+            kmessages_Messages.isAssignableFrom(klass) -> {
+                val inputChannel = fTL_channels_getMessage_channel.get(originalRequest)
+                val channelId = fInputChannel_channel_id.getLong(inputChannel)
+                check(channelId > 0) { "invalid channel_id: $channelId" }
+                val slot = AccountController.getCurrentActiveSlot()
+                check(slot >= 0) { "invalid slot: $slot" }
+                val messages = fmessages_Messages_messages.get(response) as ArrayList<Any>
+                val users = fmessages_Messages_users.get(response) as ArrayList<Any>
+                handleReceivedMessages(slot, messages, users)
+            }
+
             else -> {
                 Log.w("unhandled response: $klass")
             }
+        }
+    }
+
+    private fun convertTLUserToUserInfo9(it: Any): UserInfo9 {
+        val uid = fUser_id.getLong(it)
+        check(uid > 0) { "invalid user_id: $uid" }
+        val firstName = (fUser_first_name.get(it) as String?) ?: ""
+        val lastName = (fUser_last_name.get(it) as String?)?.ifEmpty { null }
+        val username = (fUser_username.get(it) as String?)?.ifEmpty { null }
+        val accessHash = fUser_access_hash.getLong(it)
+        val flags = fUser_flags.getInt(it)
+        val languageCode = (fUser_lang_code.get(it) as String?)?.ifEmpty { null }
+        val isBot = fUser_bot.getBoolean(it)
+        val isDeleted = fUser_deleted.getBoolean(it)
+        val isInactive = fUser_inactive.getBoolean(it)
+        check(uid > 0) { "invalid user_id: $uid" }
+        val name = if (lastName.isNullOrEmpty()) firstName else "$firstName $lastName"
+        return UserInfo9(uid, accessHash, name, flags, username, isBot, isDeleted, isInactive, languageCode)
+    }
+
+    private fun convertMessageToMsgSenderInGroupInfoIfNonAnon(msg: Any): MsgSenderInGroupInfo? {
+        val peer = fMessage_peer_id.get(msg)
+        val sender = fMessage_from_id.get(msg)
+        // check if this is in a BasicGroup or SuperGroup.
+        val peer_channel_id = fPeer_channel_id.getLong(peer)
+        val peer_chat_id = fPeer_chat_id.getLong(peer)
+        val peer_user_id = fPeer_chat_id.getLong(peer)
+        val sender_user_id = fPeer_user_id.getLong(sender)
+        if (peer_channel_id == 0L && peer_chat_id == 0L) {
+            // this is a private/direct message. we don't need to handle it.
+            return null
+        }
+        // check whether the msg sender is a neutral user.
+        if (sender_user_id == 0L) {
+            // this is either an anonymous group admin or an anonymous channel, which we don't need to handle.
+            return null
+        }
+        check((peer_chat_id == 0L) xor (peer_channel_id == 0L)) { "peer_chat_id=$peer_chat_id, peer_channel_id=$peer_channel_id" }
+        val gid = if (peer_chat_id != 0L) peer_chat_id else peer_channel_id
+        val uid = sender_user_id
+        val time = fMessage_date.getInt(msg).toLong()
+        return MsgSenderInGroupInfo(gid = gid, uid = uid, flags = 0, firstSeenTime = time, lastUpdateTime = time)
+    }
+
+    private fun handleReceivedMessages(accountSlotId: Int, messages: ArrayList<Any>, users: ArrayList<Any>) {
+        check(accountSlotId >= 0) { "invalid accountSlotId: $accountSlotId" }
+        val userCount = users.size
+        val userSet = ArrayList<UserInfo9>(userCount)
+        users.forEach {
+            val user = convertTLUserToUserInfo9(it)
+            userSet.add(user)
+        }
+        updateUserInfoList(accountSlotId, userSet)
+        val msgSenderSet = ArrayList<MsgSenderInGroupInfo>(messages.size)
+        messages.forEach {
+            val msgSender = convertMessageToMsgSenderInGroupInfoIfNonAnon(it)
+            if (msgSender != null) {
+                msgSenderSet.add(msgSender)
+            }
+        }
+        if (msgSenderSet.isNotEmpty()) {
+            updateMsgSenderInGroupInfoList(accountSlotId, msgSenderSet)
         }
     }
 
@@ -435,6 +545,22 @@ object DumpGroupMember : CommonDynamicHook() {
             )
         """.trimIndent()
         )
+        database.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS t_channel_sender_info
+            (
+                gid           INTEGER NOT NULL,
+                uid           INTEGER NOT NULL,
+                flags         INTEGER NOT NULL,
+                ext_flags     INTEGER NOT NULL,
+                status        INTEGER NOT NULL,
+                ext_status    INTEGER NOT NULL,
+                first_seen_ts INTEGER NOT NULL,
+                update_ts     INTEGER NOT NULL,
+                PRIMARY KEY (gid, uid)
+            )
+        """.trimIndent()
+        )
         database.execSQL("CREATE INDEX IF NOT EXISTS idx_t_channel_member_uid ON t_channel_member (uid)")
         database.execSQL(
             """
@@ -491,6 +617,13 @@ object DumpGroupMember : CommonDynamicHook() {
         init {
             check(uid > 0) { "uid must be positive" }
         }
+
+        val isMinimal: Boolean = (flags and 1048576) != 0
+
+        override fun toString(): String {
+            // not show accessHash
+            return "UserInfo9(uid=$uid, name='$name', flags=$flags, username=$username, bot=$bot, langCode=$langCode, isMinimal=$isMinimal)"
+        }
     }
 
     data class MemberInfo(
@@ -502,6 +635,26 @@ object DumpGroupMember : CommonDynamicHook() {
     ) {
         init {
             check(gid > 0 && uid > 0) { "gid and uid must be positive" }
+        }
+
+        override fun toString(): String {
+            return "MemberInfo(gid=$gid, uid=$uid, flags=$flags, joinTime=$joinTime, inviterId=$inviterId)"
+        }
+    }
+
+    data class MsgSenderInGroupInfo(
+        val gid: Long,
+        val uid: Long,
+        val flags: Int,
+        val firstSeenTime: Long,
+        val lastUpdateTime: Long
+    ) {
+        init {
+            check(gid > 0 && uid > 0) { "gid and uid must be positive" }
+        }
+
+        override fun toString(): String {
+            return "MsgSenderInGroupInfo(gid=$gid, uid=$uid, flags=$flags, firstSeenTime=$firstSeenTime, lastUpdateTime=$lastUpdateTime)"
         }
     }
 
@@ -583,23 +736,43 @@ object DumpGroupMember : CommonDynamicHook() {
                         continue
                     }
                 }
-                database.execSQL(
-                    "INSERT OR REPLACE INTO t_user (uid, access_hash, name, flags, username, " +
-                            "bot, deleted, inactive, lang_code, update_ts) " +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                    arrayOf(
-                        userInfo.uid.toString(),
-                        userInfo.accessHash.toString(),
-                        userInfo.name,
-                        userInfo.flags.toString(),
-                        userInfo.username,
-                        if (userInfo.bot) "1" else "0",
-                        if (userInfo.deleted) "1" else "0",
-                        if (userInfo.inactive) "1" else "0",
-                        userInfo.langCode,
-                        now.toString()
+                if (userInfo.isMinimal) {
+                    database.execSQL(
+                        "INSERT OR IGNORE INTO t_user (uid, access_hash, name, flags, username, " +
+                                "bot, deleted, inactive, lang_code, update_ts) " +
+                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        arrayOf(
+                            userInfo.uid.toString(),
+                            userInfo.accessHash.toString(),
+                            userInfo.name,
+                            userInfo.flags.toString(),
+                            userInfo.username,
+                            if (userInfo.bot) "1" else "0",
+                            if (userInfo.deleted) "1" else "0",
+                            if (userInfo.inactive) "1" else "0",
+                            userInfo.langCode,
+                            now.toString()
+                        )
                     )
-                )
+                } else {
+                    database.execSQL(
+                        "INSERT OR REPLACE INTO t_user (uid, access_hash, name, flags, username, " +
+                                "bot, deleted, inactive, lang_code, update_ts) " +
+                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        arrayOf(
+                            userInfo.uid.toString(),
+                            userInfo.accessHash.toString(),
+                            userInfo.name,
+                            userInfo.flags.toString(),
+                            userInfo.username,
+                            if (userInfo.bot) "1" else "0",
+                            if (userInfo.deleted) "1" else "0",
+                            if (userInfo.inactive) "1" else "0",
+                            userInfo.langCode,
+                            now.toString()
+                        )
+                    )
+                }
             }
             database.setTransactionSuccessful()
         } finally {
@@ -642,6 +815,57 @@ object DumpGroupMember : CommonDynamicHook() {
         }
     }
 
+    private fun updateMsgSenderInGroupInfoList(slot: Int, info: List<MsgSenderInGroupInfo>) {
+        val database = ensureDatabase(slot)
+        database.beginTransaction()
+        try {
+            for (msgSenderInfo in info) {
+                val gid = msgSenderInfo.gid
+                val uid = msgSenderInfo.uid
+                // check if a record exists by query update_ts
+                val lastUpdateTimeFromDb = database.rawQuery(
+                    "SELECT update_ts FROM t_channel_sender_info WHERE gid = ? AND uid = ?",
+                    arrayOf(gid.toString(), uid.toString())
+                ).use { cursor ->
+                    if (cursor.moveToNext()) {
+                        cursor.getLong(0)
+                    } else {
+                        0L
+                    }
+                }
+                if (lastUpdateTimeFromDb == 0L) {
+                    // insert
+                    database.execSQL(
+                        "INSERT INTO t_channel_sender_info " +
+                                "(gid, uid, flags, ext_flags, status, ext_status, first_seen_ts, update_ts) " +
+                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                        arrayOf(
+                            gid.toString(),
+                            uid.toString(),
+                            msgSenderInfo.flags.toString(),
+                            "0",
+                            "0",
+                            "0",
+                            msgSenderInfo.lastUpdateTime,
+                            msgSenderInfo.lastUpdateTime
+                        )
+                    )
+                } else {
+                    // currently we only need to update the lastUpdateTime if it's newer than the one in db.
+                    if (msgSenderInfo.lastUpdateTime > lastUpdateTimeFromDb) {
+                        database.execSQL(
+                            "UPDATE t_channel_sender_info SET update_ts = ? WHERE gid = ? AND uid = ?",
+                            arrayOf(msgSenderInfo.lastUpdateTime.toString(), gid.toString(), uid.toString())
+                        )
+                    }
+                }
+            }
+            database.setTransactionSuccessful()
+        } finally {
+            database.endTransaction()
+        }
+    }
+
     @JvmStatic
     fun getMessageForTL_error(err: Any): String {
         return try {
@@ -654,12 +878,12 @@ object DumpGroupMember : CommonDynamicHook() {
     }
 
     data class GroupDescriptor(
-        val uid: Long,
-        val accessHash: Long,
+        override val uid: Long,
+        override val accessHash: Long,
         val name: String,
         val username: String?,
         val flags: Int,
-    ) {
+    ) : ITLChannelDescriptor {
         override fun toString(): String {
             return "GroupDescriptor(uid=$uid, accessHash=$accessHash, name='$name', username=$username, flags=$flags)"
         }
@@ -774,15 +998,48 @@ object DumpGroupMember : CommonDynamicHook() {
         return result
     }
 
+    interface ITLObjectDescriptor
+
+    interface ITLIdObjectDescriptor : ITLObjectDescriptor {
+        val uid: Long
+    }
+
+    interface ITLUserDescriptor : ITLIdObjectDescriptor {
+        override val uid: Long
+        val accessHash: Long
+    }
+
+    interface ITLChannelDescriptor : ITLIdObjectDescriptor {
+        override val uid: Long
+        val accessHash: Long
+    }
+
     data class UserDescriptor(
-        val uid: Long,
-        val accessHash: Long,
+        override val uid: Long,
+        override val accessHash: Long,
         val name: String,
         val username: String?,
         val flags: Int,
-    ) {
+    ) : ITLUserDescriptor {
         override fun toString(): String {
-            return "UserDescriptor(uid=$uid, accessHash=$accessHash, name='$name', username=$username, flags=$flags)"
+            return "UserDescriptor(uid=$uid, name='$name', username=$username, flags=$flags)"
+        }
+    }
+
+    data class UserDescriptorWithTime(
+        override val uid: Long,
+        override val accessHash: Long,
+        val name: String,
+        val username: String?,
+        val flags: Int,
+        val updateTimeSeconds: Long,
+    ) : ITLUserDescriptor {
+
+        // second constructor for convenience
+        constructor(user: UserDescriptor, utime: Long) : this(user.uid, user.accessHash, user.name, user.username, user.flags, utime)
+
+        override fun toString(): String {
+            return "UserDescriptorWithTime(uid=$uid, name='$name', username=$username, flags=$flags, updateTime=$updateTimeSeconds)"
         }
     }
 
@@ -856,6 +1113,59 @@ object DumpGroupMember : CommonDynamicHook() {
     }
 
     @JvmStatic
+    fun createMinimalUser(userInfo: UserDescriptorWithTime): Any {
+        return createMinimalUser(UserDescriptor(userInfo.uid, userInfo.accessHash, userInfo.name, userInfo.username, userInfo.flags))
+    }
+
+    @JvmStatic
+    fun getOrCreateUserObject(userInfo: UserDescriptor): Any {
+        val uid = userInfo.uid
+        // cache available?
+        val user = getUserFormCache(uid)
+        if (user != null) {
+            return user
+        }
+        // create a minimal user object
+        return createMinimalUser(userInfo)
+    }
+
+    @JvmStatic
+    fun getOrCreateUserObject(userInfo: ITLUserDescriptor): Any {
+        return when (userInfo) {
+            is UserDescriptor -> getOrCreateUserObject(userInfo)
+            is UserDescriptorWithTime -> getOrCreateUserObject(userInfo)
+            else -> error("unsupported user info: $userInfo")
+        }
+    }
+
+    @JvmStatic
+    fun getOrCreateUserObject(userInfo: UserDescriptorWithTime): Any {
+        val uid = userInfo.uid
+        check(uid > 0) { "uid must be positive" }
+        // cache available?
+        val user = getUserFormCache(uid)
+        if (user != null) {
+            return user
+        }
+        // create a minimal user object
+        return createMinimalUser(userInfo)
+    }
+
+    @JvmStatic
+    fun getOrCreateChannelObject(groupInfo: ITLChannelDescriptor): Any {
+        groupInfo as GroupDescriptor
+        val gid = groupInfo.uid
+        check(gid > 0) { "gid must be positive" }
+        // cache available?
+        val channel = getChatFormCache(gid)
+        if (channel != null) {
+            return channel
+        }
+        // create a minimal channel/basic-group object
+        return createMinimalChannelChat(groupInfo)
+    }
+
+    @JvmStatic
     fun queryUserInfoById(uid: Long): UserDescriptor? {
         val currentSlot = AccountController.getCurrentActiveSlot()
         if (currentSlot < 0) {
@@ -907,6 +1217,149 @@ object DumpGroupMember : CommonDynamicHook() {
             }
         }
         return group
+    }
+
+    fun selectInaccurateRecentGroupMember(gid: Long, nameFilter: String?, limit: Int = 50): ArrayList<UserDescriptorWithTime> {
+        check(gid > 0) { "gid must be positive" }
+        check(limit > 0) { "limit must be positive" }
+        // we have too many data in t_user(~100k), so we need to use a subquery to filter the data first.
+        // select * from t_user u, t_channel_sender_info s where u in
+        // (select uid from t_channel_sender_info where gid = ?) and u.uid = s.uid
+        // and (u.name like %?% or u.username like %?%)
+        // order by s.update_ts desc limit ?
+        // compare is case-insensitive
+        val currentSlot = AccountController.getCurrentActiveSlot()
+        check(currentSlot >= 0) { "selectInaccurateRecentGroupMember: no active account" }
+        val nameFilterExpr: String? = if (nameFilter.isNullOrBlank()) {
+            null
+        } else {
+            "%$nameFilter%"
+        }
+        val database = ensureDatabase(currentSlot)
+        val users = ArrayList<UserDescriptorWithTime>()
+        if (nameFilter != null) {
+            database.rawQuery(
+                "SELECT u.uid, u.access_hash, u.name, u.username, u.flags, s.update_ts FROM t_user u, t_channel_sender_info s " +
+                        "WHERE u.uid = s.uid " +
+                        "AND (u.uid IN (SELECT uid FROM t_channel_sender_info WHERE gid = ?)) " +
+                        "AND (u.name LIKE ? OR u.username LIKE ?) " +
+                        "ORDER BY s.update_ts DESC LIMIT ?",
+                arrayOf(
+                    gid.toString(),
+                    nameFilterExpr,
+                    nameFilterExpr,
+                    limit.toString()
+                )
+            ).use { cursor ->
+                while (cursor.moveToNext()) {
+                    users.add(
+                        UserDescriptorWithTime(
+                            uid = cursor.getLong(0),
+                            accessHash = cursor.getLong(1),
+                            name = cursor.getString(2),
+                            username = cursor.getString(3),
+                            flags = cursor.getInt(4),
+                            updateTimeSeconds = cursor.getLong(5)
+                        )
+                    )
+                }
+            }
+        } else {
+            database.rawQuery(
+                "SELECT u.uid, u.access_hash, u.name, u.username, u.flags, s.update_ts FROM t_user u, t_channel_sender_info s " +
+                        "WHERE u.uid = s.uid " +
+                        "AND (u.uid IN (SELECT uid FROM t_channel_sender_info WHERE gid = ?)) " +
+                        "ORDER BY s.update_ts DESC LIMIT ?",
+                arrayOf(
+                    gid.toString(),
+                    limit.toString()
+                )
+            ).use { cursor ->
+                while (cursor.moveToNext()) {
+                    users.add(
+                        UserDescriptorWithTime(
+                            uid = cursor.getLong(0),
+                            accessHash = cursor.getLong(1),
+                            name = cursor.getString(2),
+                            username = cursor.getString(3),
+                            flags = cursor.getInt(4),
+                            updateTimeSeconds = cursor.getLong(5)
+                        )
+                    )
+                }
+            }
+        }
+        return users
+    }
+
+    fun queryUserInChannel(gid: Long, nameFilter: String?, limit: Int = 50): ArrayList<UserDescriptor> {
+        check(gid > 0) { "gid must be positive" }
+        check(limit > 0) { "limit must be positive" }
+        // we have too many data in t_user(~100k), so we need to use a subquery to filter the data first.
+        // select * from t_user u, t_channel_member s where u in
+        // (select uid from t_channel_member where gid = ?) and u.uid = s.uid
+        // and (u.name like %?% or u.username like %?%) limit ?
+        // compare is case-insensitive
+        val currentSlot = AccountController.getCurrentActiveSlot()
+        check(currentSlot >= 0) { "queryUserInChannel: no active account" }
+        val nameFilterExpr: String? = if (nameFilter.isNullOrBlank()) {
+            null
+        } else {
+            "%$nameFilter%"
+        }
+        val database = ensureDatabase(currentSlot)
+        val users = ArrayList<UserDescriptor>()
+        if (nameFilter != null) {
+            database.rawQuery(
+                "SELECT u.uid, u.access_hash, u.name, u.username, u.flags FROM t_user u, t_channel_member s " +
+                        "WHERE u.uid = s.uid " +
+                        "AND (u.uid IN (SELECT uid FROM t_channel_member WHERE gid = ?)) " +
+                        "AND (u.name LIKE ? OR u.username LIKE ?) " +
+                        "LIMIT ?",
+                arrayOf(
+                    gid.toString(),
+                    nameFilterExpr,
+                    nameFilterExpr,
+                    limit.toString()
+                )
+            ).use { cursor ->
+                while (cursor.moveToNext()) {
+                    users.add(
+                        UserDescriptor(
+                            uid = cursor.getLong(0),
+                            accessHash = cursor.getLong(1),
+                            name = cursor.getString(2),
+                            username = cursor.getString(3),
+                            flags = cursor.getInt(4)
+                        )
+                    )
+                }
+            }
+        } else {
+            database.rawQuery(
+                "SELECT u.uid, u.access_hash, u.name, u.username, u.flags FROM t_user u, t_channel_member s " +
+                        "WHERE u.uid = s.uid " +
+                        "AND (u.uid IN (SELECT uid FROM t_channel_member WHERE gid = ?)) " +
+                        "LIMIT ?",
+                arrayOf(
+                    gid.toString(),
+                    limit.toString()
+                )
+            ).use { cursor ->
+                while (cursor.moveToNext()) {
+                    users.add(
+                        UserDescriptor(
+                            uid = cursor.getLong(0),
+                            accessHash = cursor.getLong(1),
+                            name = cursor.getString(2),
+                            username = cursor.getString(3),
+                            flags = cursor.getInt(4)
+                        )
+                    )
+                }
+            }
+        }
+        return users
     }
 
 }

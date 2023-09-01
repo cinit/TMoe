@@ -52,6 +52,10 @@ object RequestInterceptor {
                     // don't hook proxy
                     return
                 }
+                if (klass.classLoader == RequestInterceptor::class.java.classLoader) {
+                    // don't hook request made by ourselves
+                    return
+                }
                 if (isInterestedRequest(request.javaClass)) {
                     if (!mHookedClasses.contains(klass)) {
                         val run = klass.getDeclaredMethod("run", kTLObject, kTL_error)

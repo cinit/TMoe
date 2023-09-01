@@ -150,6 +150,11 @@ class SettingsFragment : BaseHierarchyFragment() {
                 "HistoricGroupMemberRecord", R.string.HistoricGroupMemberRecord,
                 "HistoricGroupMemberRecordDesc", R.string.HistoricGroupMemberRecordDesc
             )
+            functionSwitch(
+                LocalGroupMemberList,
+                "LocalGroupMemberList", R.string.LocalGroupMemberList,
+                "LocalGroupMemberListDesc", R.string.LocalGroupMemberListDesc
+            )
         }
         category("DebugAndLogsForClient", R.string.DebugAndLogsForClient) {
             add(mBuildVarsLogSwitch)

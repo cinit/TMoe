@@ -37,7 +37,7 @@ public class ShowMsgId extends CommonDynamicHook {
         Field timeWidth = kChatMessageCell.getDeclaredField("timeWidth");
         timeWidth.setAccessible(true);
         HookUtils.hookAfterIfEnabled(this, measureTime, param -> {
-            String time = (String) currentTimeString.get(param.thisObject);
+            CharSequence time = (CharSequence) currentTimeString.get(param.thisObject);
             Object messageObject = param.args[0];
             Object owner = messageOwner.get(messageObject);
             int id = msgId.getInt(owner);
