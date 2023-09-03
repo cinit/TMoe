@@ -118,6 +118,10 @@ class SettingsFragment : BaseHierarchyFragment() {
                 HidePremiumStickerSetTab, "HidePremiumStickerSetTab", R.string.HidePremiumStickerSetTab,
                 "HidePremiumStickerSetTabDesc", R.string.HidePremiumStickerSetTabDesc
             )
+            functionSwitch(
+                ShowExactLastSeenTime, "ShowExactLastSeenTime", R.string.ShowExactLastSeenTime,
+                "ShowExactLastSeenTimeDesc", R.string.ShowExactLastSeenTimeDesc
+            )
         }
         category("LostMsgMitigation", R.string.LostMsgMitigation) {
             functionSwitch(

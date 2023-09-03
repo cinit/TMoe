@@ -49,6 +49,8 @@
     <string name="LostMsgMitigation">If you have lost messages</string>
     <string name="AddReloadMsgBtn">Reload Message Button</string>
     <string name="AddReloadMsgBtnDesc">Add Reload Message Button in chat menu</string>
+    <string name="ShowExactLastSeenTime">Show Exact Last Seen Time</string>
+    <string name="ShowExactLastSeenTimeDesc">This works if and only if you have permission to see the last seen time of the user.</string>
     <string name="DatabaseCorruptionWarning">Database Corruption Warning</string>
     <string name="DatabaseCorruptionWarningDesc">Show database corruption warning if detected.</string>
     <string name="DumpGroupMember">Persist Access Hash</string>
