@@ -55,7 +55,7 @@ jobs:
 
       - name: Build with Gradle
         run: |
-          echo ${{ secrets.SIGN_KEYSTORE_BASE64 }} | base64 -d > keystore.jks
+          echo "${{ secrets.SIGN_KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
           ./gradlew :app:assembleRelease
         env:
           KEYSTORE_PATH: "../keystore.jks"
