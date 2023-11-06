@@ -40,10 +40,12 @@
     <string name="ExtendedOfflineSearchDesc">Разрешить поиск пользователей, групп и каналов по идентификатору в TMoe_channel_dump.db, для чего требуется включить "Постоянный хэш доступа".</string>
     <string name="ForceBlurChatAvailable">Принудительное размытие чата(-ов)</string>
     <string name="ForwardsRestrictedInfoGroup">Копирование и пересылка в этой группе не допускается.</string>
+    <string name="FuckTrackingHook">Отключение отслеживания</string>
+    <string name="FuckTrackingHookDesc">Отключение отслеживания таргетированной рекламы предоставляемой Telegram.</string>
     <string name="GitHub">GitHub</string>
     <string name="HidePhoneNumber">Скрыть номер телефона</string>
-    <string name="HidePremiumStickerSetTab">Скрыть вкладку "Набор наклеек премиум"</string>
-    <string name="HidePremiumStickerSetTabDesc">Только для премиум-пользователей. Снимите вкладку набора наклеек премиум-класса с панели наклеек.</string>
+    <string name="HidePremiumStickerSetTab">Скрыть вкладку Набор премиум стикеров</string>
+    <string name="HidePremiumStickerSetTabDesc">Только для премиум-пользователей. Скрыть вкладку набора премиум стикеров с панели стикеров.</string>
     <string name="HideSponsoredMsg">Скрыть спонсорские сообщения</string>
     <string name="HideUserAvatar">Скрыть аватары конкретных пользователей</string>
     <string name="HideUserAvatarEnabledTargetCount">%1$d пользователь(ы), %2$d канал(ы), %3$d группа(ы)</string>
@@ -53,6 +55,8 @@
     <string name="Ignore">Игнорировать</string>
     <string name="KeepVideoMuted">Видео без звука, при нажатии кнопок громкости</string>
     <string name="LicenseNotices">Информация о лицензии</string>
+    <string name="LocalGroupMemberList">Список членов локальной группы</string>
+    <string name="LocalGroupMemberListDesc">TMoe попытается показать предполагаемый, неточный список членов группы, основанный на сообщениях группы, если в группе включена опция "Скрывать членов" и Вы не являетесь администратором. Требуется, чтобы была включена функция "Постоянный хэш доступа".</string>
     <string name="LostMsgMitigation">Если Вы потеряли сообщения</string>
     <string name="MenuItem_HistoryMessage">История</string>
     <string name="MenuItem_RepeatMessage">Повторить</string>
@@ -63,10 +67,13 @@
     <string name="ProhibitChatGreetings">Запретить приветствия в чате</string>
     <string name="ProhibitEnableReactions">Запретить разрешение на реакции</string>
     <string name="ProhibitSpoilers">Запретить спойлеры</string>
+    <string name="ProhibitSpoilersD">Содержание спойлера будет отображаться как обычно</string>
     <string name="ReloadMessage">Перезагрузить сообщения</string>
     <string name="RestartClient">Перезапустить Telegram</string>
     <string name="RestrictContentMitigationDesc">Разрешить копирование, сохранение и скриншоты в секретных чатах</string>
     <string name="SendCommand">Запросите команду tap</string>
+    <string name="ShowExactLastSeenTime">Отображать точное время последнего посещения пользователя</string>
+    <string name="ShowExactLastSeenTimeDesc">Отображение точного времени последнего посещения пользователя работает, только тогда, когда пользователь разрешил просмотр.</string>
     <string name="ShowMsgId">Показывать ID сообщения(-ий)</string>
     <string name="SourceCode">Исходный код</string>
     <string name="TMoeSettings">Настройки TMoe</string>
@@ -75,11 +82,11 @@
     <string name="TgnetLogsEnabledDesc">Смотрите LOGS_ENABLED в FileLog.cpp (мгновенный, непостоянный)</string>
     <string name="TgnetLogsEnabledDescSymbolNotFound">### Символ не найден. Смотрите LOGS_ENABLED в FileLog.cpp</string>
     <string name="UnsupportedOperation">Неподдерживаемая операция.</string>
+    <string name="UseSystemEmoji">Использовать системные Emoji</string>
     <string name="VersionInfo">Версия</string>
     <string name="ViewChannel">Просмотр канала</string>
     <string name="ViewTopicAsMsgByDefault">Просматривать как сообщения по умолчанию</string>
-    <string name="ViewTopicAsMsgByDefaultDesc">"Просмотр как сообщения" по умолчанию в тематических чатах</string>
+    <string name="ViewTopicAsMsgByDefaultDesc">Просмотр как сообщения по умолчанию в тематических чатах</string>
     <string name="app_name">TMoe</string>
-    <string name="xposeddescription">Дополнительные функции для клиентов Telegram.
-Перевел tg:@majestic_translation</string>
+    <string name="xposeddescription">Дополнительные функции для клиентов Telegram. Перевел tg:@majestic_translation</string>
 </resources>
