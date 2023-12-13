@@ -6,28 +6,10 @@ import com.github.kyuubiran.ezxhelper.utils.findMethod
 import com.github.kyuubiran.ezxhelper.utils.hookBefore
 import com.github.kyuubiran.ezxhelper.utils.loadClass
 import com.github.kyuubiran.ezxhelper.utils.tryOrLogFalse
-import de.robv.android.xposed.XposedBridge
-import java.lang.Enum as JEnum
 
 @FunctionHookEntry
 object DisableInstantCamera : CommonDynamicHook() {
     override fun initOnce(): Boolean = tryOrLogFalse {
-        findMethod(loadClass("org.telegram.ui.Components.ChatActivityEnterViewAnimatedIconView")) {
-            name == "setState" && parameterTypes.size == 2
-        }.hookBefore {
-
-            if (!isEnabled) return@hookBefore
-
-            try {
-                val state = it.args[0] as JEnum<*>
-                if (state.name() == "VIDEO") {
-                    it.args[0] = JEnum.valueOf(state.javaClass as Class<out Enum<*>>, "VOICE")
-                }
-            } catch (e: Throwable) {
-                XposedBridge.log(e)
-            }
-        }
-
         findMethod(loadClass("org.telegram.ui.Components.ChatActivityEnterView")) { name == "isInVideoMode" }.hookBefore {
             if (isEnabled) it.result = false
         }
