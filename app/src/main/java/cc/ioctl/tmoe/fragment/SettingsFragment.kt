@@ -102,6 +102,9 @@ class SettingsFragment : BaseHierarchyFragment() {
                 SendCommand, "SendCommand", R.string.SendCommand
             )
             functionSwitch(
+                DisableInstantCamera, "DisableInstantCamera", R.string.DisableInstantCamera
+            )
+            functionSwitch(
                 ForceBlurChatAvailable, "ForceBlurChatAvailable", R.string.ForceBlurChatAvailable
             )
             functionSwitch(

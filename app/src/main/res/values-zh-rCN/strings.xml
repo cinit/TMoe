@@ -62,4 +62,5 @@
     <string name="DialogButton_Confirm">确认</string>
     <string name="ShowExactLastSeenTime">最后上线精确到秒</string>
     <string name="ShowExactLastSeenTimeDesc">仅对有权限查看用户最后上线时间的用户有效</string>
+    <string name="DisableInstantCamera">禁用即时相机</string>
 </resources>
