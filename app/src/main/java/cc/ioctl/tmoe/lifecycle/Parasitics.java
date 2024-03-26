@@ -17,20 +17,26 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
+import android.content.res.loader.ResourcesLoader;
+import android.content.res.loader.ResourcesProvider;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.os.ParcelFileDescriptor;
 import android.os.PersistableBundle;
 import android.os.TestLooperManager;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -42,6 +48,8 @@ import cc.ioctl.tmoe.R;
 import cc.ioctl.tmoe.startup.HookEntry;
 import cc.ioctl.tmoe.util.HostInfo;
 import cc.ioctl.tmoe.util.Initiator;
+import cc.ioctl.tmoe.util.Log;
+import cc.ioctl.tmoe.util.SyncUtils;
 
 /**
  * Inject module Activities into host process and resources injection.
@@ -71,7 +79,6 @@ public class Parasitics {
         return -1;
     }
 
-    @SuppressLint("PrivateApi")
     public static void injectModuleResources(Resources res) {
         if (res == null) {
             return;
@@ -81,46 +88,91 @@ public class Parasitics {
             return;
         } catch (Resources.NotFoundException ignored) {
         }
-        try {
-            String sModulePath = HookEntry.getModulePath();
-            if (sModulePath == null) {
-                throw new RuntimeException(
-                        "get module path failed, loader=" + Parasitics.class.getClassLoader());
+        String sModulePath = HookEntry.getModulePath();
+        if (sModulePath == null) {
+            throw new RuntimeException("get module path failed, loader=" + Parasitics.class.getClassLoader());
+        }
+        // AssetsManager.addAssetPath starts to break on Android 12.
+        // ResourcesLoader is added since Android 11.
+        if (Build.VERSION.SDK_INT >= 30) {
+            injectResourcesAboveApi30(res, sModulePath);
+        } else {
+            injectResourcesBelowApi30(res, sModulePath);
+        }
+    }
+
+    @RequiresApi(30)
+    private static class ResourcesLoaderHolderApi30 {
+
+        private ResourcesLoaderHolderApi30() {
+        }
+
+        public static ResourcesLoader sResourcesLoader = null;
+
+    }
+
+    @RequiresApi(30)
+    private static void injectResourcesAboveApi30(@NonNull Resources res, @NonNull String path) {
+        if (ResourcesLoaderHolderApi30.sResourcesLoader == null) {
+            try (ParcelFileDescriptor pfd = ParcelFileDescriptor.open(new File(path),
+                    ParcelFileDescriptor.MODE_READ_ONLY)) {
+                ResourcesProvider provider = ResourcesProvider.loadFromApk(pfd);
+                ResourcesLoader loader = new ResourcesLoader();
+                loader.addProvider(provider);
+                ResourcesLoaderHolderApi30.sResourcesLoader = loader;
+            } catch (IOException e) {
+                logForResourceInjectFailure(path, e, 0);
+                return;
             }
-            AssetManager assets = res.getAssets();
-            @SuppressLint("DiscouragedPrivateApi")
-            Method addAssetPath = AssetManager.class
-                    .getDeclaredMethod("addAssetPath", String.class);
-            addAssetPath.setAccessible(true);
-            int cookie = (int) addAssetPath.invoke(assets, sModulePath);
+        }
+        SyncUtils.runOnUiThread(() -> {
+            res.addLoaders(ResourcesLoaderHolderApi30.sResourcesLoader);
             try {
-                logd("injectModuleResources: " + res.getString(R.string.res_inject_success));
+                res.getString(R.string.res_inject_success);
                 if (sResInjectEndTime == 0) {
                     sResInjectEndTime = System.currentTimeMillis();
                 }
             } catch (Resources.NotFoundException e) {
-                loge("Fatal: injectModuleResources: test injection failure!");
-                loge("injectModuleResources: cookie=" + cookie + ", path=" + sModulePath
-                        + ", loader=" + Parasitics.class.getClassLoader());
-                long length = -1;
-                boolean read = false;
-                boolean exist = false;
-                boolean isDir = false;
-                try {
-                    File f = new File(sModulePath);
-                    exist = f.exists();
-                    isDir = f.isDirectory();
-                    length = f.length();
-                    read = f.canRead();
-                } catch (Throwable e2) {
-                    loge(e2);
+                logForResourceInjectFailure(path, e, 0);
+            }
+        });
+    }
+
+    @SuppressWarnings("JavaReflectionMemberAccess")
+    @SuppressLint({"PrivateApi", "DiscouragedPrivateApi"})
+    private static void injectResourcesBelowApi30(@NonNull Resources res, @NonNull String path) {
+        try {
+            AssetManager assets = res.getAssets();
+            Method addAssetPath = AssetManager.class.getDeclaredMethod("addAssetPath", String.class);
+            addAssetPath.setAccessible(true);
+            int cookie = (int) addAssetPath.invoke(assets, path);
+            try {
+                res.getString(R.string.res_inject_success);
+                if (sResInjectEndTime == 0) {
+                    sResInjectEndTime = System.currentTimeMillis();
                 }
-                loge("sModulePath: exists = " + exist + ", isDirectory = " + isDir + ", canRead = "
-                        + read + ", fileLength = " + length);
+            } catch (Resources.NotFoundException e) {
+                logForResourceInjectFailure(path, e, 0);
             }
         } catch (Exception e) {
-            loge(e);
+            Log.e(e);
         }
+    }
+
+    private static void logForResourceInjectFailure(@NonNull String path, @NonNull Throwable e, int cookie) {
+        Log.e("Fatal: injectModuleResources: test injection failure!");
+        Log.e("injectModuleResources: path=" + path + ", cookie=" + cookie +
+                ", loader=" + Parasitics.class.getClassLoader());
+        long length = -1;
+        boolean read = false;
+        boolean exist = false;
+        boolean isDir = false;
+        File f = new File(path);
+        exist = f.exists();
+        isDir = f.isDirectory();
+        length = f.length();
+        read = f.canRead();
+        Log.e("sModulePath: exists = " + exist + ", isDirectory = " + isDir + ", canRead = " + read + ", fileLength = " + length);
     }
 
     @SuppressLint("PrivateApi")
