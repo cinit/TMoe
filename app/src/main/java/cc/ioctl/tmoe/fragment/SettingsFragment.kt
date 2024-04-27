@@ -125,6 +125,9 @@ class SettingsFragment : BaseHierarchyFragment() {
                 ShowExactLastSeenTime, "ShowExactLastSeenTime", R.string.ShowExactLastSeenTime,
                 "ShowExactLastSeenTimeDesc", R.string.ShowExactLastSeenTimeDesc
             )
+            functionSwitch(
+                HideServiceStories, "HideServiceStories", R.string.HideServiceStories
+            )
         }
         category("LostMsgMitigation", R.string.LostMsgMitigation) {
             functionSwitch(
