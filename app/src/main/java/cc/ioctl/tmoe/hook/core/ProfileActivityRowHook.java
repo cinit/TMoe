@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.lang.reflect.Field;
@@ -83,7 +84,7 @@ public class ProfileActivityRowHook implements Initializable {
          * @param profileActivity
          * @return true if handled, otherwise false
          */
-        boolean onBindViewHolder(String key, Object holder, Object adpater, Object profileActivity);
+        boolean onBindViewHolder(@NonNull String key, @NonNull Object holder, @NonNull Object adpater, @NonNull Object profileActivity);
 
         /**
          * getItemViewType
@@ -92,7 +93,7 @@ public class ProfileActivityRowHook implements Initializable {
          * @param profileActivity
          * @return type, -1 to skip
          */
-        int getItemViewType(String key, Object adapter, Object profileActivity);
+        int getItemViewType(@NonNull String key, @NonNull Object adapter, @NonNull Object profileActivity);
 
         /**
          *
@@ -100,9 +101,9 @@ public class ProfileActivityRowHook implements Initializable {
          * @param adapter
          * @return true if handled, otherwise false
          */
-        boolean onItemClicked(String key, Object adapter, Object profileActivity);
+        boolean onItemClicked(@NonNull String key, @NonNull Object adapter, @NonNull Object profileActivity);
 
-        void onInsertRow(RowManipulator manipulator, Object profileActivity);
+        void onInsertRow(@NonNull RowManipulator manipulator, @NonNull Object profileActivity);
     }
 
     private static final List<Callback> sCallbacks = new ArrayList<>();

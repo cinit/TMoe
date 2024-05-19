@@ -1,18 +1,9 @@
 package cc.ioctl.tmoe.hook.core;
 
-import android.content.Context;
-import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Objects;
 
 import cc.ioctl.tmoe.R;
 import cc.ioctl.tmoe.fragment.SettingsFragment;
@@ -20,11 +11,8 @@ import cc.ioctl.tmoe.lifecycle.Parasitics;
 import cc.ioctl.tmoe.rtti.ProxyFragmentRttiHandler;
 import cc.ioctl.tmoe.ui.LocaleController;
 import cc.ioctl.tmoe.util.HostInfo;
-import cc.ioctl.tmoe.util.Initiator;
 import cc.ioctl.tmoe.util.Reflex;
 import cc.ioctl.tmoe.util.Utils;
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
 
 public class SettingEntryHook implements Initializable, ProfileActivityRowHook.Callback {
     public static final SettingEntryHook INSTANCE = new SettingEntryHook();
@@ -54,7 +42,7 @@ public class SettingEntryHook implements Initializable, ProfileActivityRowHook.C
     }
 
     @Override
-    public boolean onBindViewHolder(String key, Object holder, Object adpater, Object profileActivity) {
+    public boolean onBindViewHolder(@NonNull String key, @NonNull Object holder, @NonNull Object adpater, @NonNull Object profileActivity) {
         if (!TMOE_SETTINGS_ROW.equals(key)) return false;
         FrameLayout textCell = (FrameLayout) Reflex.getInstanceObjectOrNull(holder, "itemView");
         if (textCell != null) {
@@ -83,13 +71,13 @@ public class SettingEntryHook implements Initializable, ProfileActivityRowHook.C
     }
 
     @Override
-    public int getItemViewType(String key, Object adapter, Object profileActivity) {
+    public int getItemViewType(@NonNull String key, @NonNull Object adapter, @NonNull Object profileActivity) {
         if (TMOE_SETTINGS_ROW.equals(key)) return 4;
         return -1;
     }
 
     @Override
-    public boolean onItemClicked(String key, Object adapter, Object profileActivity) {
+    public boolean onItemClicked(@NonNull String key, @NonNull Object adapter, @NonNull Object profileActivity) {
         if (TMOE_SETTINGS_ROW.equals(key)) {
             presentTMoeSettingsFragment(profileActivity);
             return false;
@@ -98,7 +86,7 @@ public class SettingEntryHook implements Initializable, ProfileActivityRowHook.C
     }
 
     @Override
-    public void onInsertRow(ProfileActivityRowHook.RowManipulator manipulator, Object profileActivity) {
+    public void onInsertRow(@NonNull ProfileActivityRowHook.RowManipulator manipulator, @NonNull Object profileActivity) {
         // put our fields into the list just before the language row
         int targetRow = manipulator.getRowIdForField("languageRow");
         if (targetRow <= 0) {

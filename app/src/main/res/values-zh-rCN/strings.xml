@@ -64,4 +64,9 @@
     <string name="ShowExactLastSeenTimeDesc">仅对有权限查看用户最后上线时间的用户有效</string>
     <string name="DisableInstantCamera">禁用即时相机</string>
     <string name="HideServiceStories">隐藏“服务通知”的动态</string>
+    <string name="ShowIdInProfile">资料页显示 ID</string>
+    <string name="GroupOrChannelId">群聊 / 频道 ID</string>
+    <string name="UserId">用户 ID</string>
+    <string name="IdCopied">已复制</string>
+    <string name="ShowIdInProfileDesc">在用户、频道和群聊资料页面显示 ID</string>
 </resources>
