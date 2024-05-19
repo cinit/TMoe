@@ -5,6 +5,7 @@ import java.util.List;
 import cc.ioctl.tmoe.hook.base.DynamicHook;
 import cc.ioctl.tmoe.hook.core.Initializable;
 import cc.ioctl.tmoe.hook.core.InvalidationHook;
+import cc.ioctl.tmoe.hook.core.ProfileActivityRowHook;
 import cc.ioctl.tmoe.hook.core.SettingEntryHook;
 import cc.ioctl.tmoe.hook.func.HideUserAvatar;
 import cc.ioctl.tmoe.util.Utils;
@@ -22,6 +23,7 @@ public class DynamicHookInit {
     private static void initializeCoreHooks() {
         Initializable[] coreHooks = new Initializable[]{
                 InvalidationHook.INSTANCE,
+                ProfileActivityRowHook.INSTANCE,
                 SettingEntryHook.INSTANCE,
                 HideUserAvatar.INSTANCE
         };
