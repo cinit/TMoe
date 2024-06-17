@@ -20,6 +20,7 @@ import cc.ioctl.tmoe.util.Reflex;
 import cc.ioctl.tmoe.util.Utils;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedHelpers;
 
 public class ProfileActivityRowHook implements Initializable {
     public static final ProfileActivityRowHook INSTANCE = new ProfileActivityRowHook();
@@ -116,6 +117,7 @@ public class ProfileActivityRowHook implements Initializable {
     private static Class<?> kProfileActivity = null;
     private static Field fProfileActivity_notificationRow = null;
     private static boolean sListViewOnItemClickListenerHooked = false;
+    private static ArrayList<Field> mPossibleIds = null;
 
     @Override
     public boolean initialize() {
@@ -224,6 +226,37 @@ public class ProfileActivityRowHook implements Initializable {
                     }
                 }
             });
+            XposedBridge.hookAllMethods(
+                    Initiator.load("org.telegram.ui.ProfileActivity$DiffCallback"), "fillPositions",
+                    new XC_MethodHook() {
+                        @Override
+                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                            Object fragment = Reflex.getInstanceObjectOrNull(param.thisObject, "this$0");
+                            var args = (Bundle) fBaseFragment_arguments.get(fragment);
+                            if (args == null) return;
+                            var map = (HashMap<Integer, String>) args.getSerializable(PROFILE_ACTIVITY_EXTRA_ROWS);
+                            if (map == null) return;
+                            var i = 1000;
+                            for (var pos: map.keySet()) {
+                                XposedHelpers.callMethod(param.thisObject, "put", ++i, pos, param.args[0]);
+                            }
+                        }
+                    }
+            );
+            // we only need to do this once
+            Field fProfileActivity_rowCount = kProfileActivity.getDeclaredField("rowCount");
+            fProfileActivity_rowCount.setAccessible(true);
+            ArrayList<Field> possibleIds = new ArrayList<>();
+            // find all private int fields whose value is -1 or 0
+            for (Field f : kProfileActivity.getDeclaredFields()) {
+                if (f.getType() == int.class && !Modifier.isStatic(f.getModifiers())) {
+                    f.setAccessible(true);
+                    if (f.getName().endsWith("Row") || f.getName().endsWith("Row2")) {
+                        possibleIds.add(f);
+                    }
+                }
+            }
+            mPossibleIds = possibleIds;
         } catch (ReflectiveOperationException e) {
             Utils.loge(e);
             return false;
@@ -268,31 +301,6 @@ public class ProfileActivityRowHook implements Initializable {
     };
 
     private static final XC_MethodHook SETTINGS_ROW_ID_ALLOCATOR = new XC_MethodHook(51) {
-        ArrayList<Field> mPossibleIds = null;
-
-        @Override
-        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-            if (mPossibleIds == null) {
-                // we only need to do this once
-                Field fProfileActivity_rowCount = kProfileActivity.getDeclaredField("rowCount");
-                fProfileActivity_rowCount.setAccessible(true);
-                int currentRowCount = fProfileActivity_rowCount.getInt(param.thisObject);
-                if (currentRowCount == 0) {
-                    ArrayList<Field> possibleIds = new ArrayList<>();
-                    // find all private int fields whose value is -1 or 0
-                    for (Field f : kProfileActivity.getDeclaredFields()) {
-                        if (f.getType() == int.class && !Modifier.isStatic(f.getModifiers())) {
-                            f.setAccessible(true);
-                            int value = f.getInt(param.thisObject);
-                            if (value == -1 || value == 0) {
-                                possibleIds.add(f);
-                            }
-                        }
-                    }
-                    mPossibleIds = possibleIds;
-                }
-            }
-        }
 
         @Override
         protected void afterHookedMethod(MethodHookParam param) throws Throwable {
