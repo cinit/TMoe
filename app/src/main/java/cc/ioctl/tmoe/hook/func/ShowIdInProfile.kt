@@ -33,11 +33,11 @@ object ShowIdInProfile : CommonDynamicHook(), ProfileActivityRowHook.Callback {
         (Reflex.getInstanceObjectOrNull(holder, "itemView") as? FrameLayout)?.let { textCell ->
             Parasitics.injectModuleResources(HostInfo.getApplication().resources)
             val userId = getUserId(profileActivity)
-            val realId = if (userId == 0L) getChatId(profileActivity) else userId
+            val realId = if (userId == 0L) getChatOrTopicId(profileActivity) else userId.toString()
             val isUser = userId != 0L
             val title = if (isUser) LocaleController.getString("UserId", R.string.UserId)
             else LocaleController.getString("GroupOrChannelId", R.string.GroupOrChannelId)
-            XposedHelpers.callMethod(textCell, "setTextAndValue", realId.toString(), title, false)
+            XposedHelpers.callMethod(textCell, "setTextAndValue", realId, title, false)
         }
         return true
     }
@@ -50,10 +50,10 @@ object ShowIdInProfile : CommonDynamicHook(), ProfileActivityRowHook.Callback {
     override fun onItemClicked(key: String, adapter: Any, profileActivity: Any): Boolean {
         if (rowName != key) return false
         val userId = getUserId(profileActivity)
-        val realId = if (userId == 0L) getChatId(profileActivity) else userId
+        val realId = if (userId == 0L) getChatOrTopicId(profileActivity) else userId.toString()
         val context = HostInfo.getApplication()
         context.getSystemService(ClipboardManager::class.java)
-            .setPrimaryClip(ClipData.newPlainText("", realId.toString()))
+            .setPrimaryClip(ClipData.newPlainText("", realId))
         Toast.makeText(context, LocaleController.getString("IdCopied", R.string.IdCopied), Toast.LENGTH_SHORT).show()
         return true
     }
@@ -62,20 +62,36 @@ object ShowIdInProfile : CommonDynamicHook(), ProfileActivityRowHook.Callback {
         manipulator: ProfileActivityRowHook.RowManipulator,
         profileActivity: Any
     ) {
-        var row = manipulator.getRowIdForField("infoHeaderRow")
-        row = if (row == -1) 1 else row + 1
+        val row = manipulator.getRowIdForField("notificationsRow")
+            .let { nr ->
+                if (nr != -1) nr
+                else manipulator.getRowIdForField("infoHeaderRow").let { ihr ->
+                    if (ihr == -1) 1 else ihr + 1
+                }
+            }
         manipulator.insertRowAtPosition(rowName, row)
     }
 
     private fun getUserId(profileActivity: Any): Long {
-        return XposedHelpers.getObjectField(profileActivity, "userId") as Long
+        return (XposedHelpers.getObjectField(profileActivity, "userId") as Number).toLong()
     }
 
     private fun getChatId(profileActivity: Any): Long {
         val chat = XposedHelpers.getObjectField(profileActivity, "currentChat")
         if (chat != null) {
-            return XposedHelpers.getObjectField(chat, "id") as Long
+            return (XposedHelpers.getObjectField(chat, "id") as Number).toLong()
         }
         return 0L
+    }
+
+    private fun getTopicId(profileActivity: Any): Long {
+        return (XposedHelpers.getObjectField(profileActivity, "topicId") as Number).toLong()
+    }
+
+    private fun getChatOrTopicId(profileActivity: Any): String {
+        val chatId = getChatId(profileActivity)
+        val topicId = getTopicId(profileActivity)
+        if (topicId == 0L) return chatId.toString()
+        return "$chatId/$topicId"
     }
 }
