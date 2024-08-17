@@ -35,7 +35,7 @@
     <string name="ChannelDetailNumbersD">频道关注者显示详细人数 3k → 3000</string>
     <string name="AddInfoContainer">允许查询</string>
     <string name="AddInfoContainerD">非管理员也可查看一些信息</string>
-    <string name="SendCommand">询问是否送出 Bot 指令</string>
+    <string name="SendCommand">点击自动发送 Bot 指令前确认</string>
     <string name="ShowMsgId">显示消息 ID</string>
     <string name="RestartClient">重启 Telegram</string>
     <string name="ReloadMessage">重新加载消息</string>
@@ -62,6 +62,7 @@
     <string name="DialogButton_Confirm">确认</string>
     <string name="ShowExactLastSeenTime">最后上线精确到秒</string>
     <string name="ShowExactLastSeenTimeDesc">仅对有权限查看用户最后上线时间的用户有效</string>
+    <string name="FuckTrackingHook">禁用个性化广告推荐</string>
     <string name="DisableInstantCamera">禁用即时相机</string>
     <string name="HideServiceStories">隐藏“服务通知”的动态</string>
     <string name="ShowIdInProfile">资料页显示 ID</string>
@@ -69,4 +70,25 @@
     <string name="UserId">用户 ID</string>
     <string name="IdCopied">已复制</string>
     <string name="ShowIdInProfileDesc">在用户、频道和群聊资料页面显示 ID</string>
+    <string name="Cancel">取消</string>
+    <string name="UseSystemEmoji">使用系统 emoji</string>
+    <string name="AccessHash">访问凭证</string>
+    <string name="DatabaseCorruptionWarning">数据库损坏警告</string>
+    <string name="DatabaseCorruptionWarningDesc">显示检测到的数据库损坏并发出警告。</string>
+    <string name="DumpGroupMember">持久化存储访问凭证</string>
+    <string name="DumpGroupMemberDesc">将已知频道和用户访问的哈希值保存到 ctx.filesDir/TMoe_channel_dump.db，以便在需要时通过 ID 访问它们。此功能可能会消耗大量电量，因此请在确实需要时启用它。</string>
+    <string name="ExtendedOfflineSearch">增强版离线搜索</string>
+    <string name="ExtendedOfflineSearchDesc">允许通过 ID 搜索用户、群组和频道，需启用“持久化存储访问凭证”。</string>
+    <string name="HistoricGroupMemberRecord">显示历史群组</string>
+    <string name="HistoricGroupMemberRecordDesc">在用户资料中显示历史共同群组，需启用“持久化存储访问凭证”。</string>
+    <string name="LocalGroupMemberList">本地群成员列表</string>
+    <string name="LocalGroupMemberListDesc">如果群组启用了“隐藏成员”且你不是管理员，本模块将尝试基于群消息显示推测的群成员列表。需要启用“持久化存储访问凭证”。</string>
+    <string name="Ignore">忽略</string>
+    <string name="DebugAndLogsForClient">调试与日志</string>
+    <string name="DisableLogConfigOnStartup">启动时禁用调试日志</string>
+    <string name="DisableLogConfigOnStartupDesc">将 BuildVars.java 和 FileLog.cpp 中的 LOGS_ENABLED 设置为 false，仅适用于调试版本客户端，对发布版本无实际作用。</string>
+    <string name="TgnetLogsEnabledDesc">参考 FileLog.cpp 中的 LOGS_ENABLED（立即生效，重启失效）</string>
+    <string name="BuildVarsLogsEnabledDesc">参考 BuildVars.java 中的 LOGS_ENABLED（立即生效，重启失效）</string>
+    <string name="DialogMsg_ConfirmDumpChannelMembers">拉取群成员列表？</string>
+    <string name="FuckTrackingHookDesc">如果您点击Telegram提供的广告，他们会收集数据作为个性化广告的基础。此功能用于屏蔽个性化广告。</string>
 </resources>

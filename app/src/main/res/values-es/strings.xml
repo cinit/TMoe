@@ -1,6 +1,4 @@
 <resources>
-    <string name="app_name" translatable="false">TMoe</string>
-    <string name="res_inject_success" translatable="false">Resources injection success</string>
     <string name="xposeddescription">Funciones adicionales para los clientes de Telegram.</string>
 
     <string name="TMoeSettings">Ajustes de TMoe</string>
@@ -26,7 +24,6 @@
     <string name="AboutTMoe">Acerca de TMoe</string>
     <string name="About">Acerca de</string>
     <string name="Misc">Varios</string>
-    <string name="GitHub" translatable="false">GitHub</string>
     <string name="SourceCode">Código fuente</string>
     <string name="LicenseNotices">Avisos de licencia</string>
     <string name="HideUserAvatar">Ocultar avatares de usuarios específicos</string>
