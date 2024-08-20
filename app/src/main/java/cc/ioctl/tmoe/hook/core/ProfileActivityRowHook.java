@@ -40,25 +40,33 @@ public class ProfileActivityRowHook implements Initializable {
         int keyCount = 0;
 
         public int getRowIdForField(String fieldName) {
-            for (var a: rows) {
-                if (a.type == RowInfo.TYPE_FIELD && fieldName.equals(a.name)) return a.index;
+            for (var a : rows) {
+                if (a.type == RowInfo.TYPE_FIELD && fieldName.equals(a.name)) {
+                    return a.index;
+                }
             }
             return -1;
         }
 
         public int getRowIdForKey(String key) {
-            for (var a: rows) {
-                if (a.type == RowInfo.TYPE_KEY && key.equals(a.name)) return a.index;
+            for (var a : rows) {
+                if (a.type == RowInfo.TYPE_KEY && key.equals(a.name)) {
+                    return a.index;
+                }
             }
             return -1;
         }
 
         public void insertRowAtPosition(String key, int position) {
-            for (var a: rows) {
-                if (a.type == RowInfo.TYPE_KEY && key.equals(a.name)) throw new IllegalArgumentException("duplicated row key " + key);
+            for (var a : rows) {
+                if (a.type == RowInfo.TYPE_KEY && key.equals(a.name)) {
+                    throw new IllegalArgumentException("duplicated row key " + key);
+                }
             }
-            for (var a: rows) {
-                if (a.index >= position) a.index++;
+            for (var a : rows) {
+                if (a.index >= position) {
+                    a.index++;
+                }
             }
             var row = new RowInfo();
             row.type = RowInfo.TYPE_KEY;
@@ -70,7 +78,9 @@ public class ProfileActivityRowHook implements Initializable {
 
         public boolean insertRowAtField(String key, String fieldName) {
             var idx = getRowIdForField(fieldName);
-            if (idx == -1) return false;
+            if (idx == -1) {
+                return false;
+            }
             insertRowAtPosition(key, idx);
             return true;
         }
@@ -78,7 +88,6 @@ public class ProfileActivityRowHook implements Initializable {
 
     public interface Callback {
         /**
-         *
          * @param key
          * @param adpater
          * @param holder
@@ -89,6 +98,7 @@ public class ProfileActivityRowHook implements Initializable {
 
         /**
          * getItemViewType
+         *
          * @param key
          * @param adapter
          * @param profileActivity
@@ -97,7 +107,6 @@ public class ProfileActivityRowHook implements Initializable {
         int getItemViewType(@NonNull String key, @NonNull Object adapter, @NonNull Object profileActivity);
 
         /**
-         *
          * @param key
          * @param adapter
          * @return true if handled, otherwise false
@@ -109,7 +118,8 @@ public class ProfileActivityRowHook implements Initializable {
 
     private static final List<Callback> sCallbacks = new ArrayList<>();
 
-    private ProfileActivityRowHook() {}
+    private ProfileActivityRowHook() {
+    }
 
     private boolean mInitialized = false;
     private static Field fBaseFragment_arguments = null;
@@ -188,7 +198,9 @@ public class ProfileActivityRowHook implements Initializable {
                             Object holder = param.args[0];
                             int position = (int) Reflex.invokeVirtual(holder, "getAdapterPosition", int.class);
                             var rowKey = getRowForKey(fragment, position);
-                            if (rowKey == null) return;
+                            if (rowKey == null) {
+                                return;
+                            }
                             param.setResult(true);
                         }
                     }
@@ -200,8 +212,10 @@ public class ProfileActivityRowHook implements Initializable {
                     int position = (int) param.args[0];
                     Object fragment = Reflex.getInstanceObjectOrNull(param.thisObject, "this$0");
                     var rowKey = getRowForKey(fragment, position);
-                    if (rowKey == null) return;
-                    for (var c: sCallbacks) {
+                    if (rowKey == null) {
+                        return;
+                    }
+                    for (var c : sCallbacks) {
                         var type = c.getItemViewType(rowKey, param.thisObject, fragment);
                         if (type != -1) {
                             param.setResult(type);
@@ -216,9 +230,11 @@ public class ProfileActivityRowHook implements Initializable {
                     int position = (int) param.args[1];
                     Object fragment = Reflex.getInstanceObjectOrNull(param.thisObject, "this$0");
                     var rowKey = getRowForKey(fragment, position);
-                    if (rowKey == null) return;
+                    if (rowKey == null) {
+                        return;
+                    }
                     var holder = param.args[0];
-                    for (var c: sCallbacks) {
+                    for (var c : sCallbacks) {
                         if (c.onBindViewHolder(rowKey, holder, param.thisObject, fragment)) {
                             param.setResult(null);
                             break;
@@ -226,23 +242,24 @@ public class ProfileActivityRowHook implements Initializable {
                     }
                 }
             });
-            XposedBridge.hookAllMethods(
-                    Initiator.load("org.telegram.ui.ProfileActivity$DiffCallback"), "fillPositions",
-                    new XC_MethodHook() {
-                        @Override
-                        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                            Object fragment = Reflex.getInstanceObjectOrNull(param.thisObject, "this$0");
-                            var args = (Bundle) fBaseFragment_arguments.get(fragment);
-                            if (args == null) return;
-                            var map = (HashMap<Integer, String>) args.getSerializable(PROFILE_ACTIVITY_EXTRA_ROWS);
-                            if (map == null) return;
-                            var i = 1000;
-                            for (var pos: map.keySet()) {
-                                XposedHelpers.callMethod(param.thisObject, "put", ++i, pos, param.args[0]);
-                            }
-                        }
+            XposedBridge.hookAllMethods(Initiator.load("org.telegram.ui.ProfileActivity$DiffCallback"), "fillPositions", new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    Object fragment = Reflex.getInstanceObjectOrNull(param.thisObject, "this$0");
+                    var args = (Bundle) fBaseFragment_arguments.get(fragment);
+                    if (args == null) {
+                        return;
                     }
-            );
+                    var map = (HashMap<Integer, String>) args.getSerializable(PROFILE_ACTIVITY_EXTRA_ROWS);
+                    if (map == null) {
+                        return;
+                    }
+                    var i = 1000;
+                    for (var pos : map.keySet()) {
+                        XposedHelpers.callMethod(param.thisObject, "put", ++i, pos, param.args[0]);
+                    }
+                }
+            });
             // we only need to do this once
             Field fProfileActivity_rowCount = kProfileActivity.getDeclaredField("rowCount");
             fProfileActivity_rowCount.setAccessible(true);
@@ -290,8 +307,10 @@ public class ProfileActivityRowHook implements Initializable {
             Objects.requireNonNull(fragment, "fragment is unexpectedly null");
             int position = (int) param.args[1];
             var rowKey = getRowForKey(fragment, position);
-            if (rowKey == null) return;
-            for (var c: sCallbacks) {
+            if (rowKey == null) {
+                return;
+            }
+            for (var c : sCallbacks) {
                 if (c.onItemClicked(rowKey, param.thisObject, fragment)) {
                     param.setResult(null);
                     break;
@@ -334,11 +353,11 @@ public class ProfileActivityRowHook implements Initializable {
                 manipulator.rows.add(row);
             }
 
-            for (Callback c: sCallbacks) {
+            for (Callback c : sCallbacks) {
                 c.onInsertRow(manipulator, param.thisObject);
             }
 
-            for (var row: manipulator.rows) {
+            for (var row : manipulator.rows) {
                 if (row.type == RowInfo.TYPE_FIELD) {
                     fields.get(row.fIndex).setInt(param.thisObject, row.index);
                 }
@@ -352,7 +371,7 @@ public class ProfileActivityRowHook implements Initializable {
                 fBaseFragment_arguments.set(param.thisObject, args);
             }
             var map = new HashMap<Integer, String>();
-            for (var row: manipulator.rows) {
+            for (var row : manipulator.rows) {
                 if (row.type == RowInfo.TYPE_KEY) {
                     map.put(row.index, row.name);
                 }
@@ -365,9 +384,13 @@ public class ProfileActivityRowHook implements Initializable {
     private static @Nullable String getRowForKey(Object profileActivity, int row) {
         try {
             var args = (Bundle) fBaseFragment_arguments.get(profileActivity);
-            if (args == null) return null;
+            if (args == null) {
+                return null;
+            }
             var map = (HashMap<Integer, String>) args.getSerializable(PROFILE_ACTIVITY_EXTRA_ROWS);
-            if (map == null) return null;
+            if (map == null) {
+                return null;
+            }
             return map.get(row);
         } catch (Throwable t) {
             Utils.loge(t);

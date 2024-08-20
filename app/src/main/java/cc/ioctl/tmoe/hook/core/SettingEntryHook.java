@@ -43,7 +43,9 @@ public class SettingEntryHook implements Initializable, ProfileActivityRowHook.C
 
     @Override
     public boolean onBindViewHolder(@NonNull String key, @NonNull Object holder, @NonNull Object adpater, @NonNull Object profileActivity) {
-        if (!TMOE_SETTINGS_ROW.equals(key)) return false;
+        if (!TMOE_SETTINGS_ROW.equals(key)) {
+            return false;
+        }
         FrameLayout textCell = (FrameLayout) Reflex.getInstanceObjectOrNull(holder, "itemView");
         if (textCell != null) {
             // color and theme is already set by Telegram, we only need to set the text and icon
@@ -72,7 +74,9 @@ public class SettingEntryHook implements Initializable, ProfileActivityRowHook.C
 
     @Override
     public int getItemViewType(@NonNull String key, @NonNull Object adapter, @NonNull Object profileActivity) {
-        if (TMOE_SETTINGS_ROW.equals(key)) return 4;
+        if (TMOE_SETTINGS_ROW.equals(key)) {
+            return 4;
+        }
         return -1;
     }
 
