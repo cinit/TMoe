@@ -268,7 +268,7 @@ public class ProfileActivityRowHook implements Initializable {
             for (Field f : kProfileActivity.getDeclaredFields()) {
                 if (f.getType() == int.class && !Modifier.isStatic(f.getModifiers())) {
                     f.setAccessible(true);
-                    if (f.getName().endsWith("Row") || f.getName().endsWith("Row2")) {
+                    if (f.getName().endsWith("Row") || f.getName().endsWith("Row2") || "helpSectionCell".equals(f.getName())) {
                         possibleIds.add(f);
                     }
                 }
