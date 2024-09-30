@@ -58,7 +58,9 @@ object HistoricalNewsOption : CommonDynamicHook() {
                     if (texts.text == reportChatText) {
                         it.result = null
 
-                        // 移除了历史消息选项的代码
+                        // 获取上下文和主题代理
+                        val ctx = (thisObject as ViewGroup).context
+                        val themeDelegate = getField("resourcesProvider", thisObject)
 
                         val plus = callC.newInstance(ctx, true, true, themeDelegate)
                         getMethodAndInvoke(
