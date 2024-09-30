@@ -78,39 +78,3 @@ jobs:
           path: ${{github.workspace}}/app/build/outputs/apk/release/*.apk
           if-no-files-found: warn
           retention-days: 30
-
-  telegram-bot-api:
-    name: Telegram Bot API
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3.3.0
-      - name: Clone Telegram Bot API
-        run: |
-          git clone --recursive https://github.com/tdlib/telegram-bot-api.git
-          git status telegram-bot-api >> telegram-bot-api-status
-      - name: Cache Bot API Binary
-        id: cache-bot-api
-        uses: actions/cache@v3.2.4
-        with:
-          path: telegram-bot-api-binary
-          key: CI-telegram-bot-api-${{ hashFiles('telegram-bot-api-status') }}
-      - name: Compile Telegram Bot API
-        if: steps.cache-bot-api.outputs.cache-hit != 'true'
-        run: |
-          sudo apt-get update
-          sudo apt-get install make git zlib1g-dev libssl-dev gperf cmake g++
-          cd telegram-bot-api
-          rm -rf build
-          mkdir build
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX:PATH=.. ..
-          cmake --build . --target install -j$(nproc)
-          cd ../..
-          ls -l telegram-bot-api/bin/telegram-bot-api*
-          cp telegram-bot-api/bin/telegram-bot-api telegram-bot-api-binary
-      - name: Upload Binary
-        uses: actions/upload-artifact@master
-        with:
-          name: telegram-bot-api-binary
-          path: telegram-bot-api-binary
