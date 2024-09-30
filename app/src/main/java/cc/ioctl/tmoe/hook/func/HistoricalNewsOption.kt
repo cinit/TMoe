@@ -21,16 +21,11 @@ import java.lang.reflect.Field
 import java.lang.reflect.Method
 import java.util.concurrent.ConcurrentHashMap
 
-
-//TODO 分离 复读
 @FunctionHookEntry
 object HistoricalNewsOption : CommonDynamicHook() {
     var chatActivity: Any? = null
     override fun initOnce(): Boolean = tryOrLogFalse {
-
         try {
-
-
             var isCreateMenu = false
             findMethod("org.telegram.ui.ChatActivity") { name == "createMenu" }.hookMethod {
                 before {
@@ -40,7 +35,6 @@ object HistoricalNewsOption : CommonDynamicHook() {
                 after { isCreateMenu = false }
             }
 
-            //LocaleController.getString("ReportChat", R.string.ReportChat);
             val reportChat =
                 findField("org.telegram.messenger.R\$string") { name == "ReportChat" }.get(null) as Int
             val reportChatText = findMethod("org.telegram.messenger.LocaleController") {
@@ -55,76 +49,16 @@ object HistoricalNewsOption : CommonDynamicHook() {
             }.hookBefore {
                 if (!isEnabled) return@hookBefore
 
-
                 if (it.args[0]::class.java.canonicalName == "org.telegram.ui.ActionBar.ActionBarMenuSubItem") {
-
                     if (!isCreateMenu) return@hookBefore
 
                     val texts = getField("textView", it.args[0]) as TextView
-
-
                     val thisObject = it.thisObject
 
                     if (texts.text == reportChatText) {
                         it.result = null
 
-                        // ActionBarMenuSubItem cell = new ActionBarMenuSubItem(getParentActivity(), true, true, themeDelegate);
-                        val ctx = (thisObject as ViewGroup).context
-                        val themeDelegate = getField("resourcesProvider", thisObject)
-
-                        Parasitics.injectModuleResources(ctx.resources)
-                        val call = callC.newInstance(ctx, true, true, themeDelegate)
-                        getMethodAndInvoke(
-                            "setTextAndIcon",
-                            call,
-                            false,
-                            2,
-                            LocaleController.getString(
-                                "MenuItem_HistoryMessage",
-                                R.string.MenuItem_HistoryMessage
-                            ),
-                            R.drawable.ic_setting_hex_outline_24
-                        )
-                        XposedBridge.invokeOriginalMethod(it.method, thisObject, arrayOf(call))
-                        (call as FrameLayout).setOnClickListener {
-                            findUserHistory()
-                        }
-
-                        call.setOnLongClickListener { view ->
-
-                            var id = -1L
-                            val selectedObject = getField("selectedObject", chatActivity)
-                            val messageOwner = getField("messageOwner", selectedObject)
-                            val from_id = getField("from_id", messageOwner, true)
-
-                            val user_id = getField("user_id", from_id, true) as Long
-                            val channel_id = getField("channel_id", from_id, true) as Long
-
-                            if (user_id.toInt() != 0) {
-                                id = user_id
-                            } else if (channel_id.toInt() != 0) {
-                                id = channel_id
-                            }
-
-
-                          Toast.makeText(ctx, "ID: $id", Toast.LENGTH_SHORT).show()
-
-                          val context =  AndroidAppHelper.currentApplication().applicationContext
-
-                            val item = ClipData.Item(id.toString())
-                            val clipData = ClipData("", arrayOf("text/plain"), item)
-                            val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
-                            clipboardManager!!.setPrimaryClip(clipData)
-
-//                        Toast.makeText(AndroidAppHelper.currentApplication().applicationContext,"查看用户历史消息 $channel_id $post_author  $chat_id $user_id", Toast.LENGTH_SHORT).show()
-                            getMethodAndInvoke(
-                                "processSelectedOption",
-                                chatActivity,
-                                args = arrayOf(999)
-                            )
-
-                            true
-                        }
+                        // 移除了历史消息选项的代码
 
                         val plus = callC.newInstance(ctx, true, true, themeDelegate)
                         getMethodAndInvoke(
@@ -140,27 +74,19 @@ object HistoricalNewsOption : CommonDynamicHook() {
                         )
                         XposedBridge.invokeOriginalMethod(it.method, it.thisObject, arrayOf(plus))
                         (plus as FrameLayout).setOnClickListener {
-
                             try {
                                 plusOne()
                             } catch (e: Throwable) {
                                 XposedBridge.log(e)
                             }
-
                         }
-
-
                     }
-
                 }
-
             }
-
         } catch (e: Throwable) {
             XposedBridge.log(e)
         }
     }
-
 
     private fun plusOne() {
         val currentChat = getField("currentChat", chatActivity)
