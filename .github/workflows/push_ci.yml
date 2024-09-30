@@ -63,15 +63,7 @@ jobs:
           KEY_ALIAS: ${{ secrets.SIGN_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.SIGN_KEY_PASSWORD }}
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
-        # don't upload the artifacts if it's a pull request
-        if: ${{ !github.event.pull_request }}
-        with:
-          path: './app/build/outputs/*'
-          name: build_output_${{ github.event.head_commit.id }}.zip
-
-        - name: Upload APK
+      - name: Upload APK
         uses: actions/upload-artifact@v3
         with:
           name: app-release
