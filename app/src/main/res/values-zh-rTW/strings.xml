@@ -19,7 +19,7 @@
     <string name="AddInfoContainerD">非管理員也可檢視一些資訊</string>
     <string name="ProhibitSpoilers">禁用劇透</string>
     <string name="ProhibitSpoilersD">劇透內容將預設顯示</string>
-    <string name="SendCommand">詢問是否送出 Bot 指令</string>
+    <string name="SendCommand">按下自動傳送的 Bot 指令前先確認</string>
     <string name="ForceBlurChatAvailable">強制顯示頂欄模糊選項</string>
     <string name="DisablePremiumStickerAnimation">禁用 Premium 貼圖動畫</string>
     <string name="AntiAntiCopy">反反複製</string>
