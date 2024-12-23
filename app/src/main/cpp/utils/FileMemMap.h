@@ -30,7 +30,7 @@ public:
      * @param length the length of the file to map, may be 0 to map the entire file.
      * @return 0 on success, errno on error.
      */
-    [[nodiscard]] int mapFilePath(const char *path, bool readOnly = true, size_t length = 0);
+    [[nodiscard]] int mapFilePath(const char* path, bool readOnly = true, size_t length = 0);
 
     /**
      * Map a file into memory.
@@ -80,5 +80,11 @@ public:
      */
     void detach() noexcept;
 };
+
+namespace utils {
+
+size_t GetPageSize();
+
+}
 
 #endif //NCI_HOST_NATIVES_FILEMEMMAP_H

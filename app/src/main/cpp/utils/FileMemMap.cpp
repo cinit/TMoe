@@ -18,7 +18,7 @@ FileMemMap::~FileMemMap() noexcept {
     }
 }
 
-int FileMemMap::mapFilePath(const char *path, bool readOnly, size_t length) {
+int FileMemMap::mapFilePath(const char* path, bool readOnly, size_t length) {
     int fd = open(path, O_RDONLY);
     if (fd < 0) {
         return errno;
@@ -36,8 +36,9 @@ int FileMemMap::mapFilePath(const char *path, bool readOnly, size_t length) {
         close(fd);
         return EINVAL;
     }
-    size_t pageSize = (length + PAGE_SIZE - 1) & PAGE_MASK;
-    void *addr = mmap(nullptr, pageSize, readOnly ? PROT_READ : (PROT_READ | PROT_WRITE), MAP_PRIVATE, fd, 0);
+    size_t kPageSize = utils::GetPageSize();
+    size_t pageAlignedSize = (length + kPageSize - 1u) & ~(kPageSize - 1u);
+    void* addr = mmap(nullptr, pageAlignedSize, readOnly ? PROT_READ : (PROT_READ | PROT_WRITE), MAP_PRIVATE, fd, 0);
     if (addr == MAP_FAILED) {
         int err = errno;
         close(fd);
@@ -46,7 +47,7 @@ int FileMemMap::mapFilePath(const char *path, bool readOnly, size_t length) {
     close(fd);
     mAddress = addr;
     mLength = length;
-    mMapLength = pageSize;
+    mMapLength = pageAlignedSize;
     return 0;
 }
 
@@ -64,15 +65,16 @@ int FileMemMap::mapFileDescriptor(int fd, bool readOnly, size_t length, bool sha
     if (length == 0) {
         return EINVAL;
     }
-    size_t pageSize = (length + PAGE_SIZE - 1) & PAGE_MASK;
-    void *addr = mmap(nullptr, pageSize, readOnly ? PROT_READ : (PROT_READ | PROT_WRITE),
+    size_t kPageSize = utils::GetPageSize();
+    size_t pageAlignedSize = (length + kPageSize - 1u) & ~(kPageSize - 1u);
+    void* addr = mmap(nullptr, pageAlignedSize, readOnly ? PROT_READ : (PROT_READ | PROT_WRITE),
                       shared ? MAP_SHARED : MAP_PRIVATE, fd, 0);
     if (addr == MAP_FAILED) {
         return errno;
     }
     mAddress = addr;
     mLength = length;
-    mMapLength = pageSize;
+    mMapLength = pageAlignedSize;
     return 0;
 }
 
@@ -88,4 +90,12 @@ void FileMemMap::detach() noexcept {
     mAddress = nullptr;
     mLength = 0;
     mMapLength = 0;
+}
+
+namespace utils {
+
+size_t GetPageSize() {
+    return size_t(sysconf(_SC_PAGESIZE));
+}
+
 }
