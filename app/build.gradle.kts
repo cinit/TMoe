@@ -13,7 +13,7 @@ println("Current build ID is $currentBuildUuid")
 
 android {
 
-    buildToolsVersion = "33.0.2"
+    buildToolsVersion = "35.0.0"
 
     namespace = "cc.ioctl.tmoe"
 
@@ -38,8 +38,9 @@ android {
 
         externalNativeBuild {
             cmake {
-                arguments += arrayOf("-DTMOE_VERSION=$versionName", "-DANDROID_PLATFORM=android-21")
+                arguments += arrayOf("-DTMOE_VERSION=$versionName", "-DANDROID_PLATFORM=android-" + Versions.minSdk)
                 cppFlags += "-std=c++20"
+                arguments += "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
             }
         }
     }
@@ -114,8 +115,10 @@ dependencies {
     implementation(libs.core)
     implementation(libs.hiddenapibypass)
     implementation(libs.dexlib2)
+    implementation(libs.google.guava)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.ezxhelper)
     compileOnly(libs.xposed)
+    compileOnly(libs.javax.annotation)
 }

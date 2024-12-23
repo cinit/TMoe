@@ -6,13 +6,13 @@ import java.util.Properties
 object Versions {
 
     val java = JavaVersion.VERSION_11
-    const val compileSdkVersion = 34
+    const val compileSdkVersion = 35
     const val minSdk = 24
     const val targetSdk = 34
     const val versionName = "1.0"
 
-    private const val defaultNdkVersion = "25.1.8937393"
-    private const val defaultCMakeVersion = "3.22.1"
+    private const val defaultNdkVersion = "27.2.12479018"
+    private const val defaultCMakeVersion = "3.31.1"
 
     fun getNdkVersion(project: Project): String {
         val prop = getLocalProperty(project, "tmoe.override.ndk.version")
