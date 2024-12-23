@@ -27,6 +27,7 @@
     <string name="ProhibitSpoilers">禁用剧透</string>
     <string name="ProhibitSpoilersD">剧透内容将默认显示</string>
     <string name="HistoricalNewsOption">历史消息</string>
+    <string name="HistoricalNewsOptionDesc">打开此选项会同时启用复读功能</string>
     <string name="ProhibitChatGreetings">禁用问候贴纸</string>
     <string name="HidePhoneNumber">隐藏电话号码</string>
     <string name="AddSubItemChannel">打开频道</string>

@@ -12,6 +12,7 @@
     <string name="ProhibitChatGreetings">Prohibit Chat Greetings</string>
     <string name="HidePhoneNumber">Hide Phone Number</string>
     <string name="HistoricalNewsOption">Historical News Option</string>
+    <string name="HistoricalNewsOptionDesc">This will also enable the message repeat (+1) function</string>
     <string name="UseSystemEmoji">Use System Emoji</string>
     <string name="AddSubItemChannel">AddSubItemChannel</string>
     <string name="AddSubItemChannelD">AddSubItemChannel</string>

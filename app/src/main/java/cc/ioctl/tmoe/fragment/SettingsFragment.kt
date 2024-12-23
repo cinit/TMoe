@@ -63,7 +63,10 @@ class SettingsFragment : BaseHierarchyFragment() {
                 }
             )
             functionSwitch(
-                HistoricalNewsOption, "HistoricalNewsOption", R.string.HistoricalNewsOption
+                HistoricalNewsOption, "HistoricalNewsOption", R.string.HistoricalNewsOption,
+                descProvider = {
+                    LocaleController.getString("HistoricalNewsOptionDesc", R.string.HistoricalNewsOptionDesc)
+                }
             )
             functionSwitch(
                 ProhibitChannelSwitching, "ProhibitChannelSwitching", R.string.ProhibitChannelSwitching
