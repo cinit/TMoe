@@ -48,6 +48,16 @@ jobs:
           restore-keys: |
             gradle-builds
 
+      - name: Setup SDK
+        run: |
+          echo "ANDROID_HOME=${ANDROID_HOME}"
+          echo "ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT}"
+          mkdir -p "$ANDROID_HOME/licenses/"
+          echo > "$ANDROID_HOME/licenses/android-sdk-license"
+          echo -n 24333f8a63b6825ea9c5514f83c2829b004d1fee > "$ANDROID_HOME/licenses/android-sdk-license"
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "cmake;3.31.1"
+          echo "sdk.dir=${ANDROID_HOME}" > local.properties
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 

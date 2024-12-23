@@ -50,6 +50,16 @@ jobs:
           restore-keys: |
             gradle-builds
 
+      - name: Setup SDK
+        run: |
+          echo "ANDROID_HOME=${ANDROID_HOME}"
+          echo "ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT}"
+          mkdir -p "$ANDROID_HOME/licenses/"
+          echo > "$ANDROID_HOME/licenses/android-sdk-license"
+          echo -n 24333f8a63b6825ea9c5514f83c2829b004d1fee > "$ANDROID_HOME/licenses/android-sdk-license"
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "cmake;3.31.1"
+          echo "sdk.dir=${ANDROID_HOME}" > local.properties
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
@@ -69,7 +79,7 @@ jobs:
         if: ${{ !github.event.pull_request }}
         with:
           path: './app/build/outputs/*'
-          name: build_output_${{ github.event.head_commit.id }}.zip
+          name: build_output_${{ github.event.head_commit.id }}
 
   upload-telegram:
     name: Upload Release
@@ -80,11 +90,11 @@ jobs:
       - telegram-bot-api
     steps:
       - name: Download Artifacts
-        uses: actions/download-artifact@v4.1.7
+        uses: actions/download-artifact@v4
         with:
           path: artifacts
       - name: Download Telegram Bot API Binary
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v4
         with:
           name: telegram-bot-api-binary
           path: .
@@ -100,6 +110,7 @@ jobs:
         run: |
           ESCAPED=`python3 -c 'import json,os,urllib.parse; msg = json.dumps(os.environ["COMMIT_MESSAGE"]); print(urllib.parse.quote(msg if len(msg) <= 1024 else json.dumps(os.environ["COMMIT_URL"])))'`
           export universal=$(find artifacts -name "*.apk")
+          echo "universal=$universal"
           chmod +x telegram-bot-api-binary
           ./telegram-bot-api-binary --api-id=21724 --api-hash=3e0cb5efcd52300aec5994fdfc5bdc16 --local 2>&1 > /dev/null &
           curl -v "http://127.0.0.1:8081/bot${{ secrets.TELEGRAM_TOKEN  }}/sendMediaGroup?chat_id=-${{ vars.TG_CI_UPLOAD_TARGET_CHANNEL }}&message_thread_id=${{ vars.TG_CI_UPLOAD_TARGET_REPLY_ID }}&media=%5B%7B%22type%22%3A%22document%22%2C%20%22media%22%3A%22attach%3A%2F%2Funiversal%22%2C%22parse_mode%22%3A%22MarkdownV2%22%2C%22caption%22:${ESCAPED}%7D%5D" \
