@@ -74,7 +74,7 @@ jobs:
           KEY_PASSWORD: ${{ secrets.SIGN_KEY_PASSWORD }}
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         # don't upload the artifacts if it's a pull request
         if: ${{ !github.event.pull_request }}
         with:
@@ -150,7 +150,7 @@ jobs:
           ls -l telegram-bot-api/bin/telegram-bot-api*
           cp telegram-bot-api/bin/telegram-bot-api telegram-bot-api-binary
       - name: Upload Binary
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v4
         with:
           name: telegram-bot-api-binary
           path: telegram-bot-api-binary
