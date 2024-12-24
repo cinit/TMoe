@@ -92,6 +92,7 @@ jobs:
       - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
+          pattern: build_output_*
           path: artifacts
       - name: Download Telegram Bot API Binary
         uses: actions/download-artifact@v4
@@ -109,6 +110,7 @@ jobs:
           COMMIT_URL: ${{ github.event.head_commit.url }}
         run: |
           ESCAPED=`python3 -c 'import json,os,urllib.parse; msg = json.dumps(os.environ["COMMIT_MESSAGE"]); print(urllib.parse.quote(msg if len(msg) <= 1024 else json.dumps(os.environ["COMMIT_URL"])))'`
+          find .
           export universal=$(find artifacts -name "*.apk")
           echo "universal=$universal"
           chmod +x telegram-bot-api-binary
