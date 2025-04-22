@@ -135,6 +135,9 @@ class SettingsFragment : BaseHierarchyFragment() {
                 ShowIdInProfile, "ShowIdInProfile", R.string.ShowIdInProfile,
                 "ShowIdInProfileDesc", R.string.ShowIdInProfileDesc
             )
+            functionSwitch(
+                MutualContactsBtnOption, "MutualContact", R.string.MutualContact
+            )
         }
         category("LostMsgMitigation", R.string.LostMsgMitigation) {
             functionSwitch(

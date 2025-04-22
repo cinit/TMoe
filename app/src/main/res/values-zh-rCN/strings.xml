@@ -92,4 +92,5 @@
     <string name="BuildVarsLogsEnabledDesc">参考 BuildVars.java 中的 LOGS_ENABLED（立即生效，重启失效）</string>
     <string name="DialogMsg_ConfirmDumpChannelMembers">拉取群成员列表？</string>
     <string name="FuckTrackingHookDesc">如果您点击Telegram提供的广告，他们会收集数据作为个性化广告的基础。此功能用于屏蔽个性化广告。</string>
+    <string name="MutualContact">双向联系人</string>
 </resources>
