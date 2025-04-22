@@ -18,6 +18,7 @@ import com.github.kyuubiran.ezxhelper.utils.*
 @FunctionHookEntry
 object MutualContactsBtnOption : CommonDynamicHook() {
     object MutualViewTag
+    var needAddMutual: Boolean = false;
     override fun initOnce(): Boolean = tryOrLogFalse {
         val themeClzName = "org.telegram.ui.ActionBar.Theme"
         val themeGetColor = findMethod(themeClzName) { name == "getColor" && parameterCount == 2 }
@@ -28,9 +29,14 @@ object MutualContactsBtnOption : CommonDynamicHook() {
         val themeCreateSelectorDrawable =
             findMethod(themeClzName) { name == "createSelectorDrawable" }
 
+        Log.dx("${MutualContactsBtnOption.javaClass.name}: before onCreateViewHolder")
+        findMethod("org.telegram.ui.Adapters.ContactsAdapter") { name == "onCreateViewHolder" }.hookBefore {
+            needAddMutual = it.args[1] as Int == 0
+        }
+
         Log.dx("${MutualContactsBtnOption.javaClass.name}: before findUserCell")
         findConstructor("org.telegram.ui.Cells.UserCell") { parameterTypes.size == 6 }.hookAfter {
-            if (!isEnabled) return@hookAfter
+            if (!isEnabled || !needAddMutual) return@hookAfter
             if (it.args[5] != null && it.args[5].javaClass.canonicalName != "$themeClzName.ResourcesProvider") return@hookAfter  // neko workaround
             val context = it.args[0] as Context
             val resourcesProvider = it.args[5]
