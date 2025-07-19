@@ -28,7 +28,7 @@ jobs:
           cache: gradle
 
       - name: Cache Gradle Dependencies
-        uses: actions/cache@v3.2.4
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
@@ -39,7 +39,7 @@ jobs:
             gradle-deps
 
       - name: Cache Gradle Build
-        uses: actions/cache@v3.2.4
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches/build-cache-*
