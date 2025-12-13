@@ -66,6 +66,7 @@
     <string name="FuckTrackingHook">禁用个性化广告推荐</string>
     <string name="DisableInstantCamera">禁用即时相机</string>
     <string name="HideServiceStories">隐藏“服务通知”的动态</string>
+    <string name="DisableQuickReaction">禁用快速表情回应</string>
     <string name="ShowIdInProfile">资料页显示 ID</string>
     <string name="GroupOrChannelId">群聊 / 频道 ID</string>
     <string name="UserId">用户 ID</string>

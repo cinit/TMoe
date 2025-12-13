@@ -75,6 +75,9 @@ class SettingsFragment : BaseHierarchyFragment() {
                 UseSystemEmoji, "UseSystemEmoji", R.string.UseSystemEmoji
             )
             functionSwitch(
+                DisableQuickReaction, "DisableQuickReaction", R.string.DisableQuickReaction
+            )
+            functionSwitch(
                 ProhibitEnableReactions, "ProhibitEnableReactions", R.string.ProhibitEnableReactions
             )
             functionSwitch(
