@@ -94,4 +94,5 @@
     <string name="GroupOrChannelId">群組 / 频道 ID</string>
     <string name="UserId">使用者 ID</string>
     <string name="IdCopied">已複製</string>
+    <string name="MutualContact">相互聯繫人</string>
 </resources>

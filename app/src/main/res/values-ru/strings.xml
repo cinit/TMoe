@@ -60,6 +60,7 @@
     <string name="MenuItem_HistoryMessage">История</string>
     <string name="MenuItem_RepeatMessage">Повторить</string>
     <string name="Misc">Дополнительные возможности</string>
+    <string name="MutualContact">Общий контакт</string>
     <string name="NotEnabled">Не включен</string>
     <string name="NotImplemented">Еще не реализовано</string>
     <string name="ProhibitChannelSwitching">Запретить переключение каналов</string>

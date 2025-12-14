@@ -99,4 +99,5 @@
     <string name="GroupOrChannelId">Group / Channel ID</string>
     <string name="UserId">User ID</string>
     <string name="IdCopied">Copied</string>
+    <string name="MutualContact">Mutual Contact</string>
 </resources>
